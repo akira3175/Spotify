@@ -1,7 +1,7 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.response import Response
-from rest_framework import status, generics
+from rest_framework import status, generics, permissions
 from django.contrib.auth.models import User
 from .serializers import *
 
@@ -40,3 +40,11 @@ class CheckUsernameAndEmailView(generics.GenericAPIView):
             return Response({'error': 'At least one parameter (username or email) is required'}, status=400)
 
         return Response(response_data)
+    
+class UpdateUserView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UpdateUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user  # Chỉ cho phép user cập nhật chính mình
