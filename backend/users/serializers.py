@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from .models import Friend, StatusFriend
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
@@ -28,3 +29,13 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.save()
         return instance
+
+class FriendSerializer(serializers.ModelSerializer):
+    user1 = serializers.SlugRelatedField(slug_field="username", queryset=User.objects.all())
+    user2 = serializers.SlugRelatedField(slug_field="username", queryset=User.objects.all())
+    status = serializers.SlugRelatedField(slug_field="name", queryset=StatusFriend.objects.all())
+
+    class Meta:
+        model = Friend
+        fields = ['id', 'user1', 'user2', 'status', 'created_at']
+        read_only_fields = ['created_at']

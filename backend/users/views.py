@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status, generics, permissions
 from django.contrib.auth.models import User
 from .serializers import *
+from rest_framework.permissions import IsAuthenticated
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -48,3 +49,99 @@ class UpdateUserView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user  # Chỉ cho phép user cập nhật chính mình
+
+class SendFriendRequestView(generics.CreateAPIView):
+    """
+    Gửi lời mời kết bạn
+    """
+    serializer_class = FriendSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        user1 = request.user
+        user2_username = request.data.get("user2")
+
+        if not user2_username:
+            return Response({"error": "Thiếu username của người cần kết bạn."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user2 = User.objects.get(username=user2_username)
+        except User.DoesNotExist:
+            return Response({"error": "Người dùng không tồn tại."}, status=status.HTTP_404_NOT_FOUND)
+
+        if user1 == user2:
+            return Response({"error": "Không thể kết bạn với chính mình."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Kiểm tra xem đã gửi lời mời trước đó chưa
+        if Friend.objects.filter(user1=user1, user2=user2).exists() or Friend.objects.filter(user1=user2, user2=user1).exists():
+            return Response({"error": "Lời mời kết bạn đã tồn tại."}, status=status.HTTP_400_BAD_REQUEST)
+
+        pending_status = StatusFriend.objects.get(name=StatusFriend.PENDING)
+
+        friend_request = Friend.objects.create(user1=user1, user2=user2, status=pending_status)
+        return Response(FriendSerializer(friend_request).data, status=status.HTTP_201_CREATED)
+
+
+class RespondFriendRequestView(generics.UpdateAPIView):
+    """
+    Chấp nhận hoặc từ chối lời mời kết bạn
+    """
+    serializer_class = FriendSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        friend_request_id = kwargs.get("pk")
+        action = request.data.get("action")  # "accept" hoặc "decline"
+
+        try:
+            friend_request = Friend.objects.get(id=friend_request_id)
+        except Friend.DoesNotExist:
+            return Response({"error": "Lời mời kết bạn không tồn tại."}, status=status.HTTP_404_NOT_FOUND)
+
+        if friend_request.user2 != request.user:
+            return Response({"error": "Bạn không có quyền thực hiện hành động này."}, status=status.HTTP_403_FORBIDDEN)
+
+        if action == "accept":
+            friend_request.status = StatusFriend.objects.get(name=StatusFriend.ACCEPTED)
+        elif action == "decline":
+            friend_request.status = StatusFriend.objects.get(name=StatusFriend.DECLINED)
+        else:
+            return Response({"error": "Hành động không hợp lệ."}, status=status.HTTP_400_BAD_REQUEST)
+
+        friend_request.save()
+        return Response(FriendSerializer(friend_request).data)
+
+
+class RemoveFriendView(generics.DestroyAPIView):
+    """
+    Hủy kết bạn
+    """
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        friend_id = kwargs.get("pk")
+
+        try:
+            friendship = Friend.objects.get(id=friend_id, status__name=StatusFriend.ACCEPTED)
+        except Friend.DoesNotExist:
+            return Response({"error": "Bạn không có quyền xóa bạn bè này hoặc người này không phải bạn bè."}, status=status.HTTP_404_NOT_FOUND)
+
+        if request.user != friendship.user1 and request.user != friendship.user2:
+            return Response({"error": "Bạn không có quyền thực hiện hành động này."}, status=status.HTTP_403_FORBIDDEN)
+
+        friendship.delete()
+        return Response({"message": "Đã hủy kết bạn thành công."}, status=status.HTTP_204_NO_CONTENT)
+
+
+class ListFriendsView(generics.ListAPIView):
+    """
+    Danh sách bạn bè
+    """
+    serializer_class = FriendSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Friend.objects.filter(
+            (models.Q(user1=self.request.user) | models.Q(user2=self.request.user)),
+            status__name=StatusFriend.ACCEPTED
+        )
