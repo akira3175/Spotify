@@ -1,10 +1,10 @@
-import axios from '../axios';
+import axios from "axios";
 
-import type { Track } from '../interfaces/track';
-import type { Album } from '../interfaces/albums';
-import type { Artist } from '../interfaces/artist';
-import type { Pagination } from '../interfaces/api';
-import type { Playlist } from '../interfaces/playlists';
+import type { Track } from "../interfaces/track";
+import type { Album } from "../interfaces/albums";
+import type { Artist } from "../interfaces/artist";
+import type { Pagination } from "../interfaces/api";
+import type { Playlist } from "../interfaces/playlists";
 
 /**
  * @description Get Spotify catalog information about albums, artists, playlists, tracks, shows, episodes or audiobooks that match a keyword string. Audiobooks are only available within the US, UK, Canada, Ireland, New Zealand and Australia markets.

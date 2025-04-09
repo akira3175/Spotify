@@ -63,16 +63,23 @@ export const AppLayout: FC<{ children: ReactElement }> = memo((props) => {
       <LoginModal />
 
       {/* Main Component */}
-      <div className='main-container'>
+      <div
+        className='main-container'
+        style={{
+          height: '100vh',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <Row
           wrap
           justify='end'
           gutter={[8, 8]}
           style={{
             overflow: 'hidden',
-            height: `calc(100vh - ${
-              activeOnOtherDevice ? '141' : !user && isMobile ? '0' : '105'
-            }px)`,
+            flex: 1, // Lấp đầy không gian còn lại
+            margin: 0,
           }}
         >
           <Col span={24}>
@@ -82,10 +89,11 @@ export const AppLayout: FC<{ children: ReactElement }> = memo((props) => {
           <Col
             span={24}
             style={{
+              flex: 1, // Lấp đầy không gian còn lại
               maxHeight: activeOnOtherDevice ? `calc(100vh - 185px)` : undefined,
             }}
           >
-            <PanelGroup direction='horizontal' autoSaveId='persistence'>
+            <PanelGroup direction='horizontal' autoSaveId='persistence' style={{ height: '100%' }}>
               <Panel
                 id='left'
                 order={1}
@@ -103,8 +111,7 @@ export const AppLayout: FC<{ children: ReactElement }> = memo((props) => {
               </Panel>
 
               {!isMobile ? <PanelResizeHandle className='resize-handler' /> : null}
-              <Panel id='center' order={2} style={{ borderRadius: 5 }}>
-                {/* Home | Playlists */}
+              <Panel id='center' order={2} style={{ borderRadius: 5, height: '100%' }}>
                 {props.children}
               </Panel>
 
@@ -119,7 +126,7 @@ export const AppLayout: FC<{ children: ReactElement }> = memo((props) => {
                   maxSize={30}
                   defaultSize={25}
                   id='details-section'
-                  style={{ borderRadius: 5 }}
+                  style={{ borderRadius: 5, height: '100%' }}
                 >
                   <PlayingNow />
                 </Panel>
@@ -127,9 +134,16 @@ export const AppLayout: FC<{ children: ReactElement }> = memo((props) => {
             </PanelGroup>
           </Col>
         </Row>
-      </div>
 
-      {<footer>{user ? <PlayingBar /> : <LoginFooter />}</footer>}
+        <footer
+          style={{
+            height: user ? '90px' : 'auto', // Chiều cao cố định cho PlayingBar
+            width: '100%',
+          }}
+        >
+          {user ? <PlayingBar /> : <LoginFooter />}
+        </footer>
+      </div>
     </>
   );
 });

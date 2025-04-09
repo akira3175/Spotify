@@ -11,7 +11,10 @@ export const Navbar = memo(() => {
       gutter={[16, 16]}
       className='navbar'
       justify='space-between'
-      style={{ margin: '0 5px' }}
+      style={{  backgroundColor: '#000',
+        height: '64px', // Chiều cao cố định cho navbar
+        padding: '0 16px',
+        margin: 0, }}
     >
       <Col>
         <HistoryNavigation />

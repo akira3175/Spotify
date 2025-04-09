@@ -4,7 +4,6 @@ import { Slider } from '../../../Slider';
 
 // Utils
 import { msToTime } from '../../../../utils';
-
 // Redux
 import { useAppSelector } from '../../../../store/store';
 import { playerService } from '../../../../services/player';

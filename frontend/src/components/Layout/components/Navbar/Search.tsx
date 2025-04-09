@@ -62,7 +62,7 @@ export const Search = memo(() => {
         onChange={(e) => {
           setInputValue(e.target.value);
         }}
-        placeholder={t('SearchPlaceholder')}
+        placeholder={t('Bạn muốn phát nội dung gì?')}
       />
     </Space>
   );

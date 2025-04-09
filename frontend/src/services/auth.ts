@@ -1,8 +1,8 @@
-import axios from '../axios';
+import axios from "axios";
 
-import type { User } from '../interfaces/user';
+import type { User } from "../interfaces/user";
 
-const fetchUser = () => axios.get<User>('/me');
+const fetchUser = () => axios.get<User>("/me");
 
 export const authService = {
   fetchUser,

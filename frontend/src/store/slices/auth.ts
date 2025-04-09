@@ -1,57 +1,66 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Utils
-import axios from '../../axios';
-import login from '../../utils/spotify/login';
+import axios from "axios";
+import login from "../../utils/spotify/login";
 
 // Services
-import { authService } from '../../services/auth';
+import { authService } from "../../services/auth";
 
 // Interfaces
-import type { User } from '../../interfaces/user';
-import { getFromLocalStorageWithExpiry } from '../../utils/localstorage';
+import type { User } from "../../interfaces/user";
+import { getFromLocalStorageWithExpiry } from "../../utils/localstorage";
 
-const initialState: { token?: string; playerLoaded: boolean; user?: User; requesting: boolean } = {
+const initialState: {
+  token?: string;
+  playerLoaded: boolean;
+  user?: User;
+  requesting: boolean;
+} = {
   user: undefined,
   requesting: true,
   playerLoaded: false,
-  token: getFromLocalStorageWithExpiry('access_token') || undefined,
+  token: getFromLocalStorageWithExpiry("access_token") || undefined,
 };
 
-export const loginToSpotify = createAsyncThunk<{ token?: string; loaded: boolean }, boolean>(
-  'auth/loginToSpotify',
-  async (anonymous, api) => {
-    const userToken: string | undefined = getFromLocalStorageWithExpiry('access_token') as string;
-    const anonymousToken: string | undefined = getFromLocalStorageWithExpiry('public_access_token');
+export const loginToSpotify = createAsyncThunk<
+  { token?: string; loaded: boolean },
+  boolean
+>("auth/loginToSpotify", async (anonymous, api) => {
+  const userToken: string | undefined = getFromLocalStorageWithExpiry(
+    "access_token"
+  ) as string;
+  const anonymousToken: string | undefined = getFromLocalStorageWithExpiry(
+    "public_access_token"
+  );
 
-    let token = userToken || anonymousToken;
+  let token = userToken || anonymousToken;
 
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-      if (userToken) api.dispatch(fetchUser());
-      return { token, loaded: false };
-    }
-
-    let [requestedToken, requestUser] = await login.getToken();
-    if (requestUser) api.dispatch(fetchUser());
-
-    if (!requestedToken) {
-      login.logInWithSpotify(anonymous);
-    } else {
-      axios.defaults.headers.common['Authorization'] = 'Bearer ' + requestedToken;
-    }
-
-    return { token: requestedToken, loaded: true };
+  if (token) {
+    axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+    if (userToken) api.dispatch(fetchUser());
+    return { token, loaded: false };
   }
-);
 
-export const fetchUser = createAsyncThunk('auth/fetchUser', async () => {
+  let [requestedToken, requestUser] = await login.getToken();
+  if (requestUser) api.dispatch(fetchUser());
+
+  if (!requestedToken) {
+    login.logInWithSpotify(anonymous);
+  } else {
+    axios.defaults.headers.common["Authorization"] = "Bearer " + requestedToken;
+  }
+
+  return { token: requestedToken, loaded: true };
+});
+
+export const fetchUser = createAsyncThunk("auth/fetchUser", async () => {
   const response = await authService.fetchUser();
   return response.data;
 });
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     setRequesting(state, action: PayloadAction<{ requesting: boolean }>) {

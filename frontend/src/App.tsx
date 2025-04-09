@@ -2,7 +2,6 @@
 import './styles/App.scss';
 
 // Utils
-import i18next from 'i18next';
 import { FC, Suspense, lazy, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { getFromLocalStorageWithExpiry } from './utils/localstorage';
 
@@ -13,9 +12,8 @@ import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-route
 
 // Redux
 import { Provider } from 'react-redux';
-import { uiActions } from './store/slices/ui';
 import { PersistGate } from 'redux-persist/integration/react';
-import { authActions, loginToSpotify } from './store/slices/auth';
+import { authActions } from './store/slices/auth';
 import { persistor, store, useAppDispatch, useAppSelector } from './store/store';
 
 // Spotify
@@ -48,13 +46,6 @@ const SearchPlaylist = lazy(() => import('./pages/Search/Playlists'));
 const SearchPageArtists = lazy(() => import('./pages/Search/Artists'));
 const RecentlySearched = lazy(() => import('./pages/Search/RecentlySearched'));
 
-window.addEventListener('resize', () => {
-  const vh = window.innerWidth;
-  if (vh < 950) {
-    store.dispatch(uiActions.collapseLibrary());
-  }
-});
-
 const SpotifyContainer: FC<{ children: any }> = memo(({ children }) => {
   const dispatch = useAppDispatch();
 
@@ -64,13 +55,8 @@ const SpotifyContainer: FC<{ children: any }> = memo(({ children }) => {
 
   useEffect(() => {
     const tokenInLocalStorage = getFromLocalStorageWithExpiry('access_token');
+    console.log('[SpotifyContainer] Token from localStorage:', tokenInLocalStorage);
     dispatch(authActions.setToken({ token: tokenInLocalStorage }));
-
-    if (tokenInLocalStorage) {
-      dispatch(authActions.fetchUser());
-    } else {
-      dispatch(loginToSpotify(true));
-    }
   }, [dispatch]);
 
   const webPlaybackSdkProps: WebPlaybackProps = useMemo(
@@ -79,24 +65,29 @@ const SpotifyContainer: FC<{ children: any }> = memo(({ children }) => {
       playerInitialVolume: 1.0,
       playerRefreshRateMs: 1000,
       playerName: 'Spotify React Player',
-      onPlayerRequestAccessToken: () => Promise.resolve(token!),
-      onPlayerLoading: () => {},
+      onPlayerRequestAccessToken: () => {
+        console.log('[WebPlayback] Requesting access token:', token);
+        return Promise.resolve(token || '');
+      },
+      onPlayerLoading: () => console.log('[WebPlayback] Player loading...'),
       onPlayerWaitingForDevice: () => {
+        console.log('[WebPlayback] Waiting for device...');
         dispatch(authActions.setPlayerLoaded({ playerLoaded: true }));
       },
       onPlayerError: (e) => {
-        dispatch(loginToSpotify(false));
+        console.error('[WebPlayback] Player error:', e);
       },
       onPlayerDeviceSelected: () => {
+        console.log('[WebPlayback] Device selected');
         dispatch(authActions.setPlayerLoaded({ playerLoaded: true }));
       },
     }),
     [dispatch, token]
   );
 
-  if (!user) return <Spinner loading={requesting}>{children}</Spinner>;
-
-  return <WebPlayback {...webPlaybackSdkProps}>{children}</WebPlayback>;
+  console.log('[SpotifyContainer] Render:', { user, token, requesting });
+  console.log('[SpotifyContainer] Rendering children directly (bypassing auth)');
+  return <>{children}</>;
 });
 
 const RoutesComponent = memo(() => {
@@ -107,75 +98,67 @@ const RoutesComponent = memo(() => {
   useEffect(() => {
     if (container.current) {
       container.current.scrollTop = 0;
+      console.log('[RoutesComponent] Scroll reset to top for location:', location.pathname);
     }
   }, [location, container]);
 
-  const routes = useMemo(
-    () =>
-      [
-        { path: '', element: <Home container={container} />, public: true },
-        { path: '/collection/tracks', element: <LikedSongsPage container={container} /> },
-        {
-          public: true,
-          path: '/playlist/:playlistId',
-          element: <PlaylistView container={container} />,
-        },
-        { path: '/album/:albumId', element: <AlbumView container={container} /> },
-        {
-          path: '/artist/:artistId/discography',
-          element: <ArtistDiscographyPage container={container} />,
-        },
-        { public: true, path: '/artist/:artistId', element: <ArtistPage container={container} /> },
-        { path: '/users/:userId/artists', element: <ProfileArtists container={container} /> },
-        { path: '/users/:userId/playlists', element: <ProfilePlaylists container={container} /> },
-        { path: '/users/:userId/tracks', element: <ProfileTracks container={container} /> },
-        { path: '/users/:userId', element: <Profile container={container} /> },
-        { public: true, path: '/genre/:genreId', element: <GenrePage /> },
-        { public: true, path: '/search', element: <BrowsePage /> },
-        { path: '/recent-searches', element: <RecentlySearched /> },
-        {
-          public: true,
-          path: '/search/:search',
-          element: <SearchContainer container={container} />,
-          children: [
-            {
-              path: 'artists',
-              element: <SearchPageArtists container={container} />,
-            },
-            {
-              path: 'albums',
-              element: <SearchAlbums container={container} />,
-            },
-            {
-              path: 'playlists',
-              element: <SearchPlaylist container={container} />,
-            },
-            {
-              path: 'tracks',
-              element: <SearchTracks container={container} />,
-            },
-            {
-              path: '',
-              element: <SearchPage container={container} />,
-            },
-          ],
-        },
-        { path: '*', element: <Page404 /> },
-      ].filter((r) => (user ? true : r.public)),
-    [container, user]
-  );
+  const routes = useMemo(() => {
+    const allRoutes = [
+      { path: '', element: <Home container={container} />, public: true },
+      { path: '/collection/tracks', element: <LikedSongsPage container={container} /> },
+      {
+        public: true,
+        path: '/playlist/:playlistId',
+        element: <PlaylistView container={container} />,
+      },
+      { path: '/album/:albumId', element: <AlbumView container={container} /> },
+      {
+        public: true,
+        path: '/artist/:artistId/discography',
+        element: <ArtistDiscographyPage container={container} />,
+      },
+      { public: true, path: '/artist/:artistId', element: <ArtistPage container={container} /> },
+      { path: '/users/:userId/artists', element: <ProfileArtists container={container} /> },
+      { path: '/users/:userId/playlists', element: <ProfilePlaylists container={container} /> },
+      { path: '/users/:userId/tracks', element: <ProfileTracks container={container} /> },
+      { path: '/users/:userId', element: <Profile container={container} /> },
+      { public: true, path: '/genre/:genreId', element: <GenrePage /> },
+      { public: true, path: '/search', element: <BrowsePage /> },
+      { path: '/recent-searches', element: <RecentlySearched /> },
+      {
+        public: true,
+        path: '/search/:search',
+        element: <SearchContainer container={container} />,
+        children: [
+          { path: 'artists', element: <SearchPageArtists container={container} /> },
+          { path: 'albums', element: <SearchAlbums container={container} /> },
+          { path: 'playlists', element: <SearchPlaylist container={container} /> },
+          { path: 'tracks', element: <SearchTracks container={container} /> },
+          { path: '', element: <SearchPage container={container} /> },
+        ],
+      },
+      { path: '*', element: <Page404 /> },
+    ];
+    const filteredRoutes = allRoutes.filter((r) => (user ? true : r.public));
+    console.log('[RoutesComponent] Filtered routes:', filteredRoutes.map((r) => r.path));
+    return filteredRoutes;
+  }, [container, user]);
+
+  console.log('[RoutesComponent] Rendering with location:', location.pathname);
 
   return (
     <div
-      className='Main-section'
+      className="Main-section"
       ref={container}
       style={{
-        height: user ? undefined : `calc(100vh - 50px)`,
+        height: '100%',
+        width: '100%',
+        overflowY: 'auto',
       }}
     >
       <div
         style={{
-          minHeight: user ? 'calc(100vh - 230px)' : 'calc(100vh - 100px)',
+          height: '100%',
           width: '100%',
         }}
       >
@@ -184,14 +167,28 @@ const RoutesComponent = memo(() => {
             <Route
               key={route.path}
               path={route.path}
-              element={<Suspense>{route.element}</Suspense>}
+              element={
+                <Suspense fallback={<div>Đang tải...</div>}>
+                  {(() => {
+                    console.log('[RoutesComponent] Rendering route:', route.path);
+                    return route.element;
+                  })()}
+                </Suspense>
+              }
             >
               {route?.children
                 ? route.children.map((child) => (
                     <Route
                       key={child.path}
                       path={child.path}
-                      element={<Suspense>{child.element}</Suspense>}
+                      element={
+                        <Suspense fallback={<div>Đang tải nội dung con...</div>}>
+                          {(() => {
+                            console.log('[RoutesComponent] Rendering child route:', child.path);
+                            return child.element;
+                          })()}
+                        </Suspense>
+                      }
                     />
                   ))
                 : undefined}
@@ -205,65 +202,86 @@ const RoutesComponent = memo(() => {
 
 const RootComponent = () => {
   const user = useAppSelector((state) => !!state.auth.user);
-  const language = useAppSelector((state) => state.language.language);
   const playing = useAppSelector((state) => !state.spotify.state?.paused);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('lang', language);
-    i18next.changeLanguage(language);
-  }, [language]);
 
   const handleSpaceBar = useCallback(
     (e: KeyboardEvent) => {
-      // @ts-ignore
       if (e.target?.tagName?.toUpperCase() === 'INPUT') return;
       if (playing === undefined) return;
       e.stopPropagation();
       if (e.key === ' ' || e.code === 'Space' || e.keyCode === 32) {
         e.preventDefault();
         const request = !playing ? playerService.startPlayback() : playerService.pausePlayback();
-        request.then().catch(() => {});
+        console.log('[RootComponent] Spacebar pressed, playback:', !playing ? 'start' : 'pause');
+        request.then(() => console.log('[RootComponent] Playback request successful')).catch((err) =>
+          console.error('[RootComponent] Playback error:', err)
+        );
       }
     },
     [playing]
   );
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      console.log('[RootComponent] User not logged in, skipping spacebar listener');
+      return;
+    }
     document.addEventListener('keydown', handleSpaceBar);
+    console.log('[RootComponent] Spacebar listener added');
     return () => {
       document.removeEventListener('keydown', handleSpaceBar);
+      console.log('[RootComponent] Spacebar listener removed');
     };
   }, [user, handleSpaceBar]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      console.log('[RootComponent] User not logged in, skipping context menu listener');
+      return;
+    }
     const handleContextMenu = (e: any) => {
       e.preventDefault();
     };
     document.addEventListener('contextmenu', handleContextMenu);
+    console.log('[RootComponent] Context menu listener added');
     return () => {
-      document.removeEventListener('keydown', handleContextMenu);
+      document.removeEventListener('contextmenu', handleContextMenu);
+      console.log('[RootComponent] Context menu listener removed');
     };
   }, [user]);
 
+  console.log('[RootComponent] Render:', { user, playing });
+
   return (
     <Router>
-      <AppLayout>
-        <RoutesComponent />
-      </AppLayout>
+      {(() => {
+        console.log('[RootComponent] Rendering AppLayout and RoutesComponent');
+        return (
+          <div style={{ height: '100vh', width: '100%' }}>
+            <AppLayout>
+              <RoutesComponent />
+            </AppLayout>
+          </div>
+        );
+      })()}
     </Router>
   );
 };
 
 function App() {
+  console.log('[App] Rendering App component');
   return (
     <ConfigProvider theme={{ token: { fontFamily: 'SpotifyMixUI' } }}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <SpotifyContainer>
-            <RootComponent />
-          </SpotifyContainer>
+          {(() => {
+            console.log('[App] Rendering SpotifyContainer');
+            return (
+              <SpotifyContainer>
+                <RootComponent />
+              </SpotifyContainer>
+            );
+          })()}
         </PersistGate>
       </Provider>
     </ConfigProvider>

@@ -1,22 +1,27 @@
 import { Space } from 'antd';
-
 import NavigationButton from './NavigationButton';
 import ForwardBackwardsButton from './ForwardBackwardsButton';
-
-import { useTranslation } from 'react-i18next';
-import { memo } from 'react';
 import { FaSpotify } from 'react-icons/fa6';
 
+// Utils
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { memo, useMemo } from 'react';
+import { ActiveHomeIcon, HomeIcon } from '../../../Icons';
+
 const HistoryNavigation = memo(() => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation(['navbar']);
+
+
   return (
-    <Space>
+    <Space size={10} align='center'>
       <NavigationButton
-        text={t('Source code')}
-        onClick={() => {
-          window.open('https://github.com/francoborrelli/portfolio', '_blank');
-        }}
-        icon={<FaSpotify size={25} fill='white' />}
+        text={t('Home')}
+        icon={<FaSpotify size={25} fill='white' />}   
+        onClick={() => navigate('/')}
+        backgroundNone ={ true }
       />
 
       <div className='flex flex-row items-center gap-2 h-full'>

@@ -1,9 +1,9 @@
-import axios from '../axios';
+import axios from "axios";
 
 // Interfaces
-import type { Track } from '../interfaces/track';
-import type { Playlist, PlaylistItem } from '../interfaces/playlists';
-import type { Pagination, PaginationQueryParams } from '../interfaces/api';
+import type { Track } from "../interfaces/track";
+import type { Playlist, PlaylistItem } from "../interfaces/playlists";
+import type { Pagination, PaginationQueryParams } from "../interfaces/api";
 
 /**
  * @description Get a playlist owned by a Spotify user.
@@ -24,14 +24,17 @@ const getPlaylistItems = async (
   playlistId: string,
   params: GetPlaylistItemsParams = { limit: 50 }
 ) => {
-  return axios.get<Pagination<PlaylistItem>>(`/playlists/${playlistId}/tracks`, { params });
+  return axios.get<Pagination<PlaylistItem>>(
+    `/playlists/${playlistId}/tracks`,
+    { params }
+  );
 };
 
 /**
  * @description Get a list of the playlists owned or followed by the current Spotify user.
  */
 const getMyPlaylists = async (params: PaginationQueryParams = {}) => {
-  return axios.get<Pagination<Playlist>>('/me/playlists', { params });
+  return axios.get<Pagination<Playlist>>("/me/playlists", { params });
 };
 
 interface GetFeaturedPlaylistsParams extends PaginationQueryParams {
@@ -41,14 +44,23 @@ interface GetFeaturedPlaylistsParams extends PaginationQueryParams {
 /**
  * @description Get a list of Spotify featured playlists (shown, for example, on a Spotify player's 'Browse' tab).
  */
-const getFeaturedPlaylists = async (params: GetFeaturedPlaylistsParams = {}) => {
-  return axios.get<{ playlists: Pagination<Playlist> }>('/browse/featured-playlists', { params });
+const getFeaturedPlaylists = async (
+  params: GetFeaturedPlaylistsParams = {}
+) => {
+  return axios.get<{ playlists: Pagination<Playlist> }>(
+    "/browse/featured-playlists",
+    { params }
+  );
 };
 
 /**
  * @description Add one or more items to a user's playlist.
  */
-const addPlaylistItems = async (playlistId: string, uris: string[], snapshot_id: string) => {
+const addPlaylistItems = async (
+  playlistId: string,
+  uris: string[],
+  snapshot_id: string
+) => {
   return axios.post(`/playlists/${playlistId}/tracks`, {
     uris,
     snapshot_id,
@@ -58,7 +70,11 @@ const addPlaylistItems = async (playlistId: string, uris: string[], snapshot_id:
 /**
  * @description Remove one or more items from a user's playlist.
  */
-const removePlaylistItems = async (playlistId: string, uris: string[], snapshot_id: string) => {
+const removePlaylistItems = async (
+  playlistId: string,
+  uris: string[],
+  snapshot_id: string
+) => {
   return axios.delete(`/playlists/${playlistId}/tracks`, {
     data: {
       tracks: uris.map((uri) => ({ uri })),
@@ -109,9 +125,13 @@ const changePlaylistDetails = async (
  * @description Replace the image used to represent a specific playlist.
  * @body Base64 encoded JPEG image data, maximum payload size is 256 KB.
  */
-const changePlaylistImage = async (playlistId: string, image: string, content: string) => {
+const changePlaylistImage = async (
+  playlistId: string,
+  image: string,
+  content: string
+) => {
   return axios.put(`/playlists/${playlistId}/images`, image, {
-    headers: { 'Content-Type': content },
+    headers: { "Content-Type": content },
   });
 };
 
@@ -139,7 +159,7 @@ const getRecommendations = async (params: {
   limit?: number;
   seed_tracks?: string;
 }) => {
-  return axios.get<{ tracks: Track[] }>('/recommendations', { params });
+  return axios.get<{ tracks: Track[] }>("/recommendations", { params });
 };
 
 /**
@@ -152,7 +172,9 @@ const getPlaylists = async (
     offset?: number;
   }
 ) => {
-  return axios.get<Pagination<Playlist>>(`/users/${userId}/playlists`, { params });
+  return axios.get<Pagination<Playlist>>(`/users/${userId}/playlists`, {
+    params,
+  });
 };
 
 export const playlistService = {

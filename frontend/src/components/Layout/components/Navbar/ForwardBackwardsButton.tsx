@@ -27,7 +27,7 @@ const ForwardBackwardsButton = ({ flip }: { flip: boolean }) => {
       >
         <img
           alt={flip ? 'Backwards' : 'Forward'}
-          src={`${process.env.PUBLIC_URL}/images/forward.svg`}
+          src={`frontend/public/images/forward.svg`}
           className={`w-full h-full ${flip ? 'rotate-180' : ''}`}
         />
       </button>
