@@ -3,18 +3,23 @@ from .models import Order, PaymentMethod
 from .serializers import OrderSerializer, PaymentMethodSerializer
 from rest_framework import generics
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 
 class OrderListCreateView(generics.ListCreateAPIView):
-    queryset = Order.objects.filter()
+    queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class OrderRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.filter()
     serializer_class = OrderSerializer
 
     def destroy(self, request, *args, **kwargs):
-        pass
+        return Response({'detail': 'Xóa đơn hàng không được hỗ trợ'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 class PaymentMethodListCreateView(generics.ListCreateAPIView):
     queryset = PaymentMethod.objects.filter()

@@ -5,10 +5,13 @@ from .serializers import AlbumSerializer
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import filters
 
 class AlbumListCreateView(generics.ListCreateAPIView):
     queryset = Album.objects.filter(is_deleted=False)
     serializer_class = AlbumSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['album_name', 'artist__name']
 
 class AlbumRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Album.objects.filter(is_deleted=False)

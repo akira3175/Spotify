@@ -11,6 +11,7 @@ class Playlist(models.Model):
     playlist_cover_url = models.URLField(blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
     song = models.ManyToManyField(Song, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return self.playlist_name

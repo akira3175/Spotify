@@ -5,6 +5,7 @@ from rest_framework import status, generics, permissions
 from django.contrib.auth.models import User
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import filters
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -49,6 +50,18 @@ class UpdateUserView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user  # Chỉ cho phép user cập nhật chính mình
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['username', 'email', 'first_name', 'last_name']
+
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 class SendFriendRequestView(generics.CreateAPIView):
     """
