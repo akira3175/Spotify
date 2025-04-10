@@ -8,9 +8,9 @@ class Playlist(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_public = models.BooleanField(default=False)
-    playlist_cover_url = models.URLField()
+    playlist_cover_url = models.URLField(blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
-    song = models.ManyToManyField(Song)
+    song = models.ManyToManyField(Song, blank=True)
 
     def __str__(self):
         return self.playlist_name
