@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "esnext" /* Dùng ESNext để tận dụng các tính năng JS mới nhất */,
+    "lib": [
+      "dom",
+      "esnext"
+    ] /* Thêm DOM và ESNext để hỗ trợ React và môi trường trình duyệt */,
+    "jsx": "react-jsx" /* Hỗ trợ JSX với React 17+ (không cần import React) */,
+
+    /* Modules */
+    "module": "esnext" /* Dùng ESNext thay vì CommonJS để phù hợp với Vite */,
+    "moduleResolution": "node" /* Cách giải quyết module chuẩn cho Node.js/Vite */,
+    "esModuleInterop": true /* Hỗ trợ import CommonJS trong ES Module */,
+    "resolveJsonModule": true /* Cho phép import file JSON nếu cần */,
+
+    /* Type Checking */
+    "strict": true /* Bật tất cả các kiểm tra nghiêm ngặt */,
+    "forceConsistentCasingInFileNames": true /* Đảm bảo phân biệt hoa thường trong import */,
+
+    /* Emit */
+    "noEmit": true /* Để Vite xử lý việc emit, TypeScript chỉ kiểm tra type */,
+    "skipLibCheck": true /* Bỏ qua kiểm tra type trong các file .d.ts để tăng tốc độ */,
+
+    /* Vite/React Specific */
+    "isolatedModules": true /* Đảm bảo tương thích với Vite (mỗi file là module riêng) */,
+    "allowSyntheticDefaultImports": true /* Hỗ trợ import mặc định từ module không có export default */
+  },
+  "include": ["src/**/*"] /* Chỉ bao gồm các file trong thư mục src */,
+  "exclude": [
+    "node_modules",
+    "dist"
+  ] /* Loại trừ node_modules và thư mục build */
+}
