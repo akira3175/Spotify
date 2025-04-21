@@ -1,0 +1,93 @@
+
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+import Logo from '@/components/sidebar/Logo';
+
+const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      await login(email, password);
+      toast.success('Logged in successfully');
+      navigate('/');
+    } catch (error) {
+      toast.error('Failed to login');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  return (
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6">
+      <div className="mb-8">
+        <Logo />
+      </div>
+      
+      <div className="w-full max-w-md bg-spotify-base p-8 rounded-lg shadow-lg">
+        <h1 className="text-2xl font-bold text-white mb-6 text-center">Log in to Spotify</h1>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+              Email address
+            </label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-zinc-800 border-zinc-700 text-white"
+              placeholder="Email"
+              required
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+              Password
+            </label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-zinc-800 border-zinc-700 text-white"
+              placeholder="Password"
+              required
+            />
+          </div>
+          
+          <Button
+            type="submit"
+            className="w-full bg-green-500 hover:bg-green-400 text-black font-bold py-3"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Logging in...' : 'Log In'}
+          </Button>
+        </form>
+        
+        <div className="mt-6 text-center">
+          <p className="text-gray-400">Don't have an account?</p>
+          <Link to="/register" className="text-white hover:underline font-medium mt-1 block">
+            Sign up for Spotify
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
