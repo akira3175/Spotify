@@ -1,0 +1,14 @@
+{
+    "projects": {
+      "backend": {
+        "source": "backend",
+        "startCommand": "daphne backend.asgi:application --port $PORT --bind 0.0.0.0"
+      },
+      "frontend": {
+        "source": "frontend",
+        "buildCommand": "npm install && npm run build",
+        "startCommand": "npm run preview -- --port $PORT"
+      }
+    }
+  }
+  
