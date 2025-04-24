@@ -185,3 +185,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"] 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Allow all hosts for development purposes
+ALLOWED_HOSTS = [
+    'spotify-production-b2ab.up.railway.app',
+    'localhost',
+    '127.0.0.1',
+    'your-domain.com',  # nếu bạn có domain riêng
+]
