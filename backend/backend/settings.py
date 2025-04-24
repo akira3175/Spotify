@@ -61,6 +61,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -193,3 +194,12 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'your-domain.com',  # nếu bạn có domain riêng
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://spotify-production-b2ab.up.railway.app',
+    'https://localhost',
+    'https://127.0.0.1',
+    'https://your-domain.com',  # nếu bạn có domain riêng
+]
+
+DEBUG = False
