@@ -193,6 +193,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'your-domain.com',  # nếu bạn có domain riêng
+    'spotify.aikoshimizu.com',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -200,6 +201,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://localhost',
     'https://127.0.0.1',
     'https://your-domain.com',  # nếu bạn có domain riêng
+    'https://spotify.aikoshimizu.com',
 ]
 
 DEBUG = False
