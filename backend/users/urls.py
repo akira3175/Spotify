@@ -9,6 +9,7 @@ urlpatterns = [
     path('check-username-and-email/', CheckUsernameAndEmailView.as_view(), name='check-user'),
     path('update-user/', UpdateUserView.as_view(), name='update-user'),
     path('', UserListView.as_view(), name='user-list'),
+    path('me/', CurrentUserView.as_view(), name='current-user'),
     path('<int:pk>/', UserDetailView.as_view(), name='user-detail'),
     path("send-request/", SendFriendRequestView.as_view(), name="send-friend-request"),
     path("respond-request/<int:pk>/", RespondFriendRequestView.as_view(), name="respond-friend-request"),

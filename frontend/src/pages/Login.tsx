@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import Logo from '@/components/sidebar/Logo';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
@@ -19,7 +19,7 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      await login(email, password);
+      await login(username, password);
       toast.success('Logged in successfully');
       navigate('/');
     } catch (error) {
@@ -41,16 +41,16 @@ const Login = () => {
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
-              Email address
+            <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1">
+              Username
             </label>
             <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="username"
+              type="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full bg-zinc-800 border-zinc-700 text-white"
-              placeholder="Email"
+              placeholder="Username"
               required
             />
           </div>

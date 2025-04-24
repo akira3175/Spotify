@@ -1,8 +1,9 @@
-
 export type User = {
   id: string;
   name: string;
-  email: string;
+  username: string;
+  email?: string;
   avatarUrl?: string;
   bio?: string;
+  [key: string]: any;
 };
