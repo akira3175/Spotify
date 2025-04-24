@@ -16,7 +16,7 @@ const PreLoginBanner = () => (
     <div className="flex gap-4">
       <Link to="/register">
         <Button className="bg-green-500 hover:bg-green-400 text-black font-bold py-3 px-8">
-          Sign up for free
+          cd Sign up for free
         </Button>
       </Link>
       <Link to="/login">

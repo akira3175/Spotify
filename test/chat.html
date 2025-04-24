@@ -1,0 +1,56 @@
+<!-- test_chat.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Test</title>
+</head>
+<body>
+  <h3>WebSocket Chat Test</h3>
+
+  <label>Username:</label>
+  <input id="usernameInput" type="text" placeholder="Tên người dùng..." />
+  <button onclick="connect()">Kết nối</button>
+
+  <div id="chat" style="display:none;">
+    <div id="messages" style="border:1px solid #ccc; height:200px; overflow-y:scroll; margin-top:10px;"></div>
+    <input id="msgInput" type="text" placeholder="Nhập tin nhắn..." />
+    <button onclick="sendMsg()">Gửi</button>
+  </div>
+
+  <script>
+    let socket;
+    let username = "";
+    const chatboxId = 1;
+
+    function connect() {
+      username = document.getElementById("usernameInput").value.trim();
+      if (!username) return alert("Vui lòng nhập username");
+
+      socket = new WebSocket(`ws://localhost:8000/ws/chat/${chatboxId}/`);
+
+      socket.onopen = () => {
+        document.getElementById("chat").style.display = "block";
+        console.log("✅ Kết nối WebSocket thành công");
+      };
+
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        const msg = `<p><strong>${data.user}:</strong> ${data.message}</p>`;
+        document.getElementById("messages").innerHTML += msg;
+      };
+    }
+
+    function sendMsg() {
+      const input = document.getElementById("msgInput");
+      const message = input.value.trim();
+      if (message) {
+        socket.send(JSON.stringify({
+          message: message,
+          user: username
+        }));
+        input.value = '';
+      }
+    }
+  </script>
+</body>
+</html>

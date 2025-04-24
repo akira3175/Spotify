@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'chatbox',
     'corsheaders',
+    'channels',
     'rest_framework_simplejwt',
     'storages',
     'users',
@@ -56,9 +58,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -83,6 +85,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'backend.asgi.application'
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
@@ -145,6 +148,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 SIMPLE_JWT = {
@@ -164,3 +170,18 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 AWS_S3_SIGNATURE_VERSION = 's3v4'
 
+# Channels Settings
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [f"redis://:{os.getenv('REDIS_PASSWORD')}@{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}"],
+        },
+    }
+}
+
+# Static files settings
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"] 
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
