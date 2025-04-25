@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import filters
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -47,6 +48,7 @@ class UpdateUserView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UpdateUserSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_object(self):
         return self.request.user  # Chỉ cho phép user cập nhật chính mình

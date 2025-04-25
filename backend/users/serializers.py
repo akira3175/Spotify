@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Friend, StatusFriend
+from .models import Friend, StatusFriend, UserProfile
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
@@ -19,20 +19,39 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['avatar', 'bio']
+
 class UserSerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField(source='profile.avatar', read_only=True)
+    bio = serializers.CharField(source='profile.bio', read_only=True)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
-    
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'avatar', 'bio']
+
 class UpdateUserSerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField(source='profile.avatar', required=False)
+    bio = serializers.CharField(source='profile.bio', required=False)
+
     class Meta:
         model = User
-        fields = ['first_name', 'last_name']
+        fields = ['first_name', 'last_name', 'avatar', 'bio']
 
     def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile', {})
+
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.save()
+
+        profile = instance.profile
+        profile.avatar = profile_data.get('avatar', profile.avatar)
+        profile.bio = profile_data.get('bio', profile.bio)
+        profile.save()
+
         return instance
 
 class FriendSerializer(serializers.ModelSerializer):
