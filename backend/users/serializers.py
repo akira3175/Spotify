@@ -17,6 +17,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', '')
         )
+
+        UserProfile.objects.create(user=user)
         return user
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -46,6 +48,9 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.save()
+
+        if not instance.profile:
+            UserProfile.objects.create(user=instance)
 
         profile = instance.profile
         profile.avatar = profile_data.get('avatar', profile.avatar)

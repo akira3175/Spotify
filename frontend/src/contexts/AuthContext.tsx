@@ -8,8 +8,9 @@ type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (first_name: string, last_name: string, username: string, password: string) => Promise<void>;
   logout: () => void;
+  updateUserProfile: (profileData: Partial<User>) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,13 +38,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (first_name: string, last_name: string, username: string, password: string) => {
     setIsLoading(true);
     try {
-      const newUser = await AuthService.register(name, email, password);
+      const newUser = await AuthService.register(first_name, last_name, username, password);
       setUser(newUser);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const updateUserProfile = async (profileData: Partial<User>) => {
+    try {
+      const updatedUser = await AuthService.updateUserProfile(profileData);
+      setUser(updatedUser);
+    } catch (error) {
+      console.error('Error updating user profile:', error);
     }
   };
 
@@ -59,6 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     register,
     logout,
+    updateUserProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

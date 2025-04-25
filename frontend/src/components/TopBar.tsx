@@ -81,7 +81,7 @@ const TopBar = () => {
                     {user?.avatarUrl ? (
                       <img 
                         src={user.avatarUrl} 
-                        alt={user.name} 
+                        alt={user.first_name + " " + user.last_name} 
                         className="h-full w-full rounded-full object-cover"
                       />
                     ) : (
@@ -89,7 +89,7 @@ const TopBar = () => {
                     )}
                   </div>
                   <span className="ml-2 text-sm font-medium text-white">
-                    {user?.name}
+                    {user?.first_name + " " + user?.last_name}
                   </span>
                 </button>
               </DropdownMenuTrigger>

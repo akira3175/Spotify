@@ -30,6 +30,21 @@ export class AuthService {
     }
   }
 
+  static async register(first_name: string, last_name: string, username: string, password: string): Promise<User> {
+    try {
+      const response = await api.post('/users/register/', {
+        first_name,
+        last_name,
+        username,
+        password,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Register error:', error);
+      throw new Error('Đăng ký thất bại');
+    }
+  }
+
   static async refreshToken(): Promise<string> {
     const refreshToken = TokenService.getRefreshToken();
     if (!refreshToken) {
@@ -37,7 +52,7 @@ export class AuthService {
     }
 
     try {
-      const response = await api.post('/token/refresh/', {
+      const response = await api.post('/users/token/refresh/', {
         refresh: refreshToken,
       });
 
@@ -62,5 +77,16 @@ export class AuthService {
     return !!TokenService.getToken();
   }
 
-  static 
+  static async updateUserProfile(profileData: Partial<User>): Promise<User> {
+    const formData = new FormData();
+    Object.keys(profileData).forEach(key => {
+      formData.append(key, profileData[key as keyof User] as string);
+    });
+    const response = await api.put('/users/update-user/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  }
 }
