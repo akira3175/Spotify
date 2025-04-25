@@ -13,7 +13,7 @@ const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { register } = useAuth();
+  const { register, login } = useAuth();
   const navigate = useNavigate();
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,6 +22,7 @@ const Register = () => {
     
     try {
       await register(firstName, lastName, username, password);
+      await login(username, password);
       toast.success('Registered successfully');
       navigate('/');
     } catch (error) {

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status, generics, permissions
 from django.contrib.auth.models import User
 from .serializers import *
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import filters
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -23,8 +23,10 @@ class LoginAPIView(TokenObtainPairView):
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
+        print('request.data:', request.data)
         response = super().create(request, *args, **kwargs)
         return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
     
