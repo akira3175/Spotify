@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Friend, StatusFriend, UserProfile
+from django.db import transaction
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
@@ -42,17 +43,27 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['first_name', 'last_name', 'avatar', 'bio']
 
+class UpdateUserSerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField(source='profile.avatar', required=False)
+    bio    = serializers.CharField(   source='profile.bio',    required=False)
+
+    class Meta:
+        model  = User
+        fields = ['first_name', 'last_name', 'avatar', 'bio']
+
+    @transaction.atomic
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', {})
 
         instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.last_name  = validated_data.get('last_name',  instance.last_name)
         instance.save()
 
-        profile, created = UserProfile.objects.get_or_create(user=instance)
-
-        profile.avatar = profile_data.get('avatar', profile.avatar)
-        profile.bio = profile_data.get('bio', profile.bio)
+        profile, _ = UserProfile.objects.get_or_create(user=instance)
+        if 'avatar' in profile_data:
+            profile.avatar = profile_data['avatar']
+        if 'bio' in profile_data:
+            profile.bio = profile_data['bio']
         profile.save()
 
         return instance

@@ -5,6 +5,7 @@ import { AuthService } from '../services/AuthService';
 
 type AuthContextType = {
   user: User | null;
+  setUser: (user: User | null) => void;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -50,6 +51,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateUserProfile = async (profileData: Partial<User>) => {
     try {
+      for (let pair of profileData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
       const updatedUser = await AuthService.updateUserProfile(profileData);
       setUser(updatedUser);
     } catch (error) {
@@ -64,6 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const value = {
     user,
+    setUser,
     isAuthenticated: !!user,
     isLoading,
     login,

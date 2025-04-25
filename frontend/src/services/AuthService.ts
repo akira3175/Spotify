@@ -78,15 +78,12 @@ export class AuthService {
   }
 
   static async updateUserProfile(profileData: Partial<User>): Promise<User> {
-    const formData = new FormData();
-    Object.keys(profileData).forEach(key => {
-      formData.append(key, profileData[key as keyof User] as string);
-    });
-    const response = await api.put('/users/update-user/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  }
+    try {
+      const response = await api.put('/users/update-user/', profileData); // Không set headers
+      return response.data;
+    } catch (error) {
+      console.error('Update user profile error:', error);
+      throw new Error('Cập nhật thông tin người dùng thất bại');
+    }
+  }  
 }

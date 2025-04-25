@@ -17,6 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { User, Edit, Camera, Loader2 } from 'lucide-react';
+import { AuthService } from '@/services/AuthService';
 
 const profileSchema = z.object({
   first_name: z.string().min(2, "First name must be at least 2 characters"),
@@ -29,7 +30,7 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 const UserProfile = () => {
-  const { user, isAuthenticated, updateUserProfile } = useAuth();
+  const { user, isAuthenticated, updateUserProfile, setUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -83,9 +84,13 @@ const UserProfile = () => {
       // Create a form data object to handle the file upload
       const formData = new FormData();
       
-      // Add all form fields to the form data
+      // Add all form fields to the form data - this is where the problem might be
       Object.keys(data).forEach(key => {
-        formData.append(key, data[key as keyof ProfileFormValues] || '');
+        // Only append if the value exists and isn't empty
+        const value = data[key as keyof ProfileFormValues];
+        if (value !== undefined && value !== null && value !== '') {
+          formData.append(key, value);
+        }
       });
       
       // Add the image file if one was selected
@@ -93,15 +98,25 @@ const UserProfile = () => {
         formData.append('avatar', imageFile);
       }
       
+      // Log the formData to debug
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
+      
       // Send the update to the server
       await updateUserProfile(formData);
 
+      const currentUser = await AuthService.getCurrentUser();
+      setUser(currentUser);
+  
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully",
         variant: "default"
       });
-
+      
+      setIsEditing(false); // Exit edit mode after successful update
+  
     } catch (error: any) {
       toast({
         title: "Error",
@@ -155,9 +170,9 @@ const UserProfile = () => {
                     alt={user.first_name + " " + user.last_name} 
                     className="h-full w-full rounded-full object-cover"
                   />
-                ) : user.avatarUrl ? (
+                ) : user.avatar ? (
                   <img 
-                    src={user.avatarUrl} 
+                    src={user.avatar} 
                     alt={user.first_name + " " + user.last_name} 
                     className="h-full w-full rounded-full object-cover"
                   />

@@ -78,9 +78,9 @@ const TopBar = () => {
               <DropdownMenuTrigger asChild>
                 <button className="bg-black p-0.5 rounded-full hover:scale-105 transition-transform flex items-center">
                   <div className="h-7 w-7 bg-zinc-600 rounded-full flex items-center justify-center">
-                    {user?.avatarUrl ? (
+                    {user?.avatar ? (
                       <img 
-                        src={user.avatarUrl} 
+                        src={user.avatar} 
                         alt={user.first_name + " " + user.last_name} 
                         className="h-full w-full rounded-full object-cover"
                       />
