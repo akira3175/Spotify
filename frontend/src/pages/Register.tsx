@@ -8,8 +8,9 @@ import { toast } from 'sonner';
 import Logo from '@/components/sidebar/Logo';
 
 const Register = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
@@ -20,7 +21,7 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      await register(name, email, password);
+      await register(firstName, lastName, username, password);
       toast.success('Registered successfully');
       navigate('/');
     } catch (error) {
@@ -46,27 +47,42 @@ const Register = () => {
               Name
             </label>
             <Input
-              id="name"
+              id="first_name"
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               className="w-full bg-zinc-800 border-zinc-700 text-white"
-              placeholder="Name"
+              placeholder="First name"
               required
             />
           </div>
           
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
-              Email address
+            <label htmlFor="last_name" className="block text-sm font-medium text-gray-300 mb-1">
+              Last name
             </label>
             <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="last_name"
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               className="w-full bg-zinc-800 border-zinc-700 text-white"
-              placeholder="Email"
+              placeholder="Last name"
+              required
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1">
+              Username
+            </label>
+            <Input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full bg-zinc-800 border-zinc-700 text-white"
+              placeholder="Username"
               required
             />
           </div>
