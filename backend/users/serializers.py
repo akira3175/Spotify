@@ -49,10 +49,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.save()
 
-        if not instance.profile:
-            UserProfile.objects.create(user=instance)
+        profile, created = UserProfile.objects.get_or_create(user=instance)
 
-        profile = instance.profile
         profile.avatar = profile_data.get('avatar', profile.avatar)
         profile.bio = profile_data.get('bio', profile.bio)
         profile.save()
