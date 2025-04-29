@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from '@/components/ui/button';
 import { Play, Music, Download, Share } from 'lucide-react';
-
+import { Song } from '@/types/music';
 const PurchaseHistory = () => {
   const { isAuthenticated } = useAuth();
   const { purchases, play, isPurchased } = useMusic();
@@ -197,7 +197,7 @@ const PurchaseHistory = () => {
                           size="sm"
                           variant="ghost" 
                           className="flex items-center" 
-                          onClick={() => play(purchase.song)}
+                          onClick={() => play(purchase.song as Song)}
                         >
                           <Play size={16} />
                         </Button>

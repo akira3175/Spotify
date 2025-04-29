@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Play } from 'lucide-react';
+import { useMusic } from '@/contexts/MusicContext';
 
 // Sample data for playlists
 const recentlyPlayed = [
@@ -37,6 +38,8 @@ const HomeContent = () => {
   const [songs, setSongs] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [purchasingSong, setPurchasingSong] = useState<Song | null>(null);
+  const { play, isPurchased, purchaseSong } = useMusic();
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -83,6 +86,37 @@ const HomeContent = () => {
 
     fetchSongs();
   }, []);
+
+  const handlePlaySong = async (song: Song) => {
+    try {
+      console.log('HomeContent: Checking purchase status for song:', song.title);
+      const purchased = await isPurchased(song.id);
+      if (purchased) {
+        console.log('HomeContent: Playing purchased song:', song.title);
+        play(song);
+      } else {
+        console.log('HomeContent: Song not purchased, showing purchase modal:', song.title);
+        setPurchasingSong(song);
+      }
+    } catch (error) {
+      console.error('HomeContent: Error checking purchase status:', error);
+      setError('Failed to verify purchase');
+    }
+  };
+
+  const handlePurchase = async () => {
+    if (!purchasingSong) return;
+    try {
+      console.log('HomeContent: Initiating purchase for song:', purchasingSong.title);
+      await purchaseSong(purchasingSong); // Gọi hàm purchaseSong từ context
+      console.log('HomeContent: Song purchased successfully:', purchasingSong.title);
+      setPurchasingSong(null);
+      play(purchasingSong);
+    } catch (error) {
+      console.error('HomeContent: Error purchasing song:', error);
+      setError('Failed to purchase song');
+    }
+  };
 
   const renderSongsGrid = () => {
     console.log('HomeContent: Rendering songs grid. Loading:', isLoading, 'Error:', error, 'Songs count:', songs.length);
@@ -151,10 +185,7 @@ const HomeContent = () => {
                     <Button
                       size="icon"
                       className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-primary hover:bg-primary/90"
-                      onClick={() => {
-                        console.log('HomeContent: Playing song:', song.title);
-                        MusicService.setCurrentTrack(song);
-                      }}
+                      onClick={() => handlePlaySong(song)}
                     >
                       <Play className="h-4 w-4" />
                     </Button>
@@ -171,6 +202,20 @@ const HomeContent = () => {
             );
           })}
         </div>
+        {purchasingSong && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-background p-6 rounded-lg shadow-lg max-w-sm w-full">
+              <h3 className="text-lg font-semibold">Purchase Song</h3>
+              <p className="mt-2">You need to purchase "{purchasingSong.title}" for $1.99 to play it.</p>
+              <div className="mt-4 flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setPurchasingSong(null)}>
+                  Cancel
+                </Button>
+                <Button onClick={handlePurchase}>Purchase</Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -179,27 +224,14 @@ const HomeContent = () => {
     <ScrollArea className="h-full">
       <div className="p-6 pb-28">
         {renderSongsGrid()}
-
         <div className="mt-8">
-          <PlaylistGrid 
-            title="Recently played" 
-            playlists={recentlyPlayed}
-            seeAllLink="#"
-          />
-          <PlaylistGrid 
-            title="Made for you" 
-            playlists={madeForYou}
-            seeAllLink="#"
-          />
-          <PlaylistGrid 
-            title="Charts" 
-            playlists={topCharts}
-            seeAllLink="#"
-          />
+          <PlaylistGrid title="Recently played" playlists={recentlyPlayed} seeAllLink="#" />
+          <PlaylistGrid title="Made for you" playlists={madeForYou} seeAllLink="#" />
+          <PlaylistGrid title="Charts" playlists={topCharts} seeAllLink="#" />
         </div>
       </div>
     </ScrollArea>
   );
 };
 
-export default HomeContent; 
+export default HomeContent;
