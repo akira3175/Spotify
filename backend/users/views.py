@@ -7,6 +7,7 @@ from .serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import filters
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db import models
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
