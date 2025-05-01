@@ -170,3 +170,29 @@ class ListFriendsView(generics.ListAPIView):
             (models.Q(user1=self.request.user) | models.Q(user2=self.request.user)),
             status__name=StatusFriend.ACCEPTED
         )
+    
+class ListPendingRequestsView(generics.ListAPIView):
+    """
+    Danh sách yêu cầu kết bạn chờ xử lý
+    """
+    serializer_class = FriendSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Friend.objects.filter(
+            user2=self.request.user,
+            status__name=StatusFriend.PENDING
+        )
+    
+class ListSentRequestsView(generics.ListAPIView):
+    """
+    Danh sách yêu cầu kết bạn đã gửi
+    """
+    serializer_class = FriendSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Friend.objects.filter(
+            user1=self.request.user,
+            status__name=StatusFriend.PENDING
+        )

@@ -71,11 +71,17 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         return instance
 
 class FriendSerializer(serializers.ModelSerializer):
-    user1 = serializers.SlugRelatedField(slug_field="username", queryset=User.objects.all())
-    user2 = serializers.SlugRelatedField(slug_field="username", queryset=User.objects.all())
+    user = serializers.SerializerMethodField()
     status = serializers.SlugRelatedField(slug_field="name", queryset=StatusFriend.objects.all())
 
     class Meta:
         model = Friend
-        fields = ['id', 'user1', 'user2', 'status', 'created_at']
+        fields = ['id', 'user', 'status', 'created_at']
         read_only_fields = ['created_at']
+
+    def get_user(self, obj):
+        request_user = self.context['request'].user
+        if obj.user1 == request_user:
+            return UserSerializer(obj.user2).data
+        else:
+            return UserSerializer(obj.user1).data
