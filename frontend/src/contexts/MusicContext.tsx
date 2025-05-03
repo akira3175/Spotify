@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from './AuthContext';
@@ -29,6 +28,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [purchasedSongs, setPurchasedSongs] = useState<Song[]>([]);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
 
@@ -55,8 +55,21 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [isAuthenticated]);
 
+  // Lấy audioUrl từ API nếu không có
+  const fetchAudioUrl = async (songId: number | string): Promise<string> => {
+    try {
+      const response = await fetch(`/api/song/${songId}/audio`);
+      if (!response.ok) throw new Error('Failed to fetch audio');
+      const data = await response.json();
+      return data.audioUrl;
+    } catch (error) {
+      console.error('MusicContext: Error fetching audio URL:', error);
+      throw error;
+    }
+  };
+
   // Play: phát một bài hát
-  const play = (song: Song) => {
+  const play = async (song: Song) => {
     if (!MusicService.isPurchased(song.id)) {
       toast({
         variant: "destructive",
@@ -65,29 +78,70 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
       return;
     }
-    
-    setCurrentTrack(song);
-    setIsPlaying(true);
-    
-    // Lưu thông tin vào service
-    MusicService.setCurrentTrack(song);
-    MusicService.setIsPlaying(true);
-    
-    toast({
-      title: "Đang phát",
-      description: `${song.title} - ${song.artist}`,
-    });
+
+    try {
+      // Lấy audioUrl nếu không có sẵn
+      const audioUrl = song.audioUrl || (await fetchAudioUrl(song.id));
+      
+      // Dừng bài hát hiện tại nếu đang phát
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+
+      // Tạo và phát audio mới
+      const newAudio = new Audio(audioUrl);
+      newAudio.play().catch((error) => {
+        toast({
+          variant: "destructive",
+          title: "Lỗi phát nhạc",
+          description: "Không thể phát bài hát này.",
+        });
+        console.error('MusicContext: Error playing audio:', error);
+      });
+      
+      setAudio(newAudio);
+      setCurrentTrack({ ...song, audioUrl });
+      setIsPlaying(true);
+
+      // Lưu thông tin vào service
+      MusicService.setCurrentTrack({ ...song, audioUrl });
+      MusicService.setIsPlaying(true);
+
+      toast({
+        title: "Đang phát",
+        description: `${song.title} - ${song.artist}`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Lỗi",
+        description: "Không thể tải tệp âm thanh.",
+      });
+      console.error('MusicContext: Error in play:', error);
+    }
   };
 
   // Pause: tạm dừng
   const pause = () => {
+    if (audio) {
+      audio.pause();
+    }
     setIsPlaying(false);
     MusicService.setIsPlaying(false);
   };
 
   // Resume: tiếp tục phát
   const resume = () => {
-    if (currentTrack) {
+    if (currentTrack && audio) {
+      audio.play().catch((error) => {
+        toast({
+          variant: "destructive",
+          title: "Lỗi phát nhạc",
+          description: "Không thể tiếp tục phát bài hát.",
+        });
+        console.error('MusicContext: Error resuming audio:', error);
+      });
       setIsPlaying(true);
       MusicService.setIsPlaying(true);
     }

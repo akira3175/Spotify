@@ -38,6 +38,7 @@ const SongDetails = () => {
       artistId: song.artistId,
       duration: song.duration,
       album: song.album,
+      audioUrl: song.audioUrl,
       imageUrl: song.imageUrl,
       price: song.price,
     });
