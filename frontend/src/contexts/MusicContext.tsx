@@ -10,9 +10,11 @@ interface MusicContextType {
   purchasedSongs: Song[];
   purchases: Purchase[];
   playlists: Playlist[];
+  audio: HTMLAudioElement | null;
   play: (song: Song) => void;
   pause: () => void;
   resume: () => void;
+  seek: (time: number) => void;
   purchaseSong: (song: Song) => void;
   isPurchased: (songId: number) => boolean;
   createPlaylist: (name: string) => void;
@@ -32,30 +34,19 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
 
-  // Tải dữ liệu từ MusicService khi khởi tạo
   useEffect(() => {
     if (isAuthenticated) {
-      // Tải bài hát hiện tại
       const savedTrack = MusicService.getCurrentTrack();
       if (savedTrack) {
         setCurrentTrack(savedTrack);
       }
-      
-      // Tải trạng thái phát nhạc
       setIsPlaying(MusicService.getIsPlaying());
-      
-      // Tải danh sách bài hát đã mua
       setPurchasedSongs(MusicService.getPurchasedSongs());
-      
-      // Tải lịch sử mua hàng
       setPurchases(MusicService.getPurchaseHistory());
-      
-      // Tải danh sách playlist
       setPlaylists(MusicService.getPlaylists());
     }
   }, [isAuthenticated]);
 
-  // Lấy audioUrl từ API nếu không có
   const fetchAudioUrl = async (songId: number | string): Promise<string> => {
     try {
       const response = await fetch(`/api/song/${songId}/audio`);
@@ -68,7 +59,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Play: phát một bài hát
   const play = async (song: Song) => {
     if (!MusicService.isPurchased(song.id)) {
       toast({
@@ -80,16 +70,13 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     try {
-      // Lấy audioUrl nếu không có sẵn
       const audioUrl = song.audioUrl || (await fetchAudioUrl(song.id));
       
-      // Dừng bài hát hiện tại nếu đang phát
       if (audio) {
         audio.pause();
         audio.currentTime = 0;
       }
 
-      // Tạo và phát audio mới
       const newAudio = new Audio(audioUrl);
       newAudio.play().catch((error) => {
         toast({
@@ -101,11 +88,10 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
       
       setAudio(newAudio);
-      setCurrentTrack({ ...song, audioUrl });
+      setCurrentTrack(song.audioUrl ? song : { ...song, audioUrl });
       setIsPlaying(true);
 
-      // Lưu thông tin vào service
-      MusicService.setCurrentTrack({ ...song, audioUrl });
+      MusicService.setCurrentTrack(song.audioUrl ? song : { ...song, audioUrl });
       MusicService.setIsPlaying(true);
 
       toast({
@@ -122,7 +108,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Pause: tạm dừng
   const pause = () => {
     if (audio) {
       audio.pause();
@@ -131,7 +116,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     MusicService.setIsPlaying(false);
   };
 
-  // Resume: tiếp tục phát
   const resume = () => {
     if (currentTrack && audio) {
       audio.play().catch((error) => {
@@ -147,10 +131,14 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Mua bài hát
+  const seek = (time: number) => {
+    if (audio) {
+      audio.currentTime = time;
+    }
+  };
+
   const purchaseSong = (song: Song) => {
     try {
-      // Kiểm tra đã mua hay chưa
       if (MusicService.isPurchased(song.id)) {
         toast({
           title: "Đã sở hữu",
@@ -159,10 +147,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return;
       }
 
-      // Thực hiện mua
       const purchase = MusicService.purchaseSong(song);
-      
-      // Cập nhật state
       setPurchasedSongs([...purchasedSongs, song]);
       setPurchases([...purchases, purchase]);
       
@@ -181,12 +166,10 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Kiểm tra đã mua bài hát chưa
   const isPurchased = (songId: number): boolean => {
     return MusicService.isPurchased(songId);
   };
 
-  // Tạo playlist mới
   const createPlaylist = (name: string) => {
     const newPlaylist = MusicService.createPlaylist(name);
     setPlaylists([...playlists, newPlaylist]);
@@ -197,7 +180,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
   };
 
-  // Thêm bài hát vào playlist
   const addSongToPlaylist = (songId: number, playlistId: number) => {
     const song = MusicService.getSongById(songId);
     if (!song) return;
@@ -205,10 +187,8 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const success = MusicService.addSongToPlaylist(songId, playlistId);
     
     if (success) {
-      // Cập nhật state
       const updatedPlaylists = playlists.map(playlist => {
         if (playlist.id === playlistId) {
-          // Kiểm tra bài hát đã có trong playlist
           if (playlist.songs.some(s => s.id === songId)) {
             toast({
               variant: "destructive",
@@ -232,12 +212,10 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Xóa bài hát khỏi playlist
   const removeSongFromPlaylist = (songId: number, playlistId: number) => {
     const success = MusicService.removeSongFromPlaylist(songId, playlistId);
     
     if (success) {
-      // Cập nhật state
       const updatedPlaylists = playlists.map(playlist => {
         if (playlist.id === playlistId) {
           const songToRemove = playlist.songs.find(s => s.id === songId);
@@ -263,9 +241,11 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       purchasedSongs,
       purchases,
       playlists,
+      audio,
       play,
       pause,
       resume,
+      seek,
       purchaseSong,
       isPurchased,
       createPlaylist,
