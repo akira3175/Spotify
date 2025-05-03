@@ -7,6 +7,7 @@ export type Song = {
   duration: string;
   album: string;
   audioUrl?: string;
+  videoUrl?: string;
   imageUrl?: string;
   price: number;
   plays: number;

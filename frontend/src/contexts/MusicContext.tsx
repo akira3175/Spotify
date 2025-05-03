@@ -15,6 +15,7 @@ interface MusicContextType {
   pause: () => void;
   resume: () => void;
   seek: (time: number) => void;
+  downloadSong: (song: Song, format: 'mp3' | 'mp4' | 'both') => void;
   purchaseSong: (song: Song) => void;
   isPurchased: (songId: number) => boolean;
   createPlaylist: (name: string) => void;
@@ -55,6 +56,18 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return data.audioUrl;
     } catch (error) {
       console.error('MusicContext: Error fetching audio URL:', error);
+      throw error;
+    }
+  };
+
+  const fetchVideoUrl = async (songId: number | string): Promise<string> => {
+    try {
+      const response = await fetch(`/api/song/${songId}/video`);
+      if (!response.ok) throw new Error('Failed to fetch video');
+      const data = await response.json();
+      return data.videoUrl;
+    } catch (error) {
+      console.error('MusicContext: Error fetching video URL:', error);
       throw error;
     }
   };
@@ -134,6 +147,56 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const seek = (time: number) => {
     if (audio) {
       audio.currentTime = time;
+    }
+  };
+
+  const downloadSong = async (song: Song, format: 'mp3' | 'mp4' | 'both') => {
+    if (!MusicService.isPurchased(song.id)) {
+      toast({
+        variant: "destructive",
+        title: "Không thể tải",
+        description: "Bạn cần mua bài hát này trước khi tải.",
+      });
+      return;
+    }
+
+    try {
+      const downloadFile = async (url: string, fileName: string) => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+
+      if (format === 'mp3' || format === 'both') {
+        const audioUrl = song.audioUrl || (await fetchAudioUrl(song.id));
+        if (!audioUrl) {
+          throw new Error('Audio URL not available');
+        }
+        await downloadFile(audioUrl, `${song.title} - ${song.artist}.mp3`);
+      }
+
+      if (format === 'mp4' || format === 'both') {
+        const videoUrl = song.videoUrl || (await fetchVideoUrl(song.id));
+        if (!videoUrl) {
+          throw new Error('Video URL not available');
+        }
+        await downloadFile(videoUrl, `${song.title} - ${song.artist}.mp4`);
+      }
+
+      toast({
+        title: "Đang tải",
+        description: `Đang tải "${song.title}" của ${song.artist} (${format}).`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Lỗi",
+        description: `Không thể tải ${format === 'both' ? 'bài hát' : format.toUpperCase()}.`,
+      });
+      console.error('MusicContext: Error downloading song:', error);
     }
   };
 
@@ -246,6 +309,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       pause,
       resume,
       seek,
+      downloadSong,
       purchaseSong,
       isPurchased,
       createPlaylist,
