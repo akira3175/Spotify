@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Play,
@@ -17,53 +16,42 @@ import NowPlayingInfo from './NowPlayingInfo';
 import { useMusic } from '@/contexts/MusicContext';
 
 const MusicPlayer = () => {
-  const { currentTrack, isPlaying, play, pause, resume } = useMusic();
+  const { currentTrack, isPlaying, play, pause, resume, audio, seek } = useMusic();
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(70);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
 
-  // Giả lập tiến trình phát nhạc khi có bài hát và đang phát
+  // Đồng bộ thời gian phát và thời lượng với audio
   useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
+    if (audio) {
+      // Cập nhật thời lượng khi audio sẵn sàng
+      const handleLoadedMetadata = () => {
+        setDuration(audio.duration);
+      };
 
-    if (currentTrack && isPlaying) {
-      // Lấy thời lượng từ chuỗi "phút:giây"
-      const [minutes, seconds] = currentTrack.duration.split(':').map(Number);
-      const totalSeconds = minutes * 60 + seconds;
-      setDuration(totalSeconds);
+      // Cập nhật thời gian phát theo thời gian thực
+      const handleTimeUpdate = () => {
+        setCurrentTime(audio.currentTime);
+        setProgress((audio.currentTime / audio.duration) * 100 || 0);
+      };
 
-      // Giả lập tiến trình phát
-      interval = setInterval(() => {
-        setCurrentTime(prevTime => {
-          const newTime = prevTime + 1;
-          if (newTime >= totalSeconds) {
-            clearInterval(interval);
-            return 0;
-          }
-          return newTime;
-        });
-      }, 1000);
-    } else {
-      clearInterval(interval);
+      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.addEventListener('timeupdate', handleTimeUpdate);
+
+      // Cập nhật âm lượng
+      audio.volume = volume / 100;
+
+      return () => {
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.removeEventListener('timeupdate', handleTimeUpdate);
+      };
     }
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [currentTrack, isPlaying]);
-
-  // Tính phần trăm tiến độ
-  useEffect(() => {
-    if (duration > 0) {
-      setProgress((currentTime / duration) * 100);
-    } else {
-      setProgress(0);
-    }
-  }, [currentTime, duration]);
+  }, [audio, volume]);
 
   // Chuyển đổi giây thành định dạng "phút:giây"
   const formatTime = (seconds: number) => {
+    if (isNaN(seconds)) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
@@ -71,10 +59,13 @@ const MusicPlayer = () => {
 
   // Xử lý khi người dùng thay đổi thanh tiến trình
   const handleProgressChange = (values: number[]) => {
-    const newProgress = values[0];
-    const newTime = (newProgress / 100) * duration;
-    setCurrentTime(newTime);
-    setProgress(newProgress);
+    if (audio && duration > 0) {
+      const newProgress = values[0];
+      const newTime = (newProgress / 100) * duration;
+      seek(newTime); // Tua nhạc
+      setCurrentTime(newTime);
+      setProgress(newProgress);
+    }
   };
 
   // Xử lý thay đổi âm lượng
@@ -139,7 +130,7 @@ const MusicPlayer = () => {
             onValueChange={handleProgressChange}
           />
           <span className="text-xs text-spotify-subdued">
-            {currentTrack ? currentTrack.duration : '0:00'}
+            {formatTime(duration)}
           </span>
         </div>
       </div>
