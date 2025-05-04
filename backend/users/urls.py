@@ -13,6 +13,7 @@ urlpatterns = [
     path('<int:pk>/', UserDetailView.as_view(), name='user-detail'),
     path("send-request/", SendFriendRequestView.as_view(), name="send-friend-request"),
     path("respond-request/<int:pk>/", RespondFriendRequestView.as_view(), name="respond-friend-request"),
+    path("cancel-request/<int:pk>/", CancelFriendRequestView.as_view(), name="cancel-friend-request"),
     path("remove-friend/<int:pk>/", RemoveFriendView.as_view(), name="remove-friend"),
     path("friends/", ListFriendsView.as_view(), name="list-friends"),
     path("pending-requests/", ListPendingRequestsView.as_view(), name="list-pending-requests"),

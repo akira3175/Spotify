@@ -1,5 +1,5 @@
-
 import { Song, Playlist, Purchase } from '../types/music';
+import { api } from '@/config/api';
 
 // Local Storage keys
 const CURRENT_TRACK_KEY = 'spotify_current_track';
@@ -10,32 +10,81 @@ const PLAYLISTS_KEY = 'spotify_playlists';
 const QUEUE_KEY = 'spotify_queue';
 const PLAY_HISTORY_KEY = 'spotify_play_history';
 
-// Sample songs data
-const sampleSongs: Song[] = [
-  { id: 1, title: 'Bohemian Rhapsody', artist: 'Queen', artistId: 1, duration: '5:55', album: 'A Night at the Opera', imageUrl: 'https://images.unsplash.com/photo-1619961602105-16fa2a5465c2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 1.99 },
-  { id: 2, title: 'Stairway to Heaven', artist: 'Led Zeppelin', artistId: 2, duration: '8:02', album: 'Led Zeppelin IV', imageUrl: 'https://images.unsplash.com/photo-1526142684086-7ebd69df27a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 1.49 },
-  { id: 3, title: 'Imagine', artist: 'John Lennon', artistId: 3, duration: '3:04', album: 'Imagine', imageUrl: 'https://images.unsplash.com/photo-1565345635904-040a70b3d002?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 0.99 },
-  { id: 4, title: 'Billie Jean', artist: 'Michael Jackson', artistId: 4, duration: '4:54', album: 'Thriller', imageUrl: 'https://images.unsplash.com/photo-1619683717556-9b22008b9ad5?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 1.99 },
-  { id: 5, title: 'Like a Rolling Stone', artist: 'Bob Dylan', artistId: 5, duration: '6:13', album: 'Highway 61 Revisited', imageUrl: 'https://images.unsplash.com/photo-1619396316238-17f37dde1a6d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 1.29 },
-  { id: 6, title: 'Hotel California', artist: 'Eagles', artistId: 6, duration: '6:30', album: 'Hotel California', imageUrl: 'https://images.unsplash.com/photo-1619961058085-b85d70a1fce2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 1.49 },
-  { id: 7, title: 'Sweet Child O\' Mine', artist: 'Guns N\' Roses', artistId: 7, duration: '5:56', album: 'Appetite for Destruction', imageUrl: 'https://images.unsplash.com/photo-1508973379184-7517410fb0bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 1.49 },
-  { id: 8, title: 'Smells Like Teen Spirit', artist: 'Nirvana', artistId: 8, duration: '5:01', album: 'Nevermind', imageUrl: 'https://images.unsplash.com/photo-1619983081563-430f63602796?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 1.29 },
-  { id: 9, title: 'Yesterday', artist: 'The Beatles', artistId: 9, duration: '2:05', album: 'Help!', imageUrl: 'https://images.unsplash.com/photo-1552422535-c45813c61732?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 0.99 },
-  { id: 10, title: 'Thriller', artist: 'Michael Jackson', artistId: 4, duration: '5:57', album: 'Thriller', imageUrl: 'https://images.unsplash.com/photo-1619683717556-9b22008b9ad5?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 1.99 },
-  { id: 11, title: 'Bad Romance', artist: 'Lady Gaga', artistId: 10, duration: '4:54', album: 'The Fame Monster', imageUrl: 'https://images.unsplash.com/photo-1571310100246-e0676f359b42?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 1.49 },
-  { id: 12, title: 'Shape of You', artist: 'Ed Sheeran', artistId: 11, duration: '3:53', album: '÷ (Divide)', imageUrl: 'https://images.unsplash.com/photo-1621627637048-5531bd7c6634?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 1.29 },
-  { id: 13, title: 'Uptown Funk', artist: 'Mark Ronson ft. Bruno Mars', artistId: 12, duration: '4:30', album: 'Uptown Special', imageUrl: 'https://images.unsplash.com/photo-1621627638304-43138384a2da?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 1.49 },
-  { id: 14, title: 'Rolling in the Deep', artist: 'Adele', artistId: 13, duration: '3:48', album: '21', imageUrl: 'https://images.unsplash.com/photo-1619080972094-91af6b91e634?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 1.29 },
-  { id: 15, title: 'Despacito', artist: 'Luis Fonsi ft. Daddy Yankee', artistId: 14, duration: '3:47', album: 'Vida', imageUrl: 'https://images.unsplash.com/photo-1619083082292-90a8f1a3b4e4?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80', price: 0.99 }
-];
+interface ApiSong {
+  id: number;
+  song_name: string;
+  artist: string;
+  duration: number;
+  audio: string | null;
+  plays: number;
+}
 
 export class MusicService {
-  static getAllSongs(): Song[] {
-    return sampleSongs;
-  }
-  
-  static getSongById(id: number): Song | undefined {
-    return sampleSongs.find(s => s.id === id);
+  static async getAllSongs(): Promise<Song[]> {
+    try {
+      console.log('MusicService: Making API call to /songs/...');
+      const response = await api.get('/songs/');
+      
+      console.log('MusicService: Full API response:', {
+        status: response.status,
+        data: response.data,
+        dataType: typeof response.data,
+        isArray: Array.isArray(response.data)
+      });
+
+      if (!response || !response.data) {
+        console.warn('MusicService: No data in API response');
+        return [];
+      }
+
+      let songsData = response.data;
+
+      // If response is paginated, extract the results
+      if (songsData.results) {
+        console.log('MusicService: Found paginated data structure:', songsData);
+        songsData = songsData.results;
+      }
+
+      if (!Array.isArray(songsData)) {
+        console.warn('MusicService: Data is not an array:', typeof songsData);
+        return [];
+      }
+
+      // Transform the data into Song objects with proper validation
+      const validSongs = songsData
+        .filter(song => {
+          if (!song || typeof song !== 'object') {
+            console.warn('MusicService: Invalid song data:', song);
+            return false;
+          }
+          return true;
+        })
+        .map((song: ApiSong) => {
+          const processedSong = {
+            id: song.id,
+            title: song.song_name || 'Unknown Title',
+            artist: song.artist || 'Artist Name',
+            artistId: 1,
+            duration: song.duration ? `${Math.floor(song.duration / 60)}:${(song.duration % 60).toString().padStart(2, '0')}` : '0:00',
+            album: 'Unknown Album',
+            imageUrl: '/placeholder.svg',
+            price: 0,
+            audioUrl: song.audio || null
+          };
+          console.log('MusicService: Processed song:', processedSong);
+          return processedSong;
+        });
+
+      console.log('MusicService: Final processed songs:', validSongs);
+      return validSongs;
+    } catch (error: any) {
+      console.error('MusicService: Error fetching songs:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error;
+    }
   }
   
   static getCurrentTrack(): Song | null {
@@ -46,7 +95,7 @@ export class MusicService {
   static setCurrentTrack(song: Song | null): void {
     if (song) {
       localStorage.setItem(CURRENT_TRACK_KEY, JSON.stringify(song));
-      // Lưu vào lịch sử nghe
+      // Add to play history
       this.addToPlayHistory(song);
     } else {
       localStorage.removeItem(CURRENT_TRACK_KEY);
@@ -63,13 +112,7 @@ export class MusicService {
   
   static getPurchasedSongs(): Song[] {
     const stored = localStorage.getItem(PURCHASED_SONGS_KEY);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-    // Khởi tạo với dữ liệu mẫu nếu chưa có
-    const initialPurchasedSongs = [sampleSongs[0], sampleSongs[2], sampleSongs[7], sampleSongs[11]];
-    localStorage.setItem(PURCHASED_SONGS_KEY, JSON.stringify(initialPurchasedSongs));
-    return initialPurchasedSongs;
+    return stored ? JSON.parse(stored) : [];
   }
   
   static isPurchased(songId: number): boolean {
@@ -78,17 +121,14 @@ export class MusicService {
   }
   
   static purchaseSong(song: Song): Purchase {
-    // Kiểm tra nếu đã mua rồi
     if (this.isPurchased(song.id)) {
-      throw new Error('Bạn đã sở hữu bài hát này');
+      throw new Error('You already own this song');
     }
     
-    // Thêm vào danh sách đã mua
     const purchasedSongs = this.getPurchasedSongs();
     purchasedSongs.push(song);
     localStorage.setItem(PURCHASED_SONGS_KEY, JSON.stringify(purchasedSongs));
     
-    // Lưu lịch sử mua hàng
     const purchases = this.getPurchaseHistory();
     const newPurchase: Purchase = {
       id: purchases.length + 1,
@@ -105,74 +145,12 @@ export class MusicService {
   
   static getPurchaseHistory(): Purchase[] {
     const stored = localStorage.getItem(PURCHASES_KEY);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-    
-    // Khởi tạo dữ liệu mẫu nếu chưa có
-    const initialPurchases: Purchase[] = [
-      {
-        id: 1,
-        songId: 1,
-        song: sampleSongs[0],
-        date: new Date('2024-04-15'),
-        amount: 1.99
-      },
-      {
-        id: 2,
-        songId: 3,
-        song: sampleSongs[2],
-        date: new Date('2024-04-10'),
-        amount: 0.99
-      },
-      {
-        id: 3,
-        songId: 8,
-        song: sampleSongs[7],
-        date: new Date('2024-03-28'),
-        amount: 1.29
-      },
-      {
-        id: 4,
-        songId: 12,
-        song: sampleSongs[11],
-        date: new Date('2024-03-20'),
-        amount: 1.29
-      }
-    ];
-    localStorage.setItem(PURCHASES_KEY, JSON.stringify(initialPurchases));
-    return initialPurchases;
+    return stored ? JSON.parse(stored) : [];
   }
   
   static getPlaylists(): Playlist[] {
     const stored = localStorage.getItem(PLAYLISTS_KEY);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-    
-    // Khởi tạo dữ liệu mẫu nếu chưa có
-    const initialPlaylists: Playlist[] = [
-      {
-        id: 1,
-        name: "Rock Classics",
-        songs: [sampleSongs[0], sampleSongs[1], sampleSongs[6]],
-        createdAt: new Date('2024-04-10')
-      },
-      {
-        id: 2,
-        name: "Chill Vibes",
-        songs: [sampleSongs[2], sampleSongs[8], sampleSongs[13]],
-        createdAt: new Date('2024-04-05')
-      },
-      {
-        id: 3,
-        name: "Dance Party",
-        songs: [sampleSongs[9], sampleSongs[10], sampleSongs[12], sampleSongs[14]],
-        createdAt: new Date('2024-03-22')
-      }
-    ];
-    localStorage.setItem(PLAYLISTS_KEY, JSON.stringify(initialPlaylists));
-    return initialPlaylists;
+    return stored ? JSON.parse(stored) : [];
   }
   
   static getPlaylistById(id: number): Playlist | undefined {
@@ -194,13 +172,12 @@ export class MusicService {
   }
   
   static addSongToPlaylist(songId: number, playlistId: number): boolean {
-    const song = this.getSongById(songId);
+    const song = this.getPurchasedSongs().find(s => s.id === songId);
     if (!song) return false;
     
     const playlists = this.getPlaylists();
     const updatedPlaylists = playlists.map(playlist => {
       if (playlist.id === playlistId) {
-        // Kiểm tra nếu bài hát đã có trong playlist
         if (playlist.songs.some(s => s.id === songId)) {
           return playlist;
         }
@@ -255,16 +232,9 @@ export class MusicService {
   
   static addToPlayHistory(song: Song): void {
     const history = this.getPlayHistory();
-    
-    // Loại bỏ bài hát này nếu đã có trong lịch sử
     const filteredHistory = history.filter(s => s.id !== song.id);
-    
-    // Thêm vào đầu danh sách
     filteredHistory.unshift(song);
-    
-    // Giới hạn lịch sử 20 bài gần nhất
     const limitedHistory = filteredHistory.slice(0, 20);
-    
     localStorage.setItem(PLAY_HISTORY_KEY, JSON.stringify(limitedHistory));
   }
   

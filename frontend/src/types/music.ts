@@ -6,8 +6,11 @@ export type Song = {
   artistId: number;
   duration: string;
   album: string;
+  audioUrl?: string;
+  videoUrl?: string;
   imageUrl?: string;
   price: number;
+  plays: number;
 };
 
 export type Purchase = {

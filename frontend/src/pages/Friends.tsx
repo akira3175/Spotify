@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import Layout from '@/components/Layout';
 import { Input } from '@/components/ui/input';
@@ -27,7 +27,8 @@ const Friends = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [pendingRequests, setPendingRequests] = useState<Friend[]>([]);
   const [sentRequests, setSentRequests] = useState<Friend[]>([]);
-  
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
@@ -37,8 +38,8 @@ const Friends = () => {
   useEffect(() => {
     if (isAuthenticated) {
       fetchFriends();
-      // fetchPendingRequests();
-      // fetchSentRequests();
+      fetchPendingRequests();
+      fetchSentRequests();
     }
   }, [isAuthenticated]);
 
@@ -57,20 +58,19 @@ const Friends = () => {
     setSentRequests(sentRequests);
   }
 
-  // const filteredUsers = searchTerm ? 
-  //   mockUsers.filter(user => 
-  //     user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-  //     user.username.toLowerCase().includes(searchTerm.toLowerCase())
-  //   )
-  //   : [];
+  const fetchFilteredUsers = async () => {
+    const allUsers = await FriendService.getUser(searchTerm);
+    const filtered = allUsers.filter(users => users.id !== user?.id);
+    setFilteredUsers(filtered);
+  };
 
   const isFriend = (userId: number) => {
-    return friends.some(friend => friend.id === userId);
+    return friends.some(friend => friend.user?.id === userId);
   };
 
   const isRequestPending = (userId: number) => {
-    return pendingRequests.some(req => req.id === userId) || 
-           sentRequests.some(req => req.id === userId);
+    return pendingRequests.some(req => req.user.id === userId) || 
+           sentRequests.some(req => req.user.id === userId);
   };
 
   const messageFriend = async (user: User) => {
@@ -81,62 +81,56 @@ const Friends = () => {
     navigate(`/chat/${chatbox.id}`);
   }
 
-  const sendFriendRequest = (user: any) => {
-    const updatedSentRequests = [...sentRequests, user];
-    setSentRequests(updatedSentRequests);
-    localStorage.setItem('spotify_sent_requests', JSON.stringify(updatedSentRequests));
+  const sendFriendRequest = async (user: any) => {
+    await FriendService.sendFriendRequest(user.username);
+    fetchSentRequests();
     
     toast({
       title: "Friend request sent",
-      description: `You sent a friend request to ${user.name}.`,
+      description: `You sent a friend request to ${user.username}.`,
     });
   };
 
-  const acceptFriendRequest = (user: any) => {
-    const updatedFriends = [...friends, user];
-    setFriends(updatedFriends);
-    localStorage.setItem('spotify_friends', JSON.stringify(updatedFriends));
-    
-    const updatedPendingRequests = pendingRequests.filter(req => req.id !== user.id);
-    setPendingRequests(updatedPendingRequests);
-    localStorage.setItem('spotify_pending_requests', JSON.stringify(updatedPendingRequests));
+  const acceptFriendRequest = async (friendRequestID: number) => {
+    await FriendService.respondFriendRequest(friendRequestID, 'accept');
+    fetchFriends();
+    fetchPendingRequests();
     
     toast({
-      title: "Friend request accepted",
-      description: `You are now friends with ${user.name}.`,
+      title: "Friend request accepted"
     });
   };
 
-  const rejectFriendRequest = (user: any) => {
-    const updatedPendingRequests = pendingRequests.filter(req => req.id !== user.id);
+  const rejectFriendRequest = async (friendRequestID: number) => {
+    const response = await FriendService.respondFriendRequest(friendRequestID, 'decline');
+    const updatedPendingRequests = pendingRequests.filter(req => req.id !== friendRequestID);
     setPendingRequests(updatedPendingRequests);
     localStorage.setItem('spotify_pending_requests', JSON.stringify(updatedPendingRequests));
     
     toast({
       title: "Friend request rejected",
-      description: `You rejected ${user.name}'s friend request.`,
+      description: `You rejected ${response.data.user2.last_name} ${response.data.user2.first_name}'s friend request.`,
     });
   };
 
-  const cancelFriendRequest = (user: any) => {
-    const updatedSentRequests = sentRequests.filter(req => req.id !== user.id);
+  const cancelFriendRequest = async (friendRequestID: number) => {
+    const response = await FriendService.cancelFriendRequest(friendRequestID);
+    const updatedSentRequests = sentRequests.filter(req => req.id !== friendRequestID);
     setSentRequests(updatedSentRequests);
     localStorage.setItem('spotify_sent_requests', JSON.stringify(updatedSentRequests));
     
     toast({
       title: "Friend request cancelled",
-      description: `You cancelled your friend request to ${user.name}.`,
+      description: `You cancelled your friend request to ${response.data.user2.last_name} ${response.data.user2.first_name}.`,
     });
   };
 
-  const removeFriend = (user: any) => {
-    const updatedFriends = friends.filter(friend => friend.id !== user.id);
-    setFriends(updatedFriends);
-    localStorage.setItem('spotify_friends', JSON.stringify(updatedFriends));
+  const removeFriend = async (friendID: number) => {
+    await FriendService.removeFriend(friendID);
+    fetchFriends();
     
     toast({
       title: "Friend removed",
-      description: `You removed ${user.name} from your friends.`,
     });
   };
 
@@ -166,7 +160,7 @@ const Friends = () => {
                   <div key={friend.id} className="bg-zinc-900 p-4 rounded-lg flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="w-12 h-12 bg-zinc-800 rounded-full overflow-hidden relative">
-                        {friend.user.avatar ? (
+                        {friend.user?.avatar ? (
                           <img 
                             src={friend.user.avatar} 
                             alt={friend.user.name} 
@@ -201,15 +195,7 @@ const Friends = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => {
-                          const updatedFriends = friends.filter(f => f.id !== friend.id);
-                          setFriends(updatedFriends);
-                          localStorage.setItem('spotify_friends', JSON.stringify(updatedFriends));
-                          toast({
-                            title: "Friend removed",
-                            description: `You removed ${friend.user.username} from your friends.`,
-                          });
-                        }}
+                        onClick={() => removeFriend(friend.id)}
                       >
                         <UserX size={16} className="mr-1" /> Remove
                       </Button>
@@ -239,17 +225,17 @@ const Friends = () => {
                         {request.user.avatar ? (
                           <img 
                             src={request.user.avatar} 
-                            alt={request.user.name} 
+                            alt={request.user.first_name} 
                             className="w-full h-full object-cover" 
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-zinc-700">
-                            {request.user.name.charAt(0).toUpperCase()}
+                            {request.user.first_name.charAt(0).toUpperCase()}
                           </div>
                         )}
                       </div>
                       <div className="ml-4">
-                        <p className="font-medium">{request.user.username}</p>
+                        <p className="font-medium">{request.user.last_name} {request.user.first_name}</p>
                         <p className="text-sm text-zinc-400">@{request.user.username}</p>
                       </div>
                     </div>
@@ -257,14 +243,14 @@ const Friends = () => {
                       <Button 
                         className="bg-green-500 hover:bg-green-600 text-black" 
                         size="sm"
-                        onClick={() => acceptFriendRequest(request)}
+                        onClick={() => acceptFriendRequest(request.id)}
                       >
                         <UserCheck size={16} className="mr-1" /> Accept
                       </Button>
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => rejectFriendRequest(request)}
+                        onClick={() => rejectFriendRequest(request.id)}
                       >
                         <UserX size={16} className="mr-1" /> Reject
                       </Button>
@@ -288,28 +274,28 @@ const Friends = () => {
                   <div key={request.id} className="bg-zinc-900 p-4 rounded-lg flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="w-12 h-12 bg-zinc-800 rounded-full overflow-hidden">
-                        {request.user.avatar ? (
+                        {request.user?.avatar ? (
                           <img 
-                            src={request.user.avatar} 
-                            alt={request.user.name} 
+                            src={request.user?.avatar} 
+                            alt={request.user?.first_name} 
                             className="w-full h-full object-cover" 
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-zinc-700">
-                            {request.user.name.charAt(0).toUpperCase()}
+                            {request.user?.first_name?.charAt(0).toUpperCase()}
                           </div>
                         )}
                       </div>
                       <div className="ml-4">
-                        <p className="font-medium">{request.user.username}</p>
-                        <p className="text-sm text-zinc-400">@{request.user.username}</p>
+                        <p className="font-medium">{request.user?.last_name} {request.user?.first_name}</p>
+                        <p className="text-sm text-zinc-400">@{request.user?.username}</p>
                       </div>
                     </div>
                     <div>
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => cancelFriendRequest(request)}
+                        onClick={() => cancelFriendRequest(request.id)}
                       >
                         <UserX size={16} className="mr-1" /> Cancel
                       </Button>
@@ -329,7 +315,12 @@ const Friends = () => {
           <TabsContent value="find">
             <div className="mb-6">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-zinc-400" />
+                <Button
+                  className="absolute right-0 top-0"
+                  onClick={() => fetchFilteredUsers()}
+                >
+                  <Search className="mr-1" />
+                </Button>
                 <Input
                   placeholder="Search for users by name or username"
                   className="pl-10"
@@ -339,27 +330,27 @@ const Friends = () => {
               </div>
             </div>
             
-            {/* {searchTerm ? (
+            {searchTerm ? (
               filteredUsers.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4">
                   {filteredUsers.map((user) => (
                     <div key={user.id} className="bg-zinc-900 p-4 rounded-lg flex items-center justify-between">
                       <div className="flex items-center">
                         <div className="w-12 h-12 bg-zinc-800 rounded-full overflow-hidden">
-                          {user.avatarUrl ? (
+                          {user.avatar ? (
                             <img 
-                              src={user.avatarUrl} 
-                              alt={user.name} 
+                              src={user.avatar} 
+                              alt={user.first_name} 
                               className="w-full h-full object-cover" 
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-zinc-700">
-                              {user.name.charAt(0).toUpperCase()}
+                              {user.first_name.charAt(0).toUpperCase()}
                             </div>
                           )}
                         </div>
                         <div className="ml-4">
-                          <p className="font-medium">{user.name}</p>
+                          <p className="font-medium">{user.first_name} {user.last_name}</p>
                           <p className="text-sm text-zinc-400">@{user.username}</p>
                         </div>
                       </div>
@@ -405,7 +396,7 @@ const Friends = () => {
                 <h3 className="text-xl font-bold mb-2">Search for friends</h3>
                 <p className="text-zinc-400">Enter a name or username to find people to connect with.</p>
               </div>
-            )} */}
+            )}
           </TabsContent>
         </Tabs>
       </div>
