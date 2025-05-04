@@ -104,7 +104,7 @@ class SendFriendRequestView(generics.CreateAPIView):
         pending_status = StatusFriend.objects.get(name=StatusFriend.PENDING)
 
         friend_request = Friend.objects.create(user1=user1, user2=user2, status=pending_status)
-        return Response(FriendSerializer(friend_request).data, status=status.HTTP_201_CREATED)
+        return Response(FriendSerializer(friend_request, context={'request': request}).data, status=status.HTTP_201_CREATED)
 
 
 class RespondFriendRequestView(generics.UpdateAPIView):
@@ -134,7 +134,27 @@ class RespondFriendRequestView(generics.UpdateAPIView):
             return Response({"error": "Hành động không hợp lệ."}, status=status.HTTP_400_BAD_REQUEST)
 
         friend_request.save()
-        return Response(FriendSerializer(friend_request).data)
+        return Response(FriendSerializer(friend_request, context={'request': request}).data)
+    
+class CancelFriendRequestView(generics.DestroyAPIView):
+    """
+    Hủy lời mời kết bạn đã gửi
+    """
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        friend_id = kwargs.get("pk")
+
+        try:
+            friend_request = Friend.objects.get(id=friend_id, user1=request.user, status__name=StatusFriend.PENDING)
+        except Friend.DoesNotExist:
+            return Response(
+                {"error": "Không tìm thấy lời mời kết bạn hoặc bạn không có quyền hủy."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        friend_request.delete()
+        return Response({"message": "Đã hủy lời mời kết bạn."}, status=status.HTTP_204_NO_CONTENT)
 
 
 class RemoveFriendView(generics.DestroyAPIView):
