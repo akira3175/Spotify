@@ -7,6 +7,7 @@ from .serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import filters
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db import models
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -168,4 +169,30 @@ class ListFriendsView(generics.ListAPIView):
         return Friend.objects.filter(
             (models.Q(user1=self.request.user) | models.Q(user2=self.request.user)),
             status__name=StatusFriend.ACCEPTED
+        )
+    
+class ListPendingRequestsView(generics.ListAPIView):
+    """
+    Danh sách yêu cầu kết bạn chờ xử lý
+    """
+    serializer_class = FriendSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Friend.objects.filter(
+            user2=self.request.user,
+            status__name=StatusFriend.PENDING
+        )
+    
+class ListSentRequestsView(generics.ListAPIView):
+    """
+    Danh sách yêu cầu kết bạn đã gửi
+    """
+    serializer_class = FriendSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Friend.objects.filter(
+            user1=self.request.user,
+            status__name=StatusFriend.PENDING
         )

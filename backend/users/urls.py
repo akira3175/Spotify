@@ -15,4 +15,6 @@ urlpatterns = [
     path("respond-request/<int:pk>/", RespondFriendRequestView.as_view(), name="respond-friend-request"),
     path("remove-friend/<int:pk>/", RemoveFriendView.as_view(), name="remove-friend"),
     path("friends/", ListFriendsView.as_view(), name="list-friends"),
+    path("pending-requests/", ListPendingRequestsView.as_view(), name="list-pending-requests"),
+    path("sent-requests/", ListSentRequestsView.as_view(), name="list-sent-requests"),
 ]

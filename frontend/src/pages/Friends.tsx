@@ -12,100 +12,11 @@ import {
 } from "@/components/ui/tabs";
 import { Search, Users, UserPlus, UserCheck, UserX, MessageCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-// Enhanced mock user data with more details
-const mockUsers = [
-  { 
-    id: 1, 
-    name: 'John Doe', 
-    username: 'johndoe', 
-    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80',
-    status: 'online',
-    bio: 'Music producer and vinyl collector',
-    favGenre: 'Jazz, Hip-Hop'
-  },
-  { 
-    id: 2, 
-    name: 'Jane Smith', 
-    username: 'janesmith', 
-    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80',
-    status: 'offline',
-    bio: 'Classical pianist and composer',
-    favGenre: 'Classical, Ambient'
-  },
-  { 
-    id: 3, 
-    name: 'Robert Johnson', 
-    username: 'robertj', 
-    avatarUrl: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80',
-    status: 'online',
-    bio: 'Blues guitarist and songwriter',
-    favGenre: 'Blues, Rock'
-  },
-  { 
-    id: 4, 
-    name: 'Emily Davis', 
-    username: 'emilyd', 
-    avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80',
-    status: 'online',
-    bio: 'Folk singer and lyricist',
-    favGenre: 'Folk, Indie'
-  },
-  { 
-    id: 5, 
-    name: 'Michael Wilson', 
-    username: 'mikew', 
-    avatarUrl: 'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80',
-    status: 'offline',
-    bio: 'Electronic music producer and DJ',
-    favGenre: 'Electronic, House'
-  },
-  { 
-    id: 6, 
-    name: 'Sarah Johnson', 
-    username: 'sarahj', 
-    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80',
-    status: 'online',
-    bio: 'Vocalist and guitar player',
-    favGenre: 'Pop, R&B'
-  },
-  { 
-    id: 7, 
-    name: 'David Brown', 
-    username: 'davidb', 
-    avatarUrl: 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80',
-    status: 'offline',
-    bio: 'Drummer and percussion enthusiast',
-    favGenre: 'Rock, Metal'
-  },
-  { 
-    id: 8, 
-    name: 'Lisa Chen', 
-    username: 'lisac', 
-    avatarUrl: 'https://images.unsplash.com/photo-1614283233556-f35b0c801ef1?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80',
-    status: 'online',
-    bio: 'Violinist and orchestra conductor',
-    favGenre: 'Classical, Soundtrack'
-  }
-];
-
-// Sample friend connections
-const initialFriends = [
-  mockUsers[0], // John Doe
-  mockUsers[3], // Emily Davis
-  mockUsers[5]  // Sarah Johnson
-];
-
-// Sample pending requests
-const initialPendingRequests = [
-  mockUsers[2], // Robert Johnson
-  mockUsers[7]  // Lisa Chen
-];
-
-// Sample sent requests
-const initialSentRequests = [
-  mockUsers[1], // Jane Smith
-];
+import { FriendService } from '@/services/FriendService';
+import { Friend } from '@/types/friend';
+import { ChatboxService } from '@/services/ChatboxService';
+import { User } from '@/types/user';
+import { Chatbox } from '@/types/chat';
 
 const Friends = () => {
   const { isAuthenticated, user } = useAuth();
@@ -113,9 +24,9 @@ const Friends = () => {
   const { toast } = useToast();
   
   const [searchTerm, setSearchTerm] = useState('');
-  const [friends, setFriends] = useState<any[]>([]);
-  const [pendingRequests, setPendingRequests] = useState<any[]>([]);
-  const [sentRequests, setSentRequests] = useState<any[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<Friend[]>([]);
+  const [sentRequests, setSentRequests] = useState<Friend[]>([]);
   
   useEffect(() => {
     if (!isAuthenticated) {
@@ -125,39 +36,33 @@ const Friends = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const storedFriends = localStorage.getItem('spotify_friends');
-      const storedPendingRequests = localStorage.getItem('spotify_pending_requests');
-      const storedSentRequests = localStorage.getItem('spotify_sent_requests');
-      
-      if (storedFriends) {
-        setFriends(JSON.parse(storedFriends));
-      } else {
-        setFriends(initialFriends);
-        localStorage.setItem('spotify_friends', JSON.stringify(initialFriends));
-      }
-      
-      if (storedPendingRequests) {
-        setPendingRequests(JSON.parse(storedPendingRequests));
-      } else {
-        setPendingRequests(initialPendingRequests);
-        localStorage.setItem('spotify_pending_requests', JSON.stringify(initialPendingRequests));
-      }
-      
-      if (storedSentRequests) {
-        setSentRequests(JSON.parse(storedSentRequests));
-      } else {
-        setSentRequests(initialSentRequests);
-        localStorage.setItem('spotify_sent_requests', JSON.stringify(initialSentRequests));
-      }
+      fetchFriends();
+      // fetchPendingRequests();
+      // fetchSentRequests();
     }
   }, [isAuthenticated]);
 
-  const filteredUsers = searchTerm ? 
-    mockUsers.filter(user => 
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      user.username.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    : [];
+  const fetchFriends = async () => {
+    const friends = await FriendService.getFriends();
+    setFriends(friends);
+  }
+
+  const fetchPendingRequests = async () => {
+    const pendingRequests = await FriendService.getPendingRequests();
+    setPendingRequests(pendingRequests);
+  }
+
+  const fetchSentRequests = async () => {
+    const sentRequests = await FriendService.getSentRequests();
+    setSentRequests(sentRequests);
+  }
+
+  // const filteredUsers = searchTerm ? 
+  //   mockUsers.filter(user => 
+  //     user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+  //     user.username.toLowerCase().includes(searchTerm.toLowerCase())
+  //   )
+  //   : [];
 
   const isFriend = (userId: number) => {
     return friends.some(friend => friend.id === userId);
@@ -167,6 +72,14 @@ const Friends = () => {
     return pendingRequests.some(req => req.id === userId) || 
            sentRequests.some(req => req.id === userId);
   };
+
+  const messageFriend = async (user: User) => {
+    const chatbox = await ChatboxService.createChatbox({
+      "user_ids": [user.id],
+      type: 'user'
+    } as unknown as Chatbox);
+    navigate(`/chat/${chatbox.id}`);
+  }
 
   const sendFriendRequest = (user: any) => {
     const updatedSentRequests = [...sentRequests, user];
@@ -253,15 +166,15 @@ const Friends = () => {
                   <div key={friend.id} className="bg-zinc-900 p-4 rounded-lg flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="w-12 h-12 bg-zinc-800 rounded-full overflow-hidden relative">
-                        {friend.avatarUrl ? (
+                        {friend.user.avatar ? (
                           <img 
-                            src={friend.avatarUrl} 
-                            alt={friend.name} 
+                            src={friend.user.avatar} 
+                            alt={friend.user.name} 
                             className="w-full h-full object-cover" 
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-zinc-700">
-                            {friend.name.charAt(0).toUpperCase()}
+                            {friend.user.first_name.charAt(0).toUpperCase()}
                           </div>
                         )}
                         {friend.status === 'online' && (
@@ -269,9 +182,9 @@ const Friends = () => {
                         )}
                       </div>
                       <div className="ml-4">
-                        <p className="font-medium">{friend.name}</p>
-                        <p className="text-sm text-zinc-400">@{friend.username}</p>
-                        <p className="text-xs text-zinc-500 mt-1">{friend.bio}</p>
+                        <p className="font-medium">{friend.user.last_name} {friend.user.first_name}</p>
+                        <p className="text-sm text-zinc-400">@{friend.user.username}</p>
+                        <p className="text-xs text-zinc-500 mt-1">{friend.user.bio}</p>
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -279,10 +192,11 @@ const Friends = () => {
                         variant="outline" 
                         size="sm"
                         asChild
+                        onClick={() => messageFriend(friend.user)}
                       >
-                        <Link to={`/chat/${friend.id}`}>
+                        <div className="flex items-center">
                           <MessageCircle size={16} className="mr-1" /> Message
-                        </Link>
+                        </div>
                       </Button>
                       <Button 
                         variant="outline" 
@@ -293,7 +207,7 @@ const Friends = () => {
                           localStorage.setItem('spotify_friends', JSON.stringify(updatedFriends));
                           toast({
                             title: "Friend removed",
-                            description: `You removed ${friend.name} from your friends.`,
+                            description: `You removed ${friend.user.username} from your friends.`,
                           });
                         }}
                       >
@@ -322,21 +236,21 @@ const Friends = () => {
                   <div key={request.id} className="bg-zinc-900 p-4 rounded-lg flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="w-12 h-12 bg-zinc-800 rounded-full overflow-hidden">
-                        {request.avatarUrl ? (
+                        {request.user.avatar ? (
                           <img 
-                            src={request.avatarUrl} 
-                            alt={request.name} 
+                            src={request.user.avatar} 
+                            alt={request.user.name} 
                             className="w-full h-full object-cover" 
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-zinc-700">
-                            {request.name.charAt(0).toUpperCase()}
+                            {request.user.name.charAt(0).toUpperCase()}
                           </div>
                         )}
                       </div>
                       <div className="ml-4">
-                        <p className="font-medium">{request.name}</p>
-                        <p className="text-sm text-zinc-400">@{request.username}</p>
+                        <p className="font-medium">{request.user.username}</p>
+                        <p className="text-sm text-zinc-400">@{request.user.username}</p>
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -374,21 +288,21 @@ const Friends = () => {
                   <div key={request.id} className="bg-zinc-900 p-4 rounded-lg flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="w-12 h-12 bg-zinc-800 rounded-full overflow-hidden">
-                        {request.avatarUrl ? (
+                        {request.user.avatar ? (
                           <img 
-                            src={request.avatarUrl} 
-                            alt={request.name} 
+                            src={request.user.avatar} 
+                            alt={request.user.name} 
                             className="w-full h-full object-cover" 
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-zinc-700">
-                            {request.name.charAt(0).toUpperCase()}
+                            {request.user.name.charAt(0).toUpperCase()}
                           </div>
                         )}
                       </div>
                       <div className="ml-4">
-                        <p className="font-medium">{request.name}</p>
-                        <p className="text-sm text-zinc-400">@{request.username}</p>
+                        <p className="font-medium">{request.user.username}</p>
+                        <p className="text-sm text-zinc-400">@{request.user.username}</p>
                       </div>
                     </div>
                     <div>
@@ -425,7 +339,7 @@ const Friends = () => {
               </div>
             </div>
             
-            {searchTerm ? (
+            {/* {searchTerm ? (
               filteredUsers.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4">
                   {filteredUsers.map((user) => (
@@ -491,7 +405,7 @@ const Friends = () => {
                 <h3 className="text-xl font-bold mb-2">Search for friends</h3>
                 <p className="text-zinc-400">Enter a name or username to find people to connect with.</p>
               </div>
-            )}
+            )} */}
           </TabsContent>
         </Tabs>
       </div>
