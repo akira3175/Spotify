@@ -6,7 +6,7 @@ import { Song } from '@/types/music';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Play } from 'lucide-react';
+import { Play, X } from 'lucide-react';
 import { useMusic } from '@/contexts/MusicContext';
 
 // Sample data for playlists
@@ -34,12 +34,17 @@ const topCharts = [
   { id: 4, title: 'Trending Now', description: 'Currently trending on social and streaming', image: '/placeholder.svg' },
 ];
 
+// URL video mặc định để kiểm tra popup
+const DEFAULT_VIDEO_URL = 'https://www.w3schools.com/html/mov_bbb.mp4';
+
 const HomeContent = () => {
   const [songs, setSongs] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [purchasingSong, setPurchasingSong] = useState<Song | null>(null);
   const { play, isPurchased, purchaseSong } = useMusic();
+  const [teaserVideoUrl, setTeaserVideoUrl] = useState<string | null>(null);
+  const [isTeaserPlaying, setIsTeaserPlaying] = useState(false);
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -87,20 +92,60 @@ const HomeContent = () => {
     fetchSongs();
   }, []);
 
+  const fetchVideoUrl = async (songId: number | string): Promise<string | null> => {
+    try {
+      const response = await fetch(`/api/song/${songId}/video`);
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('fetchVideoUrl: Server response:', { status: response.status, body: text });
+        return null;
+      }
+      const data = await response.json();
+      if (!data.videoUrl) {
+        console.error('fetchVideoUrl: No video URL in response:', data);
+        return null;
+      }
+      console.log('fetchVideoUrl: Successfully fetched video URL:', data.videoUrl);
+      return data.videoUrl;
+    } catch (error) {
+      console.error('HomeContent: Error fetching video URL:', error);
+      return null;
+    }
+  };
+
   const handlePlaySong = async (song: Song) => {
     try {
       console.log('HomeContent: Checking purchase status for song:', song.title);
-      const purchased = await isPurchased(song.id);
+      const purchased = isPurchased(song.id);
+      console.log('HomeContent: Purchase status:', purchased);
+
       if (purchased) {
         console.log('HomeContent: Playing purchased song:', song.title);
         play(song);
+
+        // Logic phát teaser
+        let videoUrl = song.videoUrl || (await fetchVideoUrl(song.id));
+        if (!videoUrl) {
+          console.warn('HomeContent: Using default video URL for teaser');
+          videoUrl = DEFAULT_VIDEO_URL; // Sử dụng video mặc định nếu không có videoUrl
+        }
+        console.log('HomeContent: Teaser video URL:', videoUrl);
+        setTeaserVideoUrl(videoUrl);
+        setIsTeaserPlaying(true);
+
+        // Dừng teaser sau 10 giây
+        setTimeout(() => {
+          setIsTeaserPlaying(false);
+          setTeaserVideoUrl(null);
+          console.log('HomeContent: Teaser stopped for song:', song.title);
+        }, 10000);
       } else {
         console.log('HomeContent: Song not purchased, showing purchase modal:', song.title);
         setPurchasingSong(song);
       }
     } catch (error) {
-      console.error('HomeContent: Error checking purchase status:', error);
-      setError('Failed to verify purchase');
+      console.error('HomeContent: Error in handlePlaySong:', error);
+      setError('Failed to play song');
     }
   };
 
@@ -108,7 +153,7 @@ const HomeContent = () => {
     if (!purchasingSong) return;
     try {
       console.log('HomeContent: Initiating purchase for song:', purchasingSong.title);
-      await purchaseSong(purchasingSong); // Gọi hàm purchaseSong từ context
+      await purchaseSong(purchasingSong);
       console.log('HomeContent: Song purchased successfully:', purchasingSong.title);
       setPurchasingSong(null);
       play(purchasingSong);
@@ -116,6 +161,12 @@ const HomeContent = () => {
       console.error('HomeContent: Error purchasing song:', error);
       setError('Failed to purchase song');
     }
+  };
+
+  const closeTeaser = () => {
+    setIsTeaserPlaying(false);
+    setTeaserVideoUrl(null);
+    console.log('HomeContent: Teaser closed manually');
   };
 
   const renderSongsGrid = () => {
@@ -229,6 +280,31 @@ const HomeContent = () => {
           <PlaylistGrid title="Made for you" playlists={madeForYou} seeAllLink="#" />
           <PlaylistGrid title="Charts" playlists={topCharts} seeAllLink="#" />
         </div>
+
+        {/* Teaser video ở bên phải */}
+        {isTeaserPlaying && teaserVideoUrl && (
+          <div className="fixed top-0 right-0 w-1/5 h-screen bg-black shadow-lg z-50 flex flex-col">
+            <div className="relative flex-1">
+              <video
+                src={teaserVideoUrl}
+                autoPlay
+                muted
+                loop
+                className="w-full h-full object-cover"
+              >
+                Your browser does not support the video tag.
+              </video>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute top-2 right-2 text-white bg-black/50 rounded-full"
+                onClick={closeTeaser}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </ScrollArea>
   );
