@@ -1,50 +1,140 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PlaylistGrid from './PlaylistGrid';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { SongService } from '@/services/SongService';
+import { ArtistService } from '@/services/ArtistService';
+import { Song } from '@/types/song';
+import { Artist } from '@/types/artist';
+import { useMusic } from '@/contexts/MusicContext';
 
-// Sample data for playlists
-const recentlyPlayed = [
-  { id: 1, title: 'Daily Mix 1', description: 'Kendrick Lamar, J. Cole and more', image: '/placeholder.svg' },
-  { id: 2, title: 'Chill Vibes', description: 'Relaxing beats to study and focus', image: '/placeholder.svg' },
-  { id: 3, title: 'Rock Classics', description: 'The greatest rock songs of all time', image: '/placeholder.svg' },
-  { id: 4, title: 'Running Mix', description: 'High energy music for your workout', image: '/placeholder.svg' },
-  { id: 5, title: 'Acoustic Favorites', description: 'Mellow acoustic tracks', image: '/placeholder.svg' },
-  { id: 6, title: '2010s Mix', description: 'Throwback to the hits from last decade', image: '/placeholder.svg' },
+interface Playlist {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+}
+
+// Mock data for songs
+const popularSongs: Playlist[] = [
+  { id: '1', title: 'Blinding Lights', description: 'The Weeknd - After Hours', image: '/placeholder.svg' },
+  { id: '2', title: 'Stay', description: 'The Kid LAROI, Justin Bieber - F*CK LOVE 3', image: '/placeholder.svg' },
+  { id: '3', title: 'Shape of You', description: 'Ed Sheeran - ÷ (Divide)', image: '/placeholder.svg' },
+  { id: '4', title: 'Dynamite', description: 'BTS - Dynamite (Single)', image: '/placeholder.svg' },
+  { id: '5', title: 'Levitating', description: 'Dua Lipa - Future Nostalgia', image: '/placeholder.svg' },
 ];
 
-const madeForYou = [
-  { id: 1, title: 'Discover Weekly', description: 'Your weekly mixtape of fresh music', image: '/placeholder.svg' },
-  { id: 2, title: 'Release Radar', description: 'Catch all the latest music from artists you follow', image: '/placeholder.svg' },
-  { id: 3, title: 'Your Time Capsule', description: 'Songs from your past we think you\'ll love', image: '/placeholder.svg' },
-  { id: 4, title: 'Daily Mix 2', description: 'Tyler the Creator, Kanye West and more', image: '/placeholder.svg' },
-  { id: 5, title: 'Daily Mix 3', description: 'Doja Cat, SZA and more', image: '/placeholder.svg' },
+const trendingSongs: Playlist[] = [
+  { id: '1', title: 'Good 4 U', description: 'Olivia Rodrigo - SOUR', image: '/placeholder.svg' },
+  { id: '2', title: 'Montero', description: 'Lil Nas X - MONTERO', image: '/placeholder.svg' },
+  { id: '3', title: 'Peaches', description: 'Justin Bieber - Justice', image: '/placeholder.svg' },
+  { id: '4', title: 'Save Your Tears', description: 'The Weeknd - After Hours', image: '/placeholder.svg' },
 ];
 
-const topCharts = [
-  { id: 1, title: 'Top 50 - Global', description: 'Your daily update of the most played tracks right now', image: '/placeholder.svg' },
-  { id: 2, title: 'Top Songs - USA', description: 'The hottest tracks in the United States', image: '/placeholder.svg' },
-  { id: 3, title: 'Viral 50', description: 'The most viral tracks on Spotify', image: '/placeholder.svg' },
-  { id: 4, title: 'Trending Now', description: 'Currently trending on social and streaming', image: '/placeholder.svg' },
+const localSongs: Playlist[] = [
+  { id: '1', title: 'Hai Triệu Năm', description: 'Đen Vâu - Đen Vâu', image: '/placeholder.svg' },
+  { id: '2', title: 'Chúng Ta Của Hiện Tại', description: 'Sơn Tùng M-TP - Chúng Ta Của Hiện Tại', image: '/placeholder.svg' },
+  { id: '3', title: 'See Tình', description: 'Hoàng Thùy Linh - See Tình', image: '/placeholder.svg' },
 ];
 
 const HomeContent = () => {
+  const navigate = useNavigate();
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [artists, setArtists] = useState<Artist[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { likedSongs } = useMusic();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log('Fetching songs...');
+        const songsData = await SongService.getSong();
+        console.log('Songs data:', songsData);
+        setSongs(Array.isArray(songsData) ? songsData : [songsData]);
+
+        console.log('Fetching artists...');
+        const artistsData = await ArtistService.getArtists();
+        console.log('Artists data:', artistsData);
+        setArtists(Array.isArray(artistsData) ? artistsData : [artistsData]);
+
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to load data');
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const getArtistName = (artistId: number) => {
+    const artist = artists.find(a => a.id === artistId);
+    return artist ? artist.artist_name : 'Unknown Artist';
+  };
+
+  const handleSongClick = (songId: string) => {
+    navigate(`/song/${songId}`);
+  };
+
+  const handlePlaylistClick = (id: string) => {
+    // Handle playlist click here
+    console.log('Playlist clicked:', id);
+  };
+
+  const apiSongs: Playlist[] = songs.map(song => ({
+    id: song.id.toString(),
+    title: song.song_name,
+    description: getArtistName(song.artist),
+    image: '/placeholder.svg'
+  }));
+
+  if (loading) {
+    return (
+      <ScrollArea className="h-full">
+        <div className="p-6 pb-28">
+          <div className="text-center">Loading songs...</div>
+        </div>
+      </ScrollArea>
+    );
+  }
+
+  if (error) {
+    return (
+      <ScrollArea className="h-full">
+        <div className="p-6 pb-28">
+          <div className="text-center text-red-500">{error}</div>
+        </div>
+      </ScrollArea>
+    );
+  }
+
   return (
     <ScrollArea className="h-full">
       <div className="p-6 pb-28">
+        {/* Display songs from API */}
         <PlaylistGrid 
-          title="Recently played" 
-          playlists={recentlyPlayed}
+          title="Songs from API" 
+          playlists={apiSongs}
+          onPlaylistClick={handleSongClick}
+          seeAllLink="#"
+        />
+
+        {/* Display mock data */}
+        <PlaylistGrid 
+          title="Popular Songs" 
+          playlists={popularSongs}
           seeAllLink="#"
         />
         <PlaylistGrid 
-          title="Made for you" 
-          playlists={madeForYou}
+          title="Trending Songs" 
+          playlists={trendingSongs}
           seeAllLink="#"
         />
         <PlaylistGrid 
-          title="Charts" 
-          playlists={topCharts}
+          title="Local Songs" 
+          playlists={localSongs}
           seeAllLink="#"
         />
       </div>

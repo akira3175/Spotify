@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +20,7 @@ import Friends from "./pages/Friends";
 import Chat from "./pages/Chat";
 import { MusicProvider } from "./contexts/MusicContext";
 import AuthGuard from "./guards/AuthGuard";
+import LikedSongsPage from './pages/LikedSongs';
 
 const queryClient = new QueryClient();
 
@@ -80,6 +80,7 @@ const App = () => (
                   <Chat />
                 </AuthGuard>
               } />
+              <Route path="/liked-songs" element={<LikedSongsPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

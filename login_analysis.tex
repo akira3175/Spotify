@@ -1,0 +1,114 @@
+\chapter{Giao diện}
+\section{Phân tích giao diện đăng nhập}
+
+\subsection{Tổng quan về giao diện đăng nhập}
+Giao diện đăng nhập của ứng dụng Spotify Clone được thiết kế với phong cách tối giản, hiện đại, phù hợp với thương hiệu Spotify. Giao diện sử dụng tông màu chủ đạo là đen và xanh lá, tạo nên sự hài hòa và chuyên nghiệp.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{login_screen.png}
+\caption{Giao diện đăng nhập của ứng dụng}
+\label{fig:login}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Logo Spotify}
+\begin{itemize}
+    \item Vị trí: Phía trên cùng của trang
+    \item Được hiển thị thông qua component \texttt{Logo}
+    \item Có khoảng cách margin-bottom là 8 đơn vị
+\end{itemize}
+
+\subsubsection{Form đăng nhập}
+\begin{itemize}
+    \item Container có nền màu đen (bg-spotify-base)
+    \item Bo góc (rounded-lg) và đổ bóng (shadow-lg)
+    \item Chiều rộng tối đa là md (max-w-md)
+    \item Có padding 8 đơn vị (p-8)
+\end{itemize}
+
+\subsubsection{Tiêu đề}
+\begin{itemize}
+    \item Dòng chữ "Log in to Spotify"
+    \item Màu trắng, cỡ chữ 2xl, font chữ đậm
+    \item Căn giữa và có margin-bottom 6 đơn vị
+\end{itemize}
+
+\subsubsection{Trường nhập liệu}
+\begin{itemize}
+    \item \textbf{Username}:
+    \begin{itemize}
+        \item Label màu xám nhạt (text-gray-300)
+        \item Input field có nền màu xám đậm (bg-zinc-800)
+        \item Viền màu xám (border-zinc-700)
+        \item Chữ màu trắng
+        \item Placeholder "Username"
+    \end{itemize}
+    
+    \item \textbf{Password}:
+    \begin{itemize}
+        \item Tương tự như trường username
+        \item Kiểu input là password (ẩn ký tự)
+        \item Placeholder "Password"
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Nút đăng nhập}
+\begin{itemize}
+    \item Màu xanh lá (bg-green-500)
+    \item Hover màu xanh lá nhạt hơn (hover:bg-green-400)
+    \item Chữ màu đen, font đậm
+    \item Chiều rộng 100\%
+    \item Padding dọc 3 đơn vị
+    \item Có trạng thái loading khi đang xử lý đăng nhập
+\end{itemize}
+
+\subsubsection{Link đăng ký}
+\begin{itemize}
+    \item Dòng chữ "Don't have an account?"
+    \item Link "Sign up for Spotify" màu trắng
+    \item Có hiệu ứng gạch chân khi hover
+    \item Căn giữa và có margin-top 6 đơn vị
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Xác thực người dùng}
+\begin{itemize}
+    \item Form có validation required cho cả username và password
+    \item Khi submit form, gọi hàm \texttt{handleSubmit}
+    \item Hiển thị loading state trong quá trình xử lý
+\end{itemize}
+
+\subsubsection{Xử lý đăng nhập}
+\begin{itemize}
+    \item Sử dụng context \texttt{useAuth} để gọi hàm \texttt{login}
+    \item Nếu đăng nhập thành công:
+    \begin{itemize}
+        \item Hiển thị thông báo thành công
+        \item Chuyển hướng về trang chủ
+    \end{itemize}
+    \item Nếu thất bại:
+    \begin{itemize}
+        \item Hiển thị thông báo lỗi
+        \item Log lỗi ra console
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Điều hướng}
+\begin{itemize}
+    \item Có link đến trang đăng ký (/register)
+    \item Sử dụng component \texttt{Link} từ react-router-dom
+\end{itemize}
+
+\subsubsection{Giao diện responsive}
+\begin{itemize}
+    \item Sử dụng Tailwind CSS
+    \item Container có padding 6 đơn vị ở mọi hướng
+    \item Chiều rộng tối đa được giới hạn
+    \item Layout flexbox để căn giữa các phần tử
+\end{itemize}
+
+\subsection{Kết luận}
+Giao diện đăng nhập được thiết kế với phong cách hiện đại, tối giản, phù hợp với thương hiệu Spotify. Việc sử dụng Tailwind CSS giúp tạo ra giao diện responsive và nhất quán. Các chức năng xác thực và điều hướng được tích hợp đầy đủ, đảm bảo trải nghiệm người dùng mượt mà và an toàn. 

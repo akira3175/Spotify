@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Home, Search, Library, Plus, Heart, Users, ShoppingCart } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -58,10 +57,11 @@ const Sidebar = () => {
             isActive={location.pathname.startsWith('/friends') || location.pathname.startsWith('/chat')}
           />
         </Link>
-        <Link to="#">
+        <Link to="/liked-songs">
           <NavLink 
             icon={<Heart size={20} className="bg-gradient-to-br from-indigo-500 to-blue-300 p-0.5 text-white rounded-sm" />} 
             label="Liked Songs" 
+            isActive={location.pathname === '/liked-songs'}
           />
         </Link>
       </div>

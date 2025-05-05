@@ -1,4 +1,3 @@
-
 export type Song = {
   id: number;
   title: string;
@@ -8,6 +7,8 @@ export type Song = {
   album: string;
   imageUrl?: string;
   price: number;
+  audio?: string;
+  cover_image?: string;
 };
 
 export type Purchase = {
