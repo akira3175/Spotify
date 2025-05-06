@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Play } from 'lucide-react';
 
@@ -6,11 +5,12 @@ interface PlaylistCardProps {
   image: string;
   title: string;
   description: string;
+  onClick?: () => void;
 }
 
-const PlaylistCard = ({ image, title, description }: PlaylistCardProps) => {
+const PlaylistCard = ({ image, title, description, onClick }: PlaylistCardProps) => {
   return (
-    <div className="spotify-card group relative">
+    <div className="spotify-card group relative" onClick={onClick}>
       <div className="relative">
         <div className="h-40 w-full mb-4 bg-zinc-800 rounded-md overflow-hidden shadow-lg">
           <img src={image} alt={title} className="object-cover h-full w-full" />
