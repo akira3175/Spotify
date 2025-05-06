@@ -23,7 +23,6 @@ const profileSchema = z.object({
   first_name: z.string().min(2, "First name must be at least 2 characters"),
   last_name: z.string().min(2, "Last name must be at least 2 characters"),
   username: z.string().min(2, "Please enter a valid username"),
-  // email: z.string().email("Please enter a valid email"),
   bio: z.string().optional(),
 });
 
