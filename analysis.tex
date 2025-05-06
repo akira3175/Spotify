@@ -1,0 +1,434 @@
+\documentclass{article}
+\usepackage[utf8]{vietnam}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows, positioning}
+
+\geometry{a4paper, margin=1in}
+
+\title{Phân tích Ứng dụng Nghe Nhạc}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Đăng nhập}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Logo ứng dụng}: Hiển thị ở đầu trang
+    \item \textbf{Form đăng nhập}:
+    \begin{itemize}
+        \item Trường email
+        \item Trường mật khẩu
+        \item Nút "Đăng nhập"
+        \item Link "Quên mật khẩu?"
+    \end{itemize}
+    \item \textbf{Đăng nhập bằng mạng xã hội}:
+    \begin{itemize}
+        \item Nút đăng nhập bằng Google
+        \item Nút đăng nhập bằng Facebook
+    \end{itemize}
+    \item \textbf{Link đăng ký}: "Chưa có tài khoản? Đăng ký ngay"
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Xác thực thông tin đăng nhập
+    \item Lưu phiên đăng nhập
+    \item Chuyển hướng sau khi đăng nhập thành công
+    \item Hiển thị thông báo lỗi khi đăng nhập thất bại
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Giao diện đơn giản, dễ sử dụng
+    \item Hiệu ứng hover trên các nút
+    \item Thông báo lỗi rõ ràng
+    \item Tự động điền thông tin nếu đã lưu
+\end{itemize}
+
+\section{Đăng ký}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Form đăng ký}:
+    \begin{itemize}
+        \item Trường họ tên
+        \item Trường email
+        \item Trường mật khẩu
+        \item Trường xác nhận mật khẩu
+        \item Checkbox đồng ý điều khoản
+        \item Nút "Đăng ký"
+    \end{itemize}
+    \item \textbf{Link đăng nhập}: "Đã có tài khoản? Đăng nhập"
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Kiểm tra tính hợp lệ của email
+    \item Kiểm tra độ mạnh của mật khẩu
+    \item Xác thực email
+    \item Tạo tài khoản mới
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Hướng dẫn rõ ràng
+    \item Thông báo lỗi trực quan
+    \item Xác thực email nhanh chóng
+\end{itemize}
+
+\section{Bạn bè}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Danh sách bạn bè}:
+    \begin{itemize}
+        \item Avatar bạn bè
+        \item Tên bạn bè
+        \item Trạng thái hoạt động
+        \item Nút tương tác
+    \end{itemize}
+    \item \textbf{Tìm kiếm bạn bè}:
+    \begin{itemize}
+        \item Thanh tìm kiếm
+        \item Kết quả tìm kiếm
+    \end{itemize}
+    \item \textbf{Lời mời kết bạn}:
+    \begin{itemize}
+        \item Thông báo lời mời
+        \item Nút chấp nhận/từ chối
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Gửi lời mời kết bạn
+    \item Chấp nhận/từ chối lời mời
+    \item Xem hoạt động của bạn bè
+    \item Chia sẻ nhạc với bạn bè
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Thông báo realtime
+    \item Dễ dàng tìm kiếm
+    \item Tương tác nhanh chóng
+\end{itemize}
+
+\section{Chỉnh sửa thông tin cá nhân}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Form chỉnh sửa}:
+    \begin{itemize}
+        \item Avatar
+        \item Họ tên
+        \item Email
+        \item Mật khẩu
+        \item Giới thiệu
+    \end{itemize}
+    \item \textbf{Nút lưu/hủy}
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Cập nhật thông tin
+    \item Thay đổi avatar
+    \item Đổi mật khẩu
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Xem trước avatar
+    \item Lưu tự động
+    \item Thông báo thành công
+\end{itemize}
+
+\section{Tin nhắn}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Danh sách chat}:
+    \begin{itemize}
+        \item Avatar người dùng
+        \item Tên người dùng
+        \item Tin nhắn mới nhất
+        \item Thời gian
+    \end{itemize}
+    \item \textbf{Khung chat}:
+    \begin{itemize}
+        \item Lịch sử tin nhắn
+        \item Khung nhập tin
+        \item Nút gửi
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Gửi tin nhắn
+    \item Xem trạng thái đã đọc
+    \item Chia sẻ nhạc
+    \item Thông báo tin mới
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Real-time chat
+    \item Thông báo desktop
+    \item Dễ dàng chia sẻ
+\end{itemize}
+
+\section{Tìm kiếm}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Thanh tìm kiếm}:
+    \begin{itemize}
+        \item Ô nhập từ khóa
+        \item Nút tìm kiếm
+    \end{itemize}
+    \item \textbf{Kết quả tìm kiếm}:
+    \begin{itemize}
+        \item Tab phân loại
+        \item Danh sách kết quả
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Tìm kiếm theo từ khóa
+    \item Lọc kết quả
+    \item Lịch sử tìm kiếm
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Gợi ý tìm kiếm
+    \item Tìm kiếm nhanh
+    \item Kết quả chính xác
+\end{itemize}
+
+\section{Theo dõi nghệ sĩ}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Trang nghệ sĩ}:
+    \begin{itemize}
+        \item Avatar nghệ sĩ
+        \item Tên nghệ sĩ
+        \item Nút theo dõi
+        \item Danh sách bài hát
+    \end{itemize}
+    \item \textbf{Thông báo}:
+    \begin{itemize}
+        \item Bài hát mới
+        \item Album mới
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Theo dõi/bỏ theo dõi
+    \item Nhận thông báo
+    \item Xem thông tin nghệ sĩ
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Dễ dàng theo dõi
+    \item Thông báo kịp thời
+    \item Cập nhật nhanh chóng
+\end{itemize}
+
+\section{Phát nhạc}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Player}:
+    \begin{itemize}
+        \item Nút điều khiển
+        \item Thanh tiến trình
+        \item Volume
+    \end{itemize}
+    \item \textbf{Thông tin bài hát}:
+    \begin{itemize}
+        \item Tên bài hát
+        \item Tên nghệ sĩ
+        \item Album
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Phát/dừng
+    \item Next/previous
+    \item Chỉnh volume
+    \item Chế độ lặp
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Điều khiển dễ dàng
+    \item Chuyển bài mượt mà
+    \item Giao diện trực quan
+\end{itemize}
+
+\section{Mua nhạc}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Trang mua nhạc}:
+    \begin{itemize}
+        \item Thông tin bài hát
+        \item Giá
+        \item Nút mua
+    \end{itemize}
+    \item \textbf{Giỏ hàng}:
+    \begin{itemize}
+        \item Danh sách bài hát
+        \item Tổng tiền
+        \item Nút thanh toán
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Thêm vào giỏ hàng
+    \item Thanh toán
+    \item Tải nhạc
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Thanh toán nhanh chóng
+    \item Tải nhạc dễ dàng
+    \item Quản lý đơn hàng
+\end{itemize}
+
+\section{Lịch sử mua hàng}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Danh sách đơn hàng}:
+    \begin{itemize}
+        \item Mã đơn hàng
+        \item Ngày mua
+        \item Tổng tiền
+        \item Trạng thái
+    \end{itemize}
+    \item \textbf{Chi tiết đơn hàng}:
+    \begin{itemize}
+        \item Danh sách bài hát
+        \item Giá từng bài
+        \item Thông tin thanh toán
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Xem lịch sử
+    \item Tải lại bài hát
+    \item Xuất hóa đơn
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Dễ dàng tra cứu
+    \item Tải nhạc nhanh chóng
+    \item Quản lý đơn hàng
+\end{itemize}
+
+\section{Tạo playlist}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Form tạo playlist}:
+    \begin{itemize}
+        \item Tên playlist
+        \item Mô tả
+        \item Ảnh bìa
+        \item Chế độ công khai/riêng tư
+    \end{itemize}
+    \item \textbf{Thêm bài hát}:
+    \begin{itemize}
+        \item Tìm kiếm bài hát
+        \item Kéo thả bài hát
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Tạo playlist mới
+    \item Thêm/xóa bài hát
+    \item Chia sẻ playlist
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Tạo playlist nhanh chóng
+    \item Dễ dàng quản lý
+    \item Chia sẻ đơn giản
+\end{itemize}
+
+\section{Quản lý playlist}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Danh sách playlist}:
+    \begin{itemize}
+        \item Ảnh bìa
+        \item Tên playlist
+        \item Số bài hát
+        \item Nút chỉnh sửa
+    \end{itemize}
+    \item \textbf{Chỉnh sửa playlist}:
+    \begin{itemize}
+        \item Thông tin cơ bản
+        \item Danh sách bài hát
+        \item Sắp xếp bài hát
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Chỉnh sửa thông tin
+    \item Quản lý bài hát
+    \item Xóa playlist
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Quản lý dễ dàng
+    \item Chỉnh sửa nhanh chóng
+    \item Sắp xếp linh hoạt
+\end{itemize}
+
+\section{Bài hát đã thích}
+\subsection{Giao diện}
+\begin{itemize}
+    \item \textbf{Danh sách bài hát}:
+    \begin{itemize}
+        \item Ảnh bìa
+        \item Tên bài hát
+        \item Tên nghệ sĩ
+        \item Nút bỏ thích
+    \end{itemize}
+    \item \textbf{Bộ lọc}:
+    \begin{itemize}
+        \item Sắp xếp
+        \item Tìm kiếm
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng}
+\begin{itemize}
+    \item Thêm/bỏ thích
+    \item Phát bài hát
+    \item Thêm vào playlist
+\end{itemize}
+
+\subsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Quản lý dễ dàng
+    \item Tìm kiếm nhanh chóng
+    \item Tương tác đơn giản
+\end{itemize}
+
+\end{document} 
