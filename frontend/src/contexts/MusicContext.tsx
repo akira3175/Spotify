@@ -1,16 +1,19 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from './AuthContext';
-import { MusicService } from '../services/MusicService';
 import { Song, Purchase, Playlist } from '../types/music';
 
 interface MusicContextType {
   currentTrack: Song | null;
   isPlaying: boolean;
+  progress: number;
+  duration: number;
   purchasedSongs: Song[];
   purchases: Purchase[];
   playlists: Playlist[];
   likedSongs: Song[];
+  volume: number;
+  setVolume: (volume: number) => void;
   play: (song: Song) => void;
   pause: () => void;
   resume: () => void;
@@ -29,6 +32,9 @@ interface MusicContextType {
 const MusicContext = createContext<MusicContextType | null>(null);
 
 export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [volume, setVolume] = useState(1);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [currentTrack, setCurrentTrack] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [purchasedSongs, setPurchasedSongs] = useState<Song[]>([]);
@@ -38,6 +44,8 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const stored = localStorage.getItem('likedSongs');
     return stored ? JSON.parse(stored) : [];
   });
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
 
@@ -45,41 +53,85 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem('likedSongs', JSON.stringify(likedSongs));
   }, [likedSongs]);
 
-  // Play: chỉ set state, không phát nhạc thực sự
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+  
+    const updateProgress = () => {
+      setProgress(audio.currentTime);
+      setDuration(audio.duration || 0);
+    };
+  
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setProgress(0);
+    };
+  
+    audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('ended', handleEnded);
+  
+    return () => {
+      audio.removeEventListener('timeupdate', updateProgress);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [audioRef.current]);  
+
   const play = (song: Song) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+
+    const audio = new Audio(song.audio);
+    audioRef.current = audio;
+    audio.play()
+      .then(() => setIsPlaying(true))
+      .catch((err) => {
+        console.error("Playback error:", err);
+        toast({ title: "Không thể phát bài hát", description: "Vui lòng thử lại sau." });
+        setIsPlaying(false);
+      });
+
+    audio.volume = volume;
+
     setCurrentTrack(song);
-    setIsPlaying(true);
   };
 
   const pause = () => {
-    if (audio) {
-      audio.pause();
+    if (audioRef.current) {
+      audioRef.current.pause();
     }
     setIsPlaying(false);
   };
 
   const resume = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+    }
     setIsPlaying(true);
   };
 
-  // Like/Unlike logic giữ nguyên
-  const likeSong = (song: any) => {
-    // Map từ kiểu API sang kiểu UI
+  const seek = (time: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+    }
+  };
+
+  const likeSong = (song: Song) => {
     const mappedSong = {
       id: song.id,
-      title: song.song_name || song.title,
-      artist: song.artist_name || song.artist || '',
-      artistId: song.artist || song.artistId,
-      duration: song.duration
-        ? typeof song.duration === 'number'
-          ? `${Math.floor(song.duration / 60)}:${(song.duration % 60).toString().padStart(2, '0')}`
-          : song.duration
-        : '',
-      album: song.source || song.album || '',
-      imageUrl: song.cover_image || song.imageUrl || '/placeholder.svg',
+      song_name: song.song_name,
+      artist: song.artist,
+      duration: song.duration,
+      album: song.album,
+      imageUrl: song.thumbnail || '/placeholder.svg',
       price: song.price || 0,
       audio: song.audio,
-      cover_image: song.cover_image,
+      cover_image: song.thumbnail,
+      genres: song.genres,
+      is_deleted: song.is_deleted,
+      release_date: song.release_date,
+      source: song.source,
+      lyrics_text: song.lyrics_text,
     };
     if (!likedSongs.find(s => s.id === mappedSong.id)) {
       setLikedSongs([...likedSongs, mappedSong]);
@@ -92,29 +144,38 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const isLiked = (songId: number) => likedSongs.some(s => s.id === songId);
 
-  // Các hàm khác giữ nguyên (purchase, playlist...)
-  // ...
+  const downloadSong = (song: Song, format: 'mp3' | 'mp4' | 'both') => {
+    window.open(song.audio, '_blank');
+  };
 
   return (
-    <MusicContext.Provider value={{
-      currentTrack,
-      isPlaying,
-      purchasedSongs,
-      purchases,
-      playlists,
-      likedSongs,
-      play,
-      pause,
-      resume,
-      purchaseSong: () => {}, // mock nếu không dùng
-      isPurchased: () => false, // mock nếu không dùng
-      createPlaylist: () => {}, // mock nếu không dùng
-      addSongToPlaylist: () => {}, // mock nếu không dùng
-      removeSongFromPlaylist: () => {}, // mock nếu không dùng
-      likeSong,
-      unlikeSong,
-      isLiked
-    }}>
+    <MusicContext.Provider
+      value={{
+        currentTrack,
+        isPlaying,
+        progress,
+        duration,
+        purchasedSongs,
+        purchases,
+        playlists,
+        likedSongs,
+        volume,
+        setVolume,
+        play,
+        pause,
+        resume,
+        seek,
+        downloadSong,
+        purchaseSong: () => {},
+        isPurchased: () => false,
+        createPlaylist: () => {},
+        addSongToPlaylist: () => {},
+        removeSongFromPlaylist: () => {},
+        likeSong,
+        unlikeSong,
+        isLiked
+      }}
+    >
       {children}
     </MusicContext.Provider>
   );

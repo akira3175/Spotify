@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const api: AxiosInstance = axios.create({
   baseURL: API_URL,
-  timeout: 5000,
+  timeout: 25000,
 });
 
 let isRefreshing = false;

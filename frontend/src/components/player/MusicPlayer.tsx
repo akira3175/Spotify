@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import {
   Play,
   Pause,
@@ -16,38 +15,7 @@ import NowPlayingInfo from './NowPlayingInfo';
 import { useMusic } from '@/contexts/MusicContext';
 
 const MusicPlayer = () => {
-  const { currentTrack, isPlaying, play, pause, resume, audio, seek } = useMusic();
-  const [progress, setProgress] = useState(0);
-  const [volume, setVolume] = useState(70);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-
-  // Đồng bộ thời gian phát và thời lượng với audio
-  useEffect(() => {
-    if (audio) {
-      // Cập nhật thời lượng khi audio sẵn sàng
-      const handleLoadedMetadata = () => {
-        setDuration(audio.duration);
-      };
-
-      // Cập nhật thời gian phát theo thời gian thực
-      const handleTimeUpdate = () => {
-        setCurrentTime(audio.currentTime);
-        setProgress((audio.currentTime / audio.duration) * 100 || 0);
-      };
-
-      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-      audio.addEventListener('timeupdate', handleTimeUpdate);
-
-      // Cập nhật âm lượng
-      audio.volume = volume / 100;
-
-      return () => {
-        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-        audio.removeEventListener('timeupdate', handleTimeUpdate);
-      };
-    }
-  }, [audio, volume]);
+  const { currentTrack, isPlaying, play, pause, resume, progress, duration, volume, seek, setVolume } = useMusic();
 
   // Chuyển đổi giây thành định dạng "phút:giây"
   const formatTime = (seconds: number) => {
@@ -59,18 +27,16 @@ const MusicPlayer = () => {
 
   // Xử lý khi người dùng thay đổi thanh tiến trình
   const handleProgressChange = (values: number[]) => {
-    if (audio && duration > 0) {
+    if (duration > 0) {
       const newProgress = values[0];
       const newTime = (newProgress / 100) * duration;
-      seek(newTime); // Tua nhạc
-      setCurrentTime(newTime);
-      setProgress(newProgress);
+      seek(newTime);
     }
   };
 
   // Xử lý thay đổi âm lượng
   const handleVolumeChange = (values: number[]) => {
-    setVolume(values[0]);
+    setVolume(values[0]/100);
   };
 
   // Xử lý khi nhấn Play/Pause
@@ -87,9 +53,9 @@ const MusicPlayer = () => {
   return (
     <div className="h-20 bg-spotify-elevated-base border-t border-zinc-800 px-4 flex items-center justify-between">
       <NowPlayingInfo 
-        image={currentTrack?.imageUrl || "/placeholder.svg"} 
-        title={currentTrack?.title || "Chưa phát nhạc"} 
-        artist={currentTrack?.artist || "Chọn một bài hát để nghe"} 
+        image={currentTrack?.thumbnail || "/placeholder.svg"} 
+        title={currentTrack?.song_name || "Chưa phát nhạc"} 
+        artist={currentTrack?.artist.artist_name || "Chọn một bài hát để nghe"} 
       />
 
       <div className="flex flex-col items-center justify-center max-w-3xl w-full">
@@ -120,10 +86,10 @@ const MusicPlayer = () => {
 
         <div className="flex items-center gap-2 w-full">
           <span className="text-xs text-spotify-subdued">
-            {formatTime(currentTime)}
+            {formatTime(progress)}
           </span>
           <Slider
-            value={[progress]}
+            value={[progress && duration ? (progress / duration) * 100 : 0]}
             max={100}
             step={1}
             className="w-full"
@@ -145,7 +111,7 @@ const MusicPlayer = () => {
         <div className="flex items-center gap-2 w-28">
           <Volume2 size={16} className="text-spotify-subdued" />
           <Slider
-            value={[volume]}
+            value={[volume*100]}
             max={100}
             step={1}
             onValueChange={handleVolumeChange}
