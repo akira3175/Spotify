@@ -75,7 +75,7 @@ const Sidebar = () => {
             playlists.map(playlist => (
               <PlaylistItem 
                 key={playlist.id}
-                name={playlist.name} 
+                name={playlist.playlist_name} 
                 type="playlist" 
                 id={playlist.id} 
               />

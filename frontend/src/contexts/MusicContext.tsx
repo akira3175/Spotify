@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from './AuthContext';
-import { Song, Purchase, Playlist } from '../types/music';
+import { Song, Purchase } from '../types/music';
+import { Playlist } from '../types/playlist';
+import { PlaylistService } from '@/services/PlaylistService';
 
 interface MusicContextType {
   currentTrack: Song | null;
@@ -58,6 +60,14 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       audioRef.current.volume = volume;
     }
   }, [volume]);
+
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      const playlists = await PlaylistService.getPlaylist();
+      setPlaylists(playlists);
+    };
+    fetchPlaylists();
+  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -154,6 +164,25 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     window.open(song.audio, '_blank');
   };
 
+  const createPlaylist = async (playlist_name: string) => {
+    const playlist = {
+      id: 0,
+      playlist_name: playlist_name,
+      description: 'New playlist',
+      is_public: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      is_deleted: false,
+      playlist_cover_url: '',
+      song: [],
+      price: 0,
+    }
+    const response = await PlaylistService.createPlaylist(playlist);
+    setPlaylists([...playlists, response]);
+    toast({ title: "Playlist đã được tạo", description: "Bạn có thể thêm bài hát vào playlist" });
+    return response;
+  }
+
   return (
     <MusicContext.Provider
       value={{
@@ -162,7 +191,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         progress,
         duration,
         purchasedSongs,
-        purchases,
+        purchases, 
         playlists,
         likedSongs,
         volume,
@@ -174,7 +203,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         downloadSong,
         purchaseSong: () => {},
         isPurchased: () => false,
-        createPlaylist: () => {},
+        createPlaylist,
         addSongToPlaylist: () => {},
         removeSongFromPlaylist: () => {},
         likeSong,

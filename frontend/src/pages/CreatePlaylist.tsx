@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMusic } from '@/contexts/MusicContext';
@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Music } from 'lucide-react';
-
+ 
 const playlistSchema = z.object({
   name: z.string().min(1, "Playlist name is required").max(50, "Playlist name must be 50 characters or less"),
 });

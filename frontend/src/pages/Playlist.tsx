@@ -1,5 +1,3 @@
-
-import React from 'react';
 import Sidebar from '@/components/sidebar/Sidebar';
 import TopBar from '@/components/TopBar';
 import MusicPlayer from '@/components/player/MusicPlayer';
@@ -7,50 +5,27 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useParams } from 'react-router-dom';
 import { Clock, Heart, MoreHorizontal, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import { Playlist } from '@/types/playlist';
+import { PlaylistService } from '@/services/PlaylistService';
+import { Song } from '@/types/music';
 
 const PlaylistPage = () => {
   const { id } = useParams<{ id: string }>();
   const playlistId = parseInt(id || '0');
-  
-  // Mock data - In a real app, this would come from an API based on the playlist ID
-  const playlists = [
-    { 
-      id: 1, 
-      title: "Today's Top Hits", 
-      description: "Ed Sheeran is on top of the Hottest 50!", 
-      image: "https://placehold.co/300x300?text=Top+Hits",
-      followers: "28,719,771",
-      owner: "Spotify",
-      totalSongs: 50,
-      duration: "2 hr 42 min" 
-    },
-    { 
-      id: 2, 
-      title: "RapCaviar", 
-      description: "New music from Drake, Lil Baby and more", 
-      image: "https://placehold.co/300x300?text=RapCaviar",
-      followers: "14,382,991",
-      owner: "Spotify",
-      totalSongs: 50,
-      duration: "2 hr 55 min" 
-    }
-  ];
+  const [playlist, setPlaylist] = useState<Playlist | null>(null);
+  const [tracks, setTracks] = useState<Song[]>([]);
 
-  const playlist = playlists.find(p => p.id === playlistId) || playlists[0];
-  
-  // Mock tracks data
-  const tracks = [
-    { id: 1, title: "Shape of You", artist: "Ed Sheeran", album: "÷", added: "3 days ago", duration: "3:54", plays: "3,157,293,591" },
-    { id: 2, title: "Blinding Lights", artist: "The Weeknd", album: "After Hours", added: "5 days ago", duration: "3:22", plays: "3,023,390,499" },
-    { id: 3, title: "Dance Monkey", artist: "Tones and I", album: "The Kids Are Coming", added: "1 week ago", duration: "3:29", plays: "2,804,184,013" },
-    { id: 4, title: "Someone You Loved", artist: "Lewis Capaldi", album: "Divinely Uninspired...", added: "2 weeks ago", duration: "3:02", plays: "2,578,058,287" },
-    { id: 5, title: "Stay", artist: "The Kid LAROI, Justin Bieber", album: "F*CK LOVE 3+", added: "3 weeks ago", duration: "2:21", plays: "2,490,501,325" },
-    { id: 6, title: "Rockstar", artist: "Post Malone ft. 21 Savage", album: "beerbongs & bentleys", added: "1 month ago", duration: "3:38", plays: "2,477,723,263" },
-    { id: 7, title: "One Dance", artist: "Drake ft. Wizkid & Kyla", album: "Views", added: "1 month ago", duration: "2:54", plays: "2,425,538,987" },
-    { id: 8, title: "Closer", artist: "The Chainsmokers ft. Halsey", album: "Collage", added: "2 months ago", duration: "4:04", plays: "2,415,319,845" },
-    { id: 9, title: "Sunflower", artist: "Post Malone, Swae Lee", album: "Spider-Man: Into the Spider-Verse", added: "2 months ago", duration: "2:38", plays: "2,353,739,341" },
-    { id: 10, title: "Believer", artist: "Imagine Dragons", album: "Evolve", added: "3 months ago", duration: "3:24", plays: "2,326,078,689" }
-  ];
+  useEffect(() => {
+    const fetchPlaylist = async () => {
+      const playlist = await PlaylistService.getPlaylistById(playlistId);
+      setPlaylist(playlist);
+      setTracks(playlist.song);
+      console.log(playlist);
+      console.log(tracks);
+    };
+    fetchPlaylist();
+  }, [playlistId]);
 
   return (
     <div className="h-screen flex flex-col bg-spotify-base">
@@ -63,23 +38,23 @@ const PlaylistPage = () => {
             <div className="flex flex-col md:flex-row items-center md:items-end gap-6 p-8 bg-gradient-to-b from-zinc-700 to-spotify-base">
               <div className="flex-shrink-0 h-60 w-60 shadow-2xl">
                 <img 
-                  src={playlist.image} 
-                  alt={playlist.title} 
+                  src={playlist?.song[0]?.thumbnail || "/placeholder.svg"} 
+                  alt={playlist?.playlist_name} 
                   className="h-full w-full object-cover" 
                 />
               </div>
               
               <div>
                 <p className="uppercase text-xs font-bold">Playlist</p>
-                <h1 className="text-5xl md:text-8xl font-bold my-3">{playlist.title}</h1>
-                <p className="text-sm text-zinc-400 mb-6">{playlist.description}</p>
+                <h1 className="text-5xl md:text-8xl font-bold my-3">{playlist?.playlist_name}</h1>
+                <p className="text-sm text-zinc-400 mb-6">{playlist?.description}</p>
                 <div className="flex items-center text-sm">
-                  <span className="font-bold">{playlist.owner}</span>
+                  <span className="font-bold">{playlist?.owner}</span>
                   <span className="mx-1">•</span>
-                  <span>{playlist.followers} likes</span>
+                  <span>{playlist?.followers} likes</span>
                   <span className="mx-1">•</span>
-                  <span>{playlist.totalSongs} songs,</span>
-                  <span className="ml-1 text-zinc-400">{playlist.duration}</span>
+                  <span>{playlist?.totalSongs} songs,</span>
+                  <span className="ml-1 text-zinc-400">{playlist?.duration}</span>
                 </div>
               </div>
             </div>
@@ -105,7 +80,7 @@ const PlaylistPage = () => {
                     <th className="px-4 py-2 w-12">#</th>
                     <th className="px-4 py-2">TITLE</th>
                     <th className="px-4 py-2">ALBUM</th>
-                    <th className="px-4 py-2">DATE ADDED</th>
+                    <th className="px-4 py-2">DATE RELEASED</th>
                     <th className="px-4 py-2 text-right">
                       <Clock size={16} />
                     </th>
@@ -119,19 +94,19 @@ const PlaylistPage = () => {
                         <div className="flex items-center">
                           <div className="mr-3">
                             <img 
-                              src={`https://placehold.co/40x40?text=${track.id}`} 
-                              alt={track.title}
+                              src={track.thumbnail} 
+                              alt={track.song_name}
                               className="w-10 h-10" 
                             />
                           </div>
                           <div>
-                            <p className="font-medium">{track.title}</p>
-                            <p className="text-sm text-zinc-400">{track.artist}</p>
+                            <p className="font-medium">{track.song_name}</p>
+                            <p className="text-sm text-zinc-400">{track.artist.artist_name}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-zinc-400">{track.album}</td>
-                      <td className="px-4 py-3 text-zinc-400">{track.added}</td>
+                      <td className="px-4 py-3 text-zinc-400">{track.song_name}</td>
+                      <td className="px-4 py-3 text-zinc-400">{new Date(track.release_date).toLocaleDateString()}</td>
                       <td className="px-4 py-3 text-zinc-400 text-right">{track.duration}</td>
                     </tr>
                   ))}

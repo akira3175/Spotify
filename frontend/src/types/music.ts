@@ -30,10 +30,3 @@ export type Purchase = {
   date: Date;
   amount: number;
 };
-
-export type Playlist = {
-  id: number;
-  name: string;
-  songs: Song[];
-  createdAt: Date;
-};
