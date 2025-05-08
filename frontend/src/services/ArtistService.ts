@@ -1,4 +1,3 @@
-import { promises } from 'dns';
 import { api } from '../config/api';
 import { Artist } from '@/types/artist';
 

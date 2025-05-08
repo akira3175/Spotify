@@ -1,5 +1,5 @@
 import { api } from '../config/api';
-import { Song } from '@/types/song';
+import { Song } from '@/types/music';
 
 export class SongService {
     static async getSong(): Promise<Song>{
