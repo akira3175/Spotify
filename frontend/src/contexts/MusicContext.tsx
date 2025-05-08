@@ -54,6 +54,12 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [likedSongs]);
 
   useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
   
