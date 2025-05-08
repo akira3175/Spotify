@@ -1,19 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { SongService } from '@/services/SongService';
-import { ArtistService } from '@/services/ArtistService';
-import { Song } from '@/types/song';
-import { Artist } from '@/types/artist';
+import { Song } from '@/types/music';
 import { Play, Pause, Heart, MoreHorizontal, Clock } from 'lucide-react';
 import { useMusic } from '@/contexts/MusicContext';
 
 const SongDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [song, setSong] = useState<Song | null>(null);
-  const [artist, setArtist] = useState<Artist | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -26,10 +22,6 @@ const SongDetail = () => {
         const songData = await SongService.getSongById(parseInt(id));
         if (!songData) throw new Error('Song not found');
         setSong(songData);
-        if (songData.artist) {
-          const artistData = await ArtistService.getArtistById(songData.artist);
-          setArtist(artistData);
-        }
         setLoading(false);
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -55,14 +47,18 @@ const SongDetail = () => {
     } else {
       const songToPlay = {
         id: song.id,
-        title: song.song_name,
-        artist: artist?.artist_name || 'Unknown Artist',
-        artistId: song.artist,
-        duration: `${Math.floor(song.duration / 60)}:${(song.duration % 60).toString().padStart(2, '0')}`,
-        album: song.source,
-        imageUrl: song.cover_image || '/placeholder.svg',
+        song_name: song.song_name,
+        artist: song.artist,
+        duration: song.duration,
+        album: song.album,
         price: 0,
-        audio: song.audio
+        audio: song.audio,
+        thumbnail: song.thumbnail || undefined,
+        genres: song.genres,
+        is_deleted: song.is_deleted,
+        release_date: song.release_date,
+        source: song.source,
+        lyrics_text: song.lyrics_text,
       };
       
       console.log('Song to play:', songToPlay);
@@ -99,7 +95,7 @@ const SongDetail = () => {
         <div className="flex flex-col md:flex-row items-center md:items-end gap-8 md:gap-12 bg-gradient-to-b from-spotify-green/80 to-spotify-base/90 rounded-xl p-6 md:p-10 shadow-lg mb-8">
           {/* Cover */}
           <img
-            src={song.cover_image || '/placeholder.svg'}
+            src={song.thumbnail || '/placeholder.svg'}
             alt={song.song_name}
             className="w-44 h-44 md:w-60 md:h-60 rounded-lg shadow-2xl object-cover bg-zinc-900"
           />
@@ -108,7 +104,7 @@ const SongDetail = () => {
             <span className="uppercase text-xs font-bold text-white/80 tracking-widest">Song</span>
             <h1 className="text-4xl md:text-6xl font-extrabold my-2 text-white leading-tight">{song.song_name}</h1>
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-white/90 text-lg font-medium">{artist?.artist_name || 'Unknown Artist'}</span>
+              <span className="text-white/90 text-lg font-medium">{song.artist.artist_name || 'Unknown Artist'}</span>
               <span className="text-white/60 text-base mx-2">•</span>
               <span className="text-white/60 text-base">{song.release_date ? new Date(song.release_date).getFullYear() : ''}</span>
             </div>
@@ -159,7 +155,7 @@ const SongDetail = () => {
           </div>
           <div className="flex-1">
             <div className="font-medium">{song.song_name}</div>
-            <div className="text-sm text-zinc-400">{artist?.artist_name || 'Unknown Artist'}</div>
+            <div className="text-sm text-zinc-400">{song.artist.artist_name || 'Unknown Artist'}</div>
           </div>
           <div className="w-32 flex items-center justify-end">
             <Clock className="h-4 w-4 mr-2" />

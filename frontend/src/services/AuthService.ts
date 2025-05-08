@@ -1,4 +1,3 @@
-// src/services/authService.ts
 import { api } from '../config/api';
 import { TokenService } from './TokenService';
 import { User } from '../types/user';

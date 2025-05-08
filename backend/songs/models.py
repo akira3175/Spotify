@@ -11,15 +11,16 @@ class Genres(models.Model):
 class Song(models.Model):
     artist = models.ForeignKey('artists.Artist', on_delete=models.CASCADE)
     song_name = models.CharField(max_length=255, null=False)
-    duration = models.IntegerField(null=True, blank=True)  # Giả sử là số giây
+    duration = models.IntegerField(null=True, blank=True)
     audio = models.FileField(upload_to='audio/', null=True, blank=True)
+    thumbnail = models.FileField(upload_to='thumbnails/', null=True, blank=True)
     plays = models.IntegerField(default=0)
     lyrics_text = models.TextField(null=True, blank=True)
     source = models.TextField(null=True, blank=True)
     genres = models.ManyToManyField(Genres)
     is_deleted = models.BooleanField(default=False)
     release_date = models.DateField(null=True, blank=True, default=timezone.now)
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     
 
     def __str__(self):

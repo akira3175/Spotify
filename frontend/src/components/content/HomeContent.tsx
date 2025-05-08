@@ -4,9 +4,7 @@ import PlaylistGrid from './PlaylistGrid';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { SongService } from '@/services/SongService';
 import { ArtistService } from '@/services/ArtistService';
-import { Song } from '@/types/song';
-import { Artist } from '@/types/artist';
-import { useMusic } from '@/contexts/MusicContext';
+import { Song } from '@/types/music';
 
 interface Playlist {
   id: string;
@@ -40,10 +38,8 @@ const localSongs: Playlist[] = [
 const HomeContent = () => {
   const navigate = useNavigate();
   const [songs, setSongs] = useState<Song[]>([]);
-  const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { likedSongs } = useMusic();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,11 +48,6 @@ const HomeContent = () => {
         const songsData = await SongService.getSong();
         console.log('Songs data:', songsData);
         setSongs(Array.isArray(songsData) ? songsData : [songsData]);
-
-        console.log('Fetching artists...');
-        const artistsData = await ArtistService.getArtists();
-        console.log('Artists data:', artistsData);
-        setArtists(Array.isArray(artistsData) ? artistsData : [artistsData]);
 
         setLoading(false);
       } catch (err) {
@@ -68,11 +59,6 @@ const HomeContent = () => {
 
     fetchData();
   }, []);
-
-  const getArtistName = (artistId: number) => {
-    const artist = artists.find(a => a.id === artistId);
-    return artist ? artist.artist_name : 'Unknown Artist';
-  };
 
   const handleSongClick = (songId: string) => {
     navigate(`/song/${songId}`);
@@ -86,8 +72,8 @@ const HomeContent = () => {
   const apiSongs: Playlist[] = songs.map(song => ({
     id: song.id.toString(),
     title: song.song_name,
-    description: getArtistName(song.artist),
-    image: '/placeholder.svg'
+    description: song.artist.artist_name,
+    image: song.thumbnail || '/placeholder.svg'
   }));
 
   if (loading) {
