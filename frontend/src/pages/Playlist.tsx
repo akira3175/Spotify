@@ -5,24 +5,29 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useParams } from 'react-router-dom';
 import { Clock, Heart, MoreHorizontal, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Playlist } from '@/types/playlist';
 import { PlaylistService } from '@/services/PlaylistService';
 import { Song } from '@/types/music';
+import { useMusic } from '@/contexts/MusicContext';
 
 const PlaylistPage = () => {
   const { id } = useParams<{ id: string }>();
   const playlistId = parseInt(id || '0');
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const [tracks, setTracks] = useState<Song[]>([]);
+  const { play } = useMusic();
+
+  const playSong = () => {
+    console.log(tracks);
+    play(tracks[0]);
+  }
 
   useEffect(() => {
     const fetchPlaylist = async () => {
       const playlist = await PlaylistService.getPlaylistById(playlistId);
       setPlaylist(playlist);
       setTracks(playlist.song);
-      console.log(playlist);
-      console.log(tracks);
     };
     fetchPlaylist();
   }, [playlistId]);
@@ -62,8 +67,10 @@ const PlaylistPage = () => {
             {/* Playlist controls and tracks */}
             <div className="px-8">
               <div className="flex items-center gap-6 py-6">
-                <Button className="rounded-full w-14 h-14 flex items-center justify-center bg-spotify-bright-accent hover:scale-105 hover:bg-spotify-bright-accent transition-transform">
-                  <Play size={24} fill="black" className="text-black ml-1" />
+                <Button className="rounded-full w-14 h-14 flex items-center justify-center bg-spotify-bright-accent hover:scale-105 hover:bg-spotify-bright-accent transition-transform"
+                  onClick={playSong}
+                >
+                  <Play size={24} fill="black" className="text-black ml-1"/>
                 </Button>
                 <Button variant="ghost" className="rounded-full p-2 hover:scale-105 transition-transform">
                   <Heart size={32} className="text-spotify-subdued hover:text-white" />
@@ -88,7 +95,7 @@ const PlaylistPage = () => {
                 </thead>
                 <tbody>
                   {tracks.map((track, index) => (
-                    <tr key={track.id} className="hover:bg-zinc-800 group">
+                    <tr key={track.id} className="hover:bg-zinc-800 group" onClick={() => playSong(track)}>
                       <td className="px-4 py-3 text-zinc-400 group-hover:text-white">{index + 1}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center">
