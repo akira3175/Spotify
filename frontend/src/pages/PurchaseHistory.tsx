@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMusic } from '@/contexts/MusicContext';
@@ -22,16 +22,23 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Play, Music, Download, Share } from 'lucide-react';
 import { Song } from '@/types/music';
+import { Order } from '@/types/purchase';
 
 const PurchaseHistory = () => {
   const { isAuthenticated } = useAuth();
-  const { purchases, play, downloadSong } = useMusic();
+  const [purchases, setPurchases] = useState<Order[]>([]);
+  const { play, downloadSong, getPurchases } = useMusic();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
     }
+    const fetchPurchases = async () => {
+      const purchases = await getPurchases();
+      setPurchases(purchases);
+    };
+    fetchPurchases();
   }, [isAuthenticated, navigate]);
 
   const fetchAudioUrl = async (songId: string | number): Promise<string> => {
@@ -48,8 +55,8 @@ const PurchaseHistory = () => {
 
   const handlePlay = async (song: Song) => {
     try {
-      const audioUrl = song.audioUrl || (await fetchAudioUrl(song.id));
-      play({ ...song, audioUrl });
+      const audioUrl = song.audio || (await fetchAudioUrl(song.id));
+      play({ ...song, audio: audioUrl });
     } catch (error) {
       console.error('PurchaseHistory: Error playing song:', error);
     }
@@ -73,7 +80,7 @@ const PurchaseHistory = () => {
             </div>
             <div>
               <p className="text-zinc-400">Total spent</p>
-              <p className="text-xl font-bold">${purchases.reduce((sum, p) => sum + p.amount, 0).toFixed(2)}</p>
+              <p className="text-xl font-bold">${purchases.reduce((sum, p) => sum + Number(p.song.price), 0).toFixed(2)}</p>
             </div>
           </div>
         </div>
@@ -97,10 +104,10 @@ const PurchaseHistory = () => {
                   <TableRow key={purchase.id}>
                     <TableCell>
                       <div className="w-10 h-10 bg-zinc-800 rounded flex items-center justify-center overflow-hidden">
-                        {purchase.song.imageUrl ? (
+                        {purchase.song.thumbnail ? (
                           <img 
-                            src={purchase.song.imageUrl} 
-                            alt={purchase.song.title} 
+                            src={purchase.song.thumbnail} 
+                            alt={purchase.song.song_name} 
                             className="w-full h-full object-cover" 
                           />
                         ) : (
@@ -110,18 +117,18 @@ const PurchaseHistory = () => {
                     </TableCell>
                     <TableCell 
                       className="font-medium cursor-pointer hover:underline"
-                      onClick={() => navigate(`/song/${purchase.songId}`)}
+                      onClick={() => navigate(`/song/${purchase.song.id}`)}
                     >
-                      {purchase.song.title}
+                      {purchase.song.song_name}
                     </TableCell>
                     <TableCell 
                       className="cursor-pointer hover:underline" 
-                      onClick={() => navigate(`/artist/${purchase.song.artistId}`)}
+                      onClick={() => navigate(`/artist/${purchase.song.artist.id}`)}
                     >
-                      {purchase.song.artist}
+                      {purchase.song.artist.artist_name}
                     </TableCell>
-                    <TableCell>{format(new Date(purchase.date), 'MMM d, yyyy')}</TableCell>
-                    <TableCell className="text-right">${purchase.amount.toFixed(2)}</TableCell>
+                    <TableCell>{format(new Date(purchase.date_buy), 'MMM d, yyyy')}</TableCell>
+                    <TableCell className="text-right">${Number(purchase.song.price).toFixed(2)}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
                         <Button 

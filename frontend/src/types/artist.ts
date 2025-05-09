@@ -1,4 +1,5 @@
 import {User} from "./user"
+import { Song } from "./music"
 
 export type Artist = {
     id: number ,
@@ -7,5 +8,6 @@ export type Artist = {
     artist_picture_url: string,
     is_deleted: boolean,
     user: User,
-    genres: number[]
+    genres: number[],
+    songs: Song[]
 }

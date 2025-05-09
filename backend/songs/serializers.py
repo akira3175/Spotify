@@ -9,6 +9,11 @@ class SongSerializer(serializers.ModelSerializer):
         model = Song
         fields = '__all__'
 
+class SongSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Song
+        fields = '__all__'
+
 class GenresSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genres

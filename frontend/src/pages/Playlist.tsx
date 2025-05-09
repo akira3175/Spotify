@@ -95,7 +95,7 @@ const PlaylistPage = () => {
                 </thead>
                 <tbody>
                   {tracks.map((track, index) => (
-                    <tr key={track.id} className="hover:bg-zinc-800 group" onClick={() => playSong(track)}>
+                    <tr key={track.id} className="hover:bg-zinc-800 group" onClick={() => play(track)}>
                       <td className="px-4 py-3 text-zinc-400 group-hover:text-white">{index + 1}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center">

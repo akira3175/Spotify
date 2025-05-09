@@ -23,10 +23,3 @@ export type Song = {
   thumbnail?: string;
 };
 
-export type Purchase = {
-  id: number;
-  songId: number;
-  song: Song;
-  date: Date;
-  amount: number;
-};

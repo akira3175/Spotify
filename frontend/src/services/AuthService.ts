@@ -78,7 +78,8 @@ export class AuthService {
 
   static async updateUserProfile(profileData: Partial<User>): Promise<User> {
     try {
-      const response = await api.put('/users/update-user/', profileData); // Không set headers
+      const response = await api.put('/users/update-user/', profileData); 
+      TokenService.saveUser(response.data);
       return response.data;
     } catch (error) {
       console.error('Update user profile error:', error);

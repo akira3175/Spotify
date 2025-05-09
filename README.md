@@ -35,22 +35,33 @@ npm install
 #### Backend
 Tạo file `.env` trong thư mục backend với nội dung:
 ```
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/spotify
-JWT_SECRET=your_jwt_secret
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_REGION=
+AWS_STORAGE_BUCKET_NAME=
+AWS_S3_CUSTOM_DOMAIN=
+REDIS_HOST=
+REDIS_PORT=19525
+REDIS_PASSWORD=
+DB_NAME=spotify
+DB_HOST=
+DB_PORT=3306
+DB_USER=
+DB_PASSWORD=
 ```
 
 #### Frontend
 Tạo file `.env` trong thư mục frontend với nội dung:
 ```
-REACT_APP_API_URL=http://localhost:5000
+VITE_API_URL=http://127.0.0.1:8000/
+VITE_WS_URL=ws://127.0.0.1:8000/ws/
 ```
 
 ### 4. Khởi Chạy Ứng Dụng
 ```bash
 # Khởi chạy backend
 cd backend
-npm start
+daphne backend.asgi:application
 
 # Khởi chạy frontend (trong terminal mới)
 cd frontend

@@ -13,7 +13,7 @@ class PlaylistListCreateView(generics.ListCreateAPIView):
 
     # Cho phép tìm kiếm
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name', 'description']  # Các trường cho phép tìm kiếm
+    search_fields = ['playlist_name', 'description']  # Các trường cho phép tìm kiếm
 
     def perform_create(self, serializer):
         playlist = serializer.save(user=self.request.user)
