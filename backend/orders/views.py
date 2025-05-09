@@ -28,3 +28,11 @@ class PaymentMethodListCreateView(generics.ListCreateAPIView):
 class PaymentMethodRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = PaymentMethod.objects.filter()
     serializer_class = PaymentMethodSerializer
+
+
+class CheckSongPaidView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, song_id):
+        has_paid = Order.objects.filter(user=request.user, song_id=song_id).exists()
+        return Response({'has_paid': has_paid})

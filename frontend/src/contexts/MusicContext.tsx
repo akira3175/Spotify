@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from './AuthContext';
-import { Song, Purchase } from '../types/music';
+import { Song } from '../types/music';
 import { Playlist } from '../types/playlist';
 import { PlaylistService } from '@/services/PlaylistService';
+import { Order } from '@/types/purchase';
+import { PurchaseService } from '@/services/PurchaseService';
 
 interface MusicContextType {
   currentTrack: Song | null;
@@ -11,7 +13,7 @@ interface MusicContextType {
   progress: number;
   duration: number;
   purchasedSongs: Song[];
-  purchases: Purchase[];
+  purchases: Order[];
   playlists: Playlist[];
   likedSongs: Song[];
   volume: number;
@@ -21,8 +23,9 @@ interface MusicContextType {
   resume: () => void;
   seek: (time: number) => void;
   downloadSong: (song: Song, format: 'mp3' | 'mp4' | 'both') => void;
-  purchaseSong: (song: Song) => void;
-  isPurchased: (songId: number) => boolean;
+  purchaseSong: (song: Song) => Promise<Order>;
+  isPurchased: (songId: number) => Promise<boolean>;
+  getPurchases: () => Promise<Order[]>;
   createPlaylist: (name: string) => Promise<Playlist>;
   addSongToPlaylist: (songId: number, playlist: Playlist) => Promise<Playlist>;
   removeSongFromPlaylist: (songId: number, playlistId: number) => void;
@@ -40,7 +43,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [currentTrack, setCurrentTrack] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [purchasedSongs, setPurchasedSongs] = useState<Song[]>([]);
-  const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [purchases, setPurchases] = useState<Order[]>([]);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [likedSongs, setLikedSongs] = useState<Song[]>(() => {
     const stored = localStorage.getItem('likedSongs');
@@ -93,7 +96,16 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, [audioRef.current]);  
 
-  const play = (song: Song) => {
+  const play = async (song: Song) => {
+    const hasPaid = await isPurchased(song.id);
+    console.log(hasPaid);
+    console.log(typeof hasPaid);
+    console.log(song)
+    if (song.price > 0 && !hasPaid) {
+      toast({ title: "Bài hát này yêu cầu mua", description: "Bạn có thể mua bài hát tại đây" });
+      return;
+    }
+
     if (audioRef.current) {
       audioRef.current.pause();
     }
@@ -192,6 +204,23 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     toast({ title: "Bài hát đã được thêm vào playlist", description: "Bạn có thể xem playlist tại đây" });
     return response;
   }
+
+  const isPurchased = async (songId: number): Promise<boolean> => {
+    const hasPaid = await PurchaseService.checkSongPaid(songId);
+    return hasPaid;
+  }
+
+  const getPurchases = async (): Promise<Order[]> => {
+    const purchases = await PurchaseService.getOrders();
+    return purchases;
+  }
+
+  const purchaseSong = async (song: Song): Promise<Order> => {
+    const purchase = await PurchaseService.createOrder(song);
+    setPurchases([...purchases, purchase]);
+    toast({ title: "Bài hát đã được mua", description: "Bạn có thể xem lịch sử mua hàng tại đây" });
+    return purchase;
+  }
   
 
   return (
@@ -212,8 +241,9 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         resume,
         seek,
         downloadSong,
-        purchaseSong: () => {},
-        isPurchased: () => false,
+        purchaseSong,
+        isPurchased,
+        getPurchases,
         createPlaylist,
         addSongToPlaylist,
         removeSongFromPlaylist: () => {},

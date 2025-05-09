@@ -19,7 +19,6 @@ const Sidebar = () => {
       try {
         const artists = await ArtistService.followedArtist();
         setFollowedArtists(artists);
-        console.log(artists);
       } catch (error) {
         console.error('Error fetching followed artists:', error);
       }

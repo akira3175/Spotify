@@ -44,9 +44,7 @@ const HomeContent = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('Fetching songs...');
         const songsData = await SongService.getSong();
-        console.log('Songs data:', songsData);
         setSongs(Array.isArray(songsData) ? songsData : [songsData]);
 
         setLoading(false);
@@ -62,11 +60,6 @@ const HomeContent = () => {
 
   const handleSongClick = (songId: string) => {
     navigate(`/song/${songId}`);
-  };
-
-  const handlePlaylistClick = (id: string) => {
-    // Handle playlist click here
-    console.log('Playlist clicked:', id);
   };
 
   const apiSongs: Playlist[] = songs.map(song => ({

@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -51,7 +49,7 @@ const SongDetail = () => {
         artist: song.artist,
         duration: song.duration,
         album: song.album,
-        price: 0,
+        price: song.price,
         audio: song.audio,
         thumbnail: song.thumbnail || undefined,
         genres: song.genres,
