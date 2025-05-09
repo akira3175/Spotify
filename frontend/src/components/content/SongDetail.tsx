@@ -7,6 +7,7 @@ import type { Song } from "@/types/music"
 import { Play, Pause, Heart, MoreHorizontal, Clock } from "lucide-react"
 import { useMusic } from "@/contexts/MusicContext"
 import { AddToPlaylistButton } from "../playlist/AddToPlaylistButton"
+import SongPurchaseDialog from "../SongPurchaseDialog"
 
 const SongDetail = () => {
   const { id } = useParams<{ id: string }>()
@@ -138,6 +139,7 @@ const SongDetail = () => {
           <div className="w-8 text-center">#</div>
           <div className="flex-1">Title</div>
           <div className="w-32">Duration</div>
+          <div className="w-32">Buy</div>
         </div>
 
         <div
@@ -162,6 +164,9 @@ const SongDetail = () => {
           <div className="w-32 flex items-center justify-end">
             <Clock className="h-4 w-4 mr-2" />
             {`${Math.floor(song.duration / 60)}:${(song.duration % 60).toString().padStart(2, "0")}`}
+          </div>
+          <div className="w-32 flex items-center justify-end">
+            <SongPurchaseDialog song={song} artist={song.artist} price={song.price} />
           </div>
         </div>
 
