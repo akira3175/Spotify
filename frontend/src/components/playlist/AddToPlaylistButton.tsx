@@ -14,6 +14,7 @@ import type { Song } from "@/types/music"
 import { PlusCircle, ListPlus } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { CreatePlaylistModal } from "./CreatePlaylistModal"
+import { useMusic } from "@/contexts/MusicContext"
 
 interface AddToPlaylistButtonProps {
   song: Song
@@ -25,6 +26,7 @@ export function AddToPlaylistButton({ song }: AddToPlaylistButtonProps) {
   const [addingToPlaylist, setAddingToPlaylist] = useState<number | null>(null)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const { toast } = useToast()
+  const { addSongToPlaylist } = useMusic()
 
   const fetchUserPlaylists = async () => {
     try {
@@ -48,7 +50,7 @@ export function AddToPlaylistButton({ song }: AddToPlaylistButtonProps) {
     fetchUserPlaylists()
   }, [toast])
 
-  const addSongToPlaylist = async (playlistId: number) => {
+  const addSongToPlaylistHandler = async (playlistId: number) => {
     try {
       setAddingToPlaylist(playlistId)
 
@@ -68,11 +70,7 @@ export function AddToPlaylistButton({ song }: AddToPlaylistButtonProps) {
       }
 
       // Add the song to the playlist
-      const updatedSongs = [...playlist.song.map(s => s.id), song.id];
-      const updatedPlaylist = { ...playlist, song_id: updatedSongs };
-
-      // Update the playlist
-      await PlaylistService.updatePlaylist(playlistId, updatedPlaylist as unknown as Playlist)
+      await addSongToPlaylist(song.id, playlist)
 
       toast({
         title: "Success",
@@ -119,7 +117,7 @@ export function AddToPlaylistButton({ song }: AddToPlaylistButtonProps) {
             playlists.map((playlist) => (
               <DropdownMenuItem
                 key={playlist.id}
-                onClick={() => addSongToPlaylist(playlist.id)}
+                onClick={() => addSongToPlaylistHandler(playlist.id)}
                 disabled={addingToPlaylist === playlist.id}
                 className="flex items-center justify-between cursor-pointer hover:bg-zinc-800"
               >

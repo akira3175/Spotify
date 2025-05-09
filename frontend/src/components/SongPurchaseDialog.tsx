@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CreditCard, Music } from 'lucide-react';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
@@ -18,10 +17,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
-
+import { Artist } from '@/types/artist';
+import { Song } from '@/types/music';
 interface SongPurchaseDialogProps {
-  song: string;
-  artist: string;
+  song: Song;
+  artist: Artist | null;
   price: number;
   onPurchase?: () => void;
 }
@@ -72,14 +72,14 @@ const SongPurchaseDialog = ({ song, artist, price, onPurchase }: SongPurchaseDia
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="text-white bg-transparent border-green-500 hover:bg-green-500 hover:text-black">
-          ${price.toFixed(2)}
+          ${Number(price).toFixed(2)}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Purchase Song</DialogTitle>
           <DialogDescription>
-            You're about to purchase "{song}" by {artist} for ${price.toFixed(2)}
+            You're about to purchase "{song.song_name}" by {artist?.artist_name} for ${Number(price).toFixed(2)}
           </DialogDescription>
         </DialogHeader>
         
@@ -88,9 +88,9 @@ const SongPurchaseDialog = ({ song, artist, price, onPurchase }: SongPurchaseDia
             <Music size={40} className="text-green-500" />
           </div>
           <div className="ml-4">
-            <p className="font-medium">{song}</p>
-            <p className="text-sm text-zinc-400">{artist}</p>
-            <p className="font-bold text-green-500 mt-1">${price.toFixed(2)}</p>
+            <p className="font-medium">{song.song_name}</p>
+            <p className="text-sm text-zinc-400">{artist?.artist_name}</p>
+            <p className="font-bold text-green-500 mt-1">${Number(price).toFixed(2)}</p>
           </div>
         </div>
 
@@ -171,7 +171,7 @@ const SongPurchaseDialog = ({ song, artist, price, onPurchase }: SongPurchaseDia
                 className="bg-green-500 hover:bg-green-600 text-black"
                 disabled={isProcessing}
               >
-                {isProcessing ? "Processing..." : `Pay $${price.toFixed(2)}`}
+                {isProcessing ? "Processing..." : `Pay $${Number(price).toFixed(2)}`}
               </Button>
             </DialogFooter>
           </form>

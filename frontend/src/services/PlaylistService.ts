@@ -11,6 +11,14 @@ export class PlaylistService {
         }
     }
 
+    static async searchPlaylist(query: string): Promise<Playlist[]> {
+        try {
+            const response = await api.get(`/playlists/?search=${query}`);
+            return response.data;
+        } catch (error) {
+            throw new Error('Failed to search playlists');
+        }
+    }
     static async getPlaylistById(id: number): Promise<Playlist> {
         try {
             const response = await api.get(`/playlists/${id}/`);

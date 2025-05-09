@@ -1,4 +1,4 @@
-import { Song, Playlist, Purchase } from '../types/music';
+import { Song, Purchase } from '../types/music';
 import { api } from '@/config/api';
 
 // Local Storage keys
@@ -6,31 +6,13 @@ const CURRENT_TRACK_KEY = 'spotify_current_track';
 const PLAYING_STATE_KEY = 'spotify_playing_state';
 const PURCHASED_SONGS_KEY = 'spotify_purchased_songs';
 const PURCHASES_KEY = 'spotify_purchases';
-const PLAYLISTS_KEY = 'spotify_playlists';
 const QUEUE_KEY = 'spotify_queue';
 const PLAY_HISTORY_KEY = 'spotify_play_history';
-
-interface ApiSong {
-  id: number;
-  song_name: string;
-  artist: string;
-  duration: number;
-  audio: string | null;
-  plays: number;
-}
 
 export class MusicService {
   static async getAllSongs(): Promise<Song[]> {
     try {
-      console.log('MusicService: Making API call to /songs/...');
       const response = await api.get('/songs/');
-      
-      console.log('MusicService: Full API response:', {
-        status: response.status,
-        data: response.data,
-        dataType: typeof response.data,
-        isArray: Array.isArray(response.data)
-      });
 
       if (!response || !response.data) {
         console.warn('MusicService: No data in API response');
@@ -50,35 +32,38 @@ export class MusicService {
         return [];
       }
 
-      // Transform the data into Song objects with proper validation
-      const validSongs = songsData
-        .filter(song => {
-          if (!song || typeof song !== 'object') {
-            console.warn('MusicService: Invalid song data:', song);
-            return false;
-          }
-          return true;
-        })
-        .map((song: ApiSong) => {
-          const processedSong = {
-            id: song.id,
-            title: song.song_name || 'Unknown Title',
-            artist: song.artist || 'Artist Name',
-            artistId: 1,
-            duration: song.duration ? `${Math.floor(song.duration / 60)}:${(song.duration % 60).toString().padStart(2, '0')}` : '0:00',
-            album: 'Unknown Album',
-            imageUrl: '/placeholder.svg',
-            price: 0,
-            audioUrl: song.audio || null
-          };
-          console.log('MusicService: Processed song:', processedSong);
-          return processedSong;
-        });
-
-      console.log('MusicService: Final processed songs:', validSongs);
-      return validSongs;
+      return songsData;
     } catch (error: any) {
       console.error('MusicService: Error fetching songs:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error;
+    }
+  }
+
+  static async getSongsByGenre(genreId: number): Promise<Song[]> {
+    try {
+      const response = await api.get(`/songs/?genre_id=${genreId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('MusicService: Error fetching songs by genre:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error;
+    }
+  }
+  
+
+  static async searchSongs(query: string): Promise<Song[]> {
+    try {
+      const response = await api.get(`/songs/?search=${query}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('MusicService: Error searching songs:', {
         message: error.message,
         status: error.response?.status,
         data: error.response?.data
@@ -147,65 +132,7 @@ export class MusicService {
     const stored = localStorage.getItem(PURCHASES_KEY);
     return stored ? JSON.parse(stored) : [];
   }
-  
-  static getPlaylists(): Playlist[] {
-    const stored = localStorage.getItem(PLAYLISTS_KEY);
-    return stored ? JSON.parse(stored) : [];
-  }
-  
-  static getPlaylistById(id: number): Playlist | undefined {
-    const playlists = this.getPlaylists();
-    return playlists.find(p => p.id === id);
-  }
-  
-  static createPlaylist(name: string): Playlist {
-    const playlists = this.getPlaylists();
-    const newPlaylist: Playlist = {
-      id: Date.now(),
-      name,
-      songs: [],
-      createdAt: new Date()
-    };
-    playlists.push(newPlaylist);
-    localStorage.setItem(PLAYLISTS_KEY, JSON.stringify(playlists));
-    return newPlaylist;
-  }
-  
-  static addSongToPlaylist(songId: number, playlistId: number): boolean {
-    const song = this.getPurchasedSongs().find(s => s.id === songId);
-    if (!song) return false;
-    
-    const playlists = this.getPlaylists();
-    const updatedPlaylists = playlists.map(playlist => {
-      if (playlist.id === playlistId) {
-        if (playlist.songs.some(s => s.id === songId)) {
-          return playlist;
-        }
-        return { ...playlist, songs: [...playlist.songs, song] };
-      }
-      return playlist;
-    });
-    
-    localStorage.setItem(PLAYLISTS_KEY, JSON.stringify(updatedPlaylists));
-    return true;
-  }
-  
-  static removeSongFromPlaylist(songId: number, playlistId: number): boolean {
-    const playlists = this.getPlaylists();
-    const updatedPlaylists = playlists.map(playlist => {
-      if (playlist.id === playlistId) {
-        return { 
-          ...playlist, 
-          songs: playlist.songs.filter(s => s.id !== songId) 
-        };
-      }
-      return playlist;
-    });
-    
-    localStorage.setItem(PLAYLISTS_KEY, JSON.stringify(updatedPlaylists));
-    return true;
-  }
-  
+
   static getQueue(): Song[] {
     const stored = localStorage.getItem(QUEUE_KEY);
     return stored ? JSON.parse(stored) : [];

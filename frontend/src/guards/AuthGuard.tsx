@@ -14,7 +14,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading  && !isAuthenticated && location.pathname !== "/login") {
       toast({
         variant: "destructive",
         title: "Truy cập bị từ chối",
@@ -33,8 +33,10 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    // Chuyển hướng đến trang đăng nhập và lưu URL hiện tại để quay lại sau khi đăng nhập
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    if (location.pathname !== "/login") {
+      return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    }
+    return null; // tránh lặp
   }
 
   return <>{children}</>;

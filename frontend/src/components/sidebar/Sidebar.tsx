@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Home, Search, Library, Plus, Heart, Users, ShoppingCart } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Logo from './Logo';
@@ -6,18 +6,27 @@ import NavLink from './NavLink';
 import PlaylistItem from './PlaylistItem';
 import { Link, useLocation } from 'react-router-dom';
 import { useMusic } from '@/contexts/MusicContext';
+import { ArtistService } from '@/services/ArtistService';
+import { Artist } from '@/types/artist';
 
 const Sidebar = () => {
   const location = useLocation();
   const { playlists } = useMusic();
+  const [followedArtists, setFollowedArtists] = useState<Artist[]>([]);
+
+  useEffect(() => {
+    const fetchFollowedArtists = async () => {
+      try {
+        const artists = await ArtistService.followedArtist();
+        setFollowedArtists(artists);
+        console.log(artists);
+      } catch (error) {
+        console.error('Error fetching followed artists:', error);
+      }
+    };
+    fetchFollowedArtists();
+  }, []);
   
-  // Sample artists for the sidebar
-  const followedArtists = [
-    { id: 1, name: 'Queen', type: 'artist' },
-    { id: 2, name: 'Led Zeppelin', type: 'artist' },
-    { id: 3, name: 'The Beatles', type: 'artist' },
-    { id: 4, name: 'Pink Floyd', type: 'artist' },
-  ];
   
   return (
     <div className="w-64 h-full bg-black flex flex-col">
@@ -90,8 +99,8 @@ const Sidebar = () => {
           {followedArtists.map(artist => (
             <PlaylistItem 
               key={artist.id}
-              name={artist.name} 
-              type={artist.type} 
+              name={artist.artist_name} 
+              type="artist" 
               id={artist.id} 
             />
           ))}
