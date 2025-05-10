@@ -9,8 +9,8 @@ export class ChatWebSocket {
     constructor(chatboxId: number, onMessage?: (data: Message) => void) {
       this.chatboxId = chatboxId;
       this.onMessageCallback = onMessage;
-      this.baseUrl = import.meta.env.VITE_API_URL;
-      const wsUrl = `${this.baseUrl}ws/chat/${chatboxId}/`; 
+      this.baseUrl = import.meta.env.VITE_WS_URL;
+      const wsUrl = `${this.baseUrl}chat/${chatboxId}/`; 
       this.socket = new WebSocket(wsUrl);
   
       this.socket.onopen = () => {
