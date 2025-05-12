@@ -53,8 +53,8 @@ DB_PASSWORD=
 #### Frontend
 Tạo file `.env` trong thư mục frontend với nội dung:
 ```
-VITE_API_URL=http://127.0.0.1:8000/
-VITE_WS_URL=ws://127.0.0.1:8000/ws/
+VITE_API_URL=http://127.0.0.1:8080/
+VITE_WS_URL=ws://127.0.0.1:8080/ws/
 ```
 
 ### 4. Khởi Chạy Ứng Dụng
