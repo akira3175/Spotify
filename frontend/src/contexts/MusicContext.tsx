@@ -32,6 +32,7 @@ interface MusicContextType {
   likeSong: (song: Song) => void;
   unlikeSong: (songId: number) => void;
   isLiked: (songId: number) => boolean;
+  audioRef: React.MutableRefObject<HTMLAudioElement | null>;
 }
 
 const MusicContext = createContext<MusicContextType | null>(null);
@@ -112,6 +113,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const audio = new Audio(song.audio);
     audioRef.current = audio;
+    audio.loop = false;
     audio.play()
       .then(() => setIsPlaying(true))
       .catch((err) => {
@@ -249,7 +251,8 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         removeSongFromPlaylist: () => {},
         likeSong,
         unlikeSong,
-        isLiked
+        isLiked,
+        audioRef
       }}
     >
       {children}

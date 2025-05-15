@@ -17,15 +17,23 @@ const Sidebar = () => {
   useEffect(() => {
     const fetchFollowedArtists = async () => {
       try {
-        const artists = await ArtistService.followedArtist();
-        setFollowedArtists(artists);
+        const response = await ArtistService.getArtists();
+        console.log('Followed artists response:', response);
+        if (Array.isArray(response)) {
+          setFollowedArtists(response);
+        } else {
+          console.warn('Expected array of artists but got:', response);
+          setFollowedArtists([]);
+        }
       } catch (error) {
         console.error('Error fetching followed artists:', error);
+        setFollowedArtists([]);
       }
     };
     fetchFollowedArtists();
   }, []);
   
+  const safeFollowedArtists = Array.isArray(followedArtists) ? followedArtists : [];
   
   return (
     <div className="w-64 h-full bg-black flex flex-col">
@@ -95,14 +103,18 @@ const Sidebar = () => {
         
         <div className="pb-6 pt-2">
           <h3 className="px-4 text-xs uppercase font-semibold text-zinc-400 tracking-wider mb-2">Following</h3>
-          {followedArtists.map(artist => (
-            <PlaylistItem 
-              key={artist.id}
-              name={artist.artist_name} 
-              type="artist" 
-              id={artist.id} 
-            />
-          ))}
+          {safeFollowedArtists.length > 0 ? (
+            safeFollowedArtists.map(artist => (
+              <PlaylistItem 
+                key={artist.id}
+                name={artist.artist_name} 
+                type="artist" 
+                id={artist.id} 
+              />
+            ))
+          ) : (
+            <p className="px-4 text-xs text-zinc-500">No followed artists yet.</p>
+          )}
         </div>
       </ScrollArea>
     </div>

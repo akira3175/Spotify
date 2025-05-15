@@ -10,12 +10,13 @@ export class AuthService {
         password,
       });
 
-      const token = response.data.access;
-      TokenService.saveToken(token);
+      const { access, refresh } = response.data;
+      TokenService.saveToken(access);
+      TokenService.saveRefreshToken(refresh);
 
       const userRes = await api.get('/users/me/', {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${access}`,
         },
       });
 
@@ -23,9 +24,19 @@ export class AuthService {
       TokenService.saveUser(user);
 
       return user;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
-      throw new Error('Đăng nhập thất bại');
+      if (error.response) {
+        // Lỗi từ server
+        const message = error.response.data.detail || error.response.data.message || 'Đăng nhập thất bại';
+        throw new Error(message);
+      } else if (error.request) {
+        // Không nhận được response từ server
+        throw new Error('Không thể kết nối đến server');
+      } else {
+        // Lỗi khác
+        throw new Error('Đăng nhập thất bại');
+      }
     }
   }
 

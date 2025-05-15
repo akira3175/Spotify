@@ -21,9 +21,10 @@ import { useMusic } from "@/contexts/MusicContext"
 import { useState, useRef, useEffect } from "react"
 
 const MusicPlayer = () => {
-  const { currentTrack, isPlaying, play, pause, resume, progress, duration, volume, seek, setVolume } = useMusic()
+  const { currentTrack, isPlaying, play, pause, resume, progress, duration, volume, seek, setVolume, audioRef } = useMusic()
   const [showVideo, setShowVideo] = useState(false)
   const [videoIsPlaying, setVideoIsPlaying] = useState(false)
+  const [isRepeat, setIsRepeat] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [musicWasPlaying, setMusicWasPlaying] = useState(false)
 
@@ -100,6 +101,14 @@ const MusicPlayer = () => {
     }
     
     setShowVideo(true)
+  }
+
+  // Xử lý khi nhấn nút lặp lại
+  const handleRepeat = () => {
+    setIsRepeat(!isRepeat)
+    if (audioRef.current) {
+      audioRef.current.loop = !isRepeat
+    }
   }
 
   // Xử lý khi đóng video
@@ -192,7 +201,12 @@ const MusicPlayer = () => {
             <button className="text-spotify-subdued hover:text-spotify-text p-1">
               <SkipForward size={16} />
             </button>
-            <button className="text-spotify-subdued hover:text-spotify-text p-1">
+            <button 
+              className={`p-1 rounded-full transition-colors duration-150
+                ${isRepeat ? 'text-spotify-green bg-spotify-elevated-base ring-2 ring-spotify-green' : 'text-spotify-subdued hover:text-spotify-text'}`}
+              onClick={handleRepeat}
+              title={isRepeat ? 'Lặp lại: Bật' : 'Lặp lại: Tắt'}
+            >
               <Repeat size={16} />
             </button>
           </div>

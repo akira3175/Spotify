@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types/user';
 import { AuthService } from '../services/AuthService';
@@ -8,7 +7,7 @@ type AuthContextType = {
   setUser: (user: User | null) => void;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
   register: (first_name: string, last_name: string, username: string, password: string) => Promise<void>;
   logout: () => void;
   updateUserProfile: (profileData: Partial<User>) => Promise<void>;
@@ -29,10 +28,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (username: string, password: string) => {
     setIsLoading(true);
     try {
-      const loggedInUser = await AuthService.login(email, password);
+      const loggedInUser = await AuthService.login(username, password);
       setUser(loggedInUser);
     } finally {
       setIsLoading(false);

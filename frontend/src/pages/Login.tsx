@@ -19,10 +19,10 @@ const Login = () => {
     
     try {
       await login(username, password);
-      toast.success('Logged in successfully');
+      toast.success('Đăng nhập thành công');
       navigate('/');
-    } catch (error) {
-      toast.error('Failed to login');
+    } catch (error: any) {
+      toast.error(error.message || 'Đăng nhập thất bại');
       console.error(error);
     } finally {
       setIsLoading(false);

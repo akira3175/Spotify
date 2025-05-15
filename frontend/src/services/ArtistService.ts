@@ -2,11 +2,15 @@ import { api } from '../config/api';
 import { Artist } from '@/types/artist';
 
 export class ArtistService {
-    static async getArtists(): Promise <Artist> {
+    static async getArtists(): Promise<Artist[]> {
         try
         {
             const response = await api.get('artists/')
-            return response.data
+            console.log('ArtistService.getArtists response:', response.data);
+            // Đảm bảo trả về một mảng
+            const artists = Array.isArray(response.data) ? response.data : 
+                          (response.data.results ? response.data.results : []);
+            return artists;
         }
         catch (error)
         {
