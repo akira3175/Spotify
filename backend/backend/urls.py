@@ -29,4 +29,5 @@ urlpatterns = [
     path('playlists/', include('playlists.urls')),
     path('orders/', include('orders.urls')),
     path('chatbox/', include('chatbox.urls')),
+    path('a2a/', include('a2a_server.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
