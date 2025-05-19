@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { ChatboxService } from "@/services/ChatboxService";
 import { AIService } from "@/services/AIService";
 
 const AI_CHAT_USER_ID = 3; // Đảm bảo đúng với backend
@@ -13,16 +12,18 @@ const QUICK_REPLIES = [
 ];
 
 const ChatAIPopupBody = () => {
-    const [chatboxId, setChatboxId] = useState<number | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [open, setOpen] = useState(false);
-    const [messages, setMessages] = useState<any[]>([]);
+    const [messages, setMessages] = useState<any[]>([{
+        from: "bot",
+        text: "Xin chào 👋\nTôi là Spotify AI. Bạn muốn nghe gì hôm nay?",
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    }]);
     const [input, setInput] = useState("");
     const [isAiResponding, setIsAiResponding] = useState(false);
-    const initialized = useRef(false);
 
-    // Lấy user hiện tại từ localStorage/session (giả định đã đăng nhập)
+    // Lấy user hiện tại từ localStorage/session
     const user = JSON.parse(localStorage.getItem("user") || "null");
     const aiService = AIService.getInstance();
 
@@ -35,62 +36,8 @@ const ChatAIPopupBody = () => {
         };
     }, [user?.id]);
 
-    // Khởi tạo chatbox chỉ một lần
-    useEffect(() => {
-        if (initialized.current) return;
-
-        const fetchOrCreateChatbox = async () => {
-            if (!user?.id) return;
-
-            setLoading(true);
-            setError(null);
-            try {
-                // Kiểm tra xem đã có chatbox chưa
-                const chatboxes = await ChatboxService.getChatboxes();
-                const existingChatbox = chatboxes.find(box =>
-                    box.type === "user" &&
-                    box.user_ids?.includes(AI_CHAT_USER_ID)
-                );
-
-                if (existingChatbox) {
-                    setChatboxId(existingChatbox.id);
-                    const msgs = await ChatboxService.getMessages(existingChatbox.id);
-                    const mapped = msgs.map((msg: any) => ({
-                        from: msg.user.id === AI_CHAT_USER_ID ? "bot" : "user",
-                        text: msg.message,
-                        time: new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-                    }));
-                    setMessages(mapped);
-                } else {
-                    // Tạo chatbox mới nếu chưa có
-                    const chatbox = await ChatboxService.createChatbox({
-                        name: "Chat với AI",
-                        type: "user",
-                        user_ids: [AI_CHAT_USER_ID],
-                    });
-                    if (chatbox && chatbox.id) {
-                        setChatboxId(chatbox.id);
-                        setMessages([{
-                            from: "bot",
-                            text: "Xin chào 👋\nTôi là Spotify AI. Bạn muốn nghe gì hôm nay?",
-                            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-                        }]);
-                    }
-                }
-            } catch (err) {
-                console.error("Error initializing chat:", err);
-                setError("Không thể kết nối với AI. Vui lòng thử lại sau.");
-            } finally {
-                setLoading(false);
-                initialized.current = true;
-            }
-        };
-
-        fetchOrCreateChatbox();
-    }, [user?.id]);
-
     const sendMessage = useCallback(async (text: string) => {
-        if (!text.trim() || !chatboxId) return;
+        if (!text.trim()) return;
 
         // Thêm tin nhắn của user vào chat
         setMessages(prev => [
@@ -126,21 +73,14 @@ const ChatAIPopupBody = () => {
         } finally {
             setIsAiResponding(false);
         }
-    }, [chatboxId, user?.id]);
+    }, [user?.id]);
 
-    if (loading)
-        return (
-            <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
-                Đang kết nối với Spotify AI...
-            </div>
-        );
     if (error)
         return (
             <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'red' }}>
                 {error}
             </div>
         );
-    if (!chatboxId) return null;
 
     // Giao diện như cũ, nhưng messages đã load từ BE
     return (
