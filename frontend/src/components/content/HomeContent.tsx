@@ -93,26 +93,26 @@ const HomeContent = () => {
     <ScrollArea className="h-full">
       <div className="p-6 pb-28">
         {/* Display songs from API */}
-        <PlaylistGrid 
-          title="Songs from API" 
+        <PlaylistGrid
+          title="Songs from API"
           playlists={apiSongs}
           onPlaylistClick={handleSongClick}
           seeAllLink="#"
         />
 
         {/* Display mock data */}
-        <PlaylistGrid 
-          title="Popular Songs" 
+        <PlaylistGrid
+          title="Popular Songs"
           playlists={popularSongs}
           seeAllLink="#"
         />
-        <PlaylistGrid 
-          title="Trending Songs" 
+        <PlaylistGrid
+          title="Trending Songs"
           playlists={trendingSongs}
           seeAllLink="#"
         />
-        <PlaylistGrid 
-          title="Local Songs" 
+        <PlaylistGrid
+          title="Local Songs"
           playlists={localSongs}
           seeAllLink="#"
         />

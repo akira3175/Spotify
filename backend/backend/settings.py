@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'playlists',
     'songs',
     'orders',
+    'a2a_server',
 ]
 
 MIDDLEWARE = [

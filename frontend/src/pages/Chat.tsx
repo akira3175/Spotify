@@ -11,8 +11,15 @@ import type { Chatbox, Message } from "@/types/chat"
 import { ChatboxService } from "@/services/ChatboxService"
 import { ChatWebSocket } from "@/config/websocket"
 
-const Chat = () => {
-  const { userId } = useParams<{ userId: string }>()
+// Thêm props cho Chat
+interface ChatProps {
+  userId?: string;
+  popupMode?: boolean;
+}
+
+const Chat: React.FC<ChatProps> = ({ userId: propUserId, popupMode }) => {
+  const params = useParams<{ userId: string }>()
+  const userId = propUserId || params.userId;
   const { isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -24,6 +31,8 @@ const Chat = () => {
   const [messageText, setMessageText] = useState("")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const AI_CHAT_USER_ID = 3;
 
   // Scroll to bottom of messages
   const scrollToBottom = () => {
@@ -170,47 +179,51 @@ const Chat = () => {
 
   // Find the other user in the chatbox (for direct messages)
   const otherMember = chatbox.members.find((member) => member.user.id !== user?.id)
-  console.log("u:", chatbox)
-  console.log("otherMember:", otherMember)
+  const isAIChat = otherMember && otherMember.user.id === AI_CHAT_USER_ID;
 
   return (
     <Layout>
       <div className="flex flex-col h-full">
         {/* Chat Header */}
-        <div className="bg-zinc-900 p-4 flex items-center border-b border-zinc-800">
-          <Button variant="ghost" size="icon" className="mr-2" onClick={() => navigate("/friends")}>
-            <ArrowLeft size={18} />
-          </Button>
-
-          <div className="flex items-center">
-            <div className="w-10 h-10 bg-zinc-800 rounded-full overflow-hidden relative">
-              {otherMember ? (
-                otherMember.user.avatar ? (
-                  <img
-                    src={otherMember.user.avatar || "/placeholder.svg"}
-                    alt={`${otherMember.user.username}'s avatar`}
-                    className="w-full h-full object-cover"
-                  />
+        {!popupMode && (
+          <div className="bg-zinc-900 p-4 flex items-center border-b border-zinc-800">
+            <Button variant="ghost" size="icon" className="mr-2" onC lick={() => navigate("/friends")}>
+              <ArrowLeft size={18} />
+            </Button>
+            <div className="flex items-center">
+              <div className="w-10 h-10 rounded-full overflow-hidden relative" style={isAIChat ? { background: '#f59e42', display: 'flex', alignItems: 'center', justifyContent: 'center' } : { background: '#27272a' }}>
+                {isAIChat ? (
+                  <span style={{ fontSize: 28 }}>🤖</span>
+                ) : otherMember ? (
+                  otherMember.user.avatar ? (
+                    <img
+                      src={otherMember.user.avatar || "/placeholder.svg"}
+                      alt={`${otherMember.user.username}'s avatar`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-zinc-700">
+                      <User size={20} />
+                    </div>
+                  )
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-zinc-700">
                     <User size={20} />
                   </div>
-                )
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-zinc-700">
-                  <User size={20} />
-                </div>
-              )}
-            </div>
-            <div className="ml-3">
-              <p className="font-medium">{otherMember ? otherMember.user.last_name + " " + otherMember.user.first_name : "Group chat"}</p>
-              <p className="text-xs text-zinc-400">
-                {otherMember ? otherMember.user.username : "Group chat"} •{" "}
-                {new Date(chatbox.created_at).toLocaleDateString()}
-              </p>
+                )}
+              </div>
+              <div className="ml-3">
+                <p className="font-medium" style={isAIChat ? { color: '#f59e42', fontWeight: 700 } : {}}>
+                  {isAIChat ? 'Spotify AI' : (otherMember ? otherMember.user.last_name + " " + otherMember.user.first_name : "Group chat")}
+                </p>
+                <p className="text-xs text-zinc-400">
+                  {isAIChat ? 'spotify_ai' : (otherMember ? otherMember.user.username : "Group chat")} •{" "}
+                  {new Date(chatbox.created_at).toLocaleDateString()}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -220,7 +233,8 @@ const Chat = () => {
             </div>
           ) : (
             messages.map((message) => {
-              const isCurrentUser = message.user.id === user?.id
+              const isCurrentUser = message.user.id === user?.id;
+              const isAI = message.user.id === AI_CHAT_USER_ID;
 
               return (
                 <div
@@ -228,8 +242,10 @@ const Chat = () => {
                   className={`flex ${isCurrentUser ? "justify-end" : "justify-start"} items-end gap-2`}
                 >
                   {!isCurrentUser && (
-                    <div className="w-8 h-8 bg-zinc-800 rounded-full overflow-hidden flex-shrink-0">
-                      {message.user.avatar ? (
+                    <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0" style={isAI ? { background: '#f59e42', display: 'flex', alignItems: 'center', justifyContent: 'center' } : { background: '#27272a' }}>
+                      {isAI ? (
+                        <span style={{ fontSize: 20 }}>🤖</span>
+                      ) : message.user.avatar ? (
                         <img
                           src={message.user.avatar || "/placeholder.svg"}
                           alt={`${message.user.username}'s avatar`}
@@ -243,15 +259,19 @@ const Chat = () => {
                     </div>
                   )}
                   <div
-                    className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                      isCurrentUser
-                        ? "bg-green-500 text-black rounded-br-none"
+                    className={`max-w-[70%] rounded-lg px-4 py-2 ${isCurrentUser
+                      ? "bg-green-500 text-black rounded-br-none"
+                      : isAI
+                        ? "bg-orange-100 text-orange-900 rounded-bl-none"
                         : "bg-zinc-800 text-white rounded-bl-none"
-                    }`}
+                      }`}
+                    style={isAI ? { border: '1.5px solid #f59e42' } : {}}
                   >
-                    {/* {!isCurrentUser && <p className="text-xs text-zinc-400 mb-1">{message.user.last_name + " " + message.user.first_name}</p>} */}
+                    {isAI && (
+                      <p className="text-xs font-bold text-orange-500 mb-1">Spotify AI</p>
+                    )}
                     <p>{message.message}</p>
-                    <p className={`text-xs mt-1 ${isCurrentUser ? "text-black/70" : "text-zinc-400"}`}>
+                    <p className={`text-xs mt-1 ${isCurrentUser ? "text-black/70" : isAI ? "text-orange-400" : "text-zinc-400"}`}>
                       {formatMessageTime(message.created_at)}
                     </p>
                   </div>
