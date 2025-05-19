@@ -3,9 +3,10 @@ import { User } from "./user";
 export interface Chatbox {
     id: number;
     name: string;
-    members: User[];
-    created_at: string;
     type: string;
+    user_ids?: number[];
+    created_at: string;
+    members?: ChatboxMember[];
 }
 
 export interface Message {
