@@ -1,0 +1,1850 @@
+  \documentclass{book}
+\usepackage{vntex}
+%\usepackage[english,vietnam]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}         % Font cho tiếng Việt
+\usepackage[vietnamese]{babel}   % Ngôn ngữ tiếng Việt
+\usepackage{listingsutf8}
+\lstset{
+    inputencoding=utf8,
+    extendedchars=true
+}
+\usepackage{titlesec}
+\titlespacing*{\chapter}{0pt}{0pt}{20pt}
+
+%\usepackage[utf8]{inputenc}
+%\usepackage[francais]{babel}
+\usepackage{a4wide,amssymb,epsfig,latexsym,multicol,array,hhline,fancyhdr}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{lastpage}
+\usepackage[lined,boxed,commentsnumbered]{algorithm2e}
+\usepackage{enumerate}
+\usepackage{color}
+\usepackage{graphicx}							% Standard graphics package
+\usepackage{array}
+\usepackage{tabularx, caption}
+\usepackage{multirow}
+\usepackage[framemethod=tikz]{mdframed}% For highlighting paragraph backgrounds
+\usepackage{multicol}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{epsfig}
+\usepackage{tikz}
+\usepackage{listings}
+\usetikzlibrary{arrows,snakes,backgrounds}
+\usepackage{hyperref}
+\let\oldsection\section
+\renewcommand{\section}{\clearpage\oldsection}
+\hypersetup{urlcolor=blue,linkcolor=black,citecolor=black,colorlinks=true} 
+%\usepackage{pstcol} 								% PSTricks with the standard color package
+
+\newtheorem{theorem}{{\bf Định lý}}
+\newtheorem{property}{{\bf Tính chất}}
+\newtheorem{proposition}{{\bf Mệnh đề}}
+\newtheorem{corollary}[proposition]{{\bf Hệ quả}}
+\newtheorem{lemma}[proposition]{{\bf Bổ đề}}
+
+\everymath{\color{blue}}
+%\usepackage{fancyhdr}
+\setlength{\headheight}{40pt}
+\pagestyle{fancy}
+\fancyhead{} % clear all header fields
+\fancyhead[L]{
+ \begin{tabular}{rl}
+    \begin{picture}(25,15)(0,0)
+    \put(0,-8){\includegraphics[width=8mm, height=8mm]{logoITSGU.png}}
+    %\put(0,-8){\epsfig{width=10mm,figure=hcmut.eps}}
+   \end{picture}&
+	%\includegraphics[width=8mm, height=8mm]{hcmut.png} & %
+	\begin{tabular}{l}
+		\textbf{\bf \ttfamily Trường Đại học Sài Gòn}\\
+		\textbf{\bf \ttfamily Khoa Công Nghệ Thông Tin}
+	\end{tabular} 	
+ \end{tabular}
+}
+\fancyhead[R]{
+	\begin{tabular}{l}
+		\tiny \bf \\
+		\tiny \bf 
+	\end{tabular}  }
+\fancyfoot{} % clear all footer fields
+\fancyfoot[L]{\scriptsize \ttfamily Bài tập lớn môn Phát triển phần mềm mã nguồn mở - Niên khóa 2024-2025}
+\fancyfoot[R]{\scriptsize \ttfamily Trang {\thepage}/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+
+%%%
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+\makeatletter
+\newcounter {subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection .\@alph\c@subsubsubsection}
+\newcommand\subsubsubsection{\@startsection{subsubsubsection}{4}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\bfseries}}
+\newcommand*\l@subsubsubsection{\@dottedtocline{3}{10.0em}{4.1em}}
+\newcommand*{\subsubsubsectionmark}[1]{}
+\makeatother
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+	language=Matlab,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3,
+	numbers=left,
+	stepnumber=1,
+	numbersep=1pt,    
+	firstnumber=1,
+	numberfirstline=true
+}
+
+\begin{document}
+\let\cleardoublepage\clearpage
+\begin{titlepage}
+\begin{center}
+TRƯỜNG ĐẠI HỌC SÀI GÒN \\
+KHOA CÔNG NGHỆ THÔNG TIN
+\end{center}
+\vspace{1cm}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=3cm]{logoITSGU.png}
+\end{center}
+\end{figure}
+
+\vspace{1cm}
+
+
+\begin{center}
+\begin{tabular}{c}
+	\multicolumn{1}{l}{\textbf{{\Large PHÁT TRIỂN PHẦN MỀM MÃ NGUỒN MỞ}}}\\
+	~~\\
+	\hline
+	\\
+	\multicolumn{1}{l}{\textbf{{\Large PROJECT }}}\\
+	\\
+	
+	\textbf{{\Huge SPOTIFY CLONE}}\\
+	\\
+	\hline
+\end{tabular}
+\end{center}
+
+\vspace{2cm}
+
+\begin{table}[h]
+\begin{tabular}{rrl}
+\hspace{3 cm} & GVHD: & Ths. Từ Lãng Phiêu\\
+& Sinh viên thực hiện: & Nguyễn Minh Phúc - 3122560061\\
+& & Nguyễn Nhật Trường - 3122410441 \\
+& & Phạm Thiên Phú - 3122560059 \\
+& & Nguyễn Quốc Tuấn - 3122560087 \\
+
+& Email: & phamphu422@gmail.com \\
+\end{tabular}
+\vspace{1.5 cm}
+\end{table}
+
+\begin{center}
+
+{\footnotesize TP. HỒ CHÍ MINH, THÁNG 5/2025}
+\end{center}
+\end{titlepage}
+
+
+\thispagestyle{empty}
+
+\newpage
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Tổng quan về phần mềm}
+
+\section{Kiến trúc hệ thống}
+
+Hệ thống được phát triển theo mô hình kiến trúc \textbf{Client-Server}, bao gồm hai thành phần chính:
+
+\subsection{Frontend (Client)}
+\textbf{Công nghệ sử dụng:}
+\begin{itemize}
+    \item \textbf{React.js với TypeScript}
+    \item \textbf{Vite} làm công cụ build
+    \item \textbf{Tailwind CSS} cho styling
+    \item \textbf{Bun} làm package manager
+\end{itemize}
+
+\subsection{Backend (Server)}
+\textbf{Công nghệ sử dụng:}
+\begin{itemize}
+    \item \textbf{Django Framework (Python)}
+    \item \textbf{SQLite Database}
+    \item \textbf{RESTful API}
+\end{itemize}
+
+\section{Cấu trúc thư mục dự án}
+
+\subsection{Cấu trúc tổng thể}
+
+\begin{lstlisting}[language=bash]
+├── frontend/           # Giao dien nguoi dung
+├── backend/            # Xu ly logic va API
+├── test/               # Test case
+├── railway.json        # Cau hinh deployment
+├── LICENSE             # Giay phep
+├── README.md           # Mo ta du an
+└── .gitignore          # Cau hinh Git
+\end{lstlisting}
+
+\section{Phân tích chi tiết Frontend}
+
+\subsection{Cấu trúc thư mục Frontend}
+\begin{lstlisting}[language=bash]
+frontend/
+├── src/
+│   ├── components/     # Component UI
+│   ├── pages/          # Trang
+│   ├── services/       # API services
+│   ├── contexts/       # Quan ly state
+│   ├── hooks/          # Custom hooks
+│   ├── types/          # TypeScript types
+│   ├── config/         # Cau hinh
+│   ├── guards/         # Route guards
+│   └── lib/            # Utility
+├── public/             # Static files
+└── package.json        # Dependencies
+\end{lstlisting}
+
+\subsection{Các công nghệ và công cụ Frontend}
+\begin{itemize}
+    \item \textbf{React + TypeScript}: Đảm bảo type safety và khả năng mở rộng
+    \item \textbf{Vite}: Build tool hiện đại, tối ưu performance
+    \item \textbf{Tailwind CSS}: Framework CSS utility-first
+    \item \textbf{ESLint}: Kiểm tra chất lượng code
+    \item \textbf{Bun}: Package manager hiệu suất cao
+\end{itemize}
+
+\section{Phân tích chi tiết Backend}
+
+\subsection{Cấu trúc thư mục Backend}
+
+\begin{lstlisting}[language=bash]
+backend/
+├── users/              # Quan ly nguoi dung
+├── songs/              # Quan ly bai hat
+├── playlists/          # Quan ly playlist
+├── artists/            # Quan ly nghe si
+├── albums/             # Quan ly album
+├── orders/             # Quan ly don hang
+├── chatbox/            # Chat
+├── staticfiles/        # Static files
+└── manage.py           # Django script 
+\end{lstlisting}
+
+\subsection{Công nghệ và công cụ Backend}
+\begin{itemize}
+    \item \textbf{Django Framework}
+    \begin{itemize}
+        \item Mô hình MVC
+        \item ORM tích hợp
+        \item Admin interface
+        \item Tích hợp bảo mật
+    \end{itemize}
+    \item \textbf{SQLite}: Database nhẹ, dễ triển khai
+    \item \textbf{RESTful API}: Giao tiếp hiệu quả với frontend
+\end{itemize}
+
+\section{Đặc điểm nổi bật của kiến trúc}
+
+\subsection{Tính module hóa}
+\begin{itemize}
+    \item Frontend và Backend tách biệt rõ ràng
+    \item Mỗi chức năng được chia nhỏ thành các module
+    \item Dễ bảo trì và mở rộng
+\end{itemize}
+
+\subsection{Bảo mật}
+\begin{itemize}
+    \item Authentication và Authorization
+    \item Route guards ở frontend
+    \item Django bảo vệ dữ liệu phía backend
+\end{itemize}
+
+\subsection{Hiệu suất}
+\begin{itemize}
+    \item Vite giúp tối ưu thời gian build
+    \item Bun tăng tốc độ cài đặt thư viện
+    \item SQLite nhanh và phù hợp cho sản phẩm MVP
+\end{itemize}
+
+\section{Sơ đồ ERD}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth, height=1.0\textheight, keepaspectratio]{ERD_Spotify.png}
+    \caption{Sơ đồ ERD của hệ thống}
+    \label{fig:erd}
+\end{figure}
+\section{Kết luận}
+Dự án được thiết kế với kiến trúc hiện đại, tuân thủ các nguyên tắc phát triển phần mềm chuyên nghiệp. Việc ứng dụng các công nghệ như React, Django giúp đảm bảo khả năng mở rộng, bảo trì và tích hợp trong tương lai. Cấu trúc rõ ràng, có tính module hóa cao, phù hợp với các dự án quy mô vừa và lớn.
+\chapter{Đặc tả phần mềm}
+
+\section{Đăng nhập (Login)}
+\subsection{Giới thiệu chức năng}
+\begin{itemize}
+    \item Xác thực người dùng thông qua tài khoản và mật khẩu
+    \item Lưu trữ phiên đăng nhập
+    \item Bảo mật thông tin đăng nhập
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{login_flow_vn.png}
+    \caption{Biểu đồ luồng quá trình đăng nhập}
+    \label{fig:login_flow}
+\end{figure}
+
+\section{Đăng ký (Register)}
+\subsection{Giới thiệu chức năng}
+\begin{itemize}
+    \item Tạo tài khoản mới cho người dùng
+    \item Kiểm tra tính hợp lệ của thông tin đăng ký
+    \item Mã hóa mật khẩu trước khi lưu trữ
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.3\textwidth]{registration_flow_vn.png}
+    \caption{Biểu đồ luồng quá trình đăng ký}
+    \label{fig:register_flow}
+\end{figure}
+
+\section{Trang bạn bè (Friends)}
+\subsection{Giới thiệu chức năng}
+\begin{itemize}
+    \item Quản lý danh sách bạn bè
+    \item Gửi và nhận lời mời kết bạn
+    \item Xem hoạt động của bạn bè
+    \item Nhắn tin trực tiếp với bạn bè
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{friend_flow_vn.png}
+    \caption{Biểu đồ luồng quản lý bạn bè}
+    \label{fig:friend_flow}
+\end{figure}
+
+\section{Trang hồ sơ cá nhân (Profile)}
+\subsection{Giới thiệu chức năng}
+\begin{itemize}
+    \item Hiển thị thông tin cá nhân
+    \item Thống kê hoạt động
+    \item Hiển thị danh sách playlist
+    \item Chỉnh sửa thông tin cá nhân
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{account_flow_vn.png}
+    \caption{Biểu đồ luồng quản lý tài khoản}
+    \label{fig:account_flow}
+\end{figure}
+
+\section{Nhắn tin (Chat)}
+\subsection{Giới thiệu chức năng}
+\begin{itemize}
+    \item Gửi và nhận tin nhắn text
+    \item Hiển thị trạng thái đã đọc
+    \item Lưu trữ lịch sử chat
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{messaging_flow_vn.png}
+    \caption{Biểu đồ luồng chức năng nhắn tin}
+    \label{fig:messaging_flow}
+\end{figure}
+
+\section{Tìm kiếm và Phát nhạc (Search and Play)}
+\subsection{Giới thiệu chức năng}
+\begin{itemize}
+    \item Tìm kiếm theo từ khóa
+    \item Lọc kết quả theo loại
+    \item Hiển thị kết quả tìm kiếm
+    \item Phát nhạc trực tuyến
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{search_play_flow_vn.png}
+    \caption{Biểu đồ luồng tìm kiếm và phát nhạc}
+    \label{fig:search_play_flow}
+\end{figure}
+
+\section{Nghệ sĩ (Artist)}
+\subsection{Giới thiệu chức năng}
+\begin{itemize}
+    \item Xem thông tin nghệ sĩ
+    \item Xem danh sách bài hát
+    \item Theo dõi nghệ sĩ
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{artist_flow_vn.png}
+    \caption{Biểu đồ luồng quản lý nghệ sĩ}
+    \label{fig:artist_flow}
+\end{figure}
+
+\section{Playlist}
+\subsection{Giới thiệu chức năng}
+\begin{itemize}
+    \item Tạo playlist mới
+    \item Quản lý playlist
+    \item Thêm/xóa bài hát
+    \item Chia sẻ playlist
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{playlist_flow_vn.png}
+    \caption{Biểu đồ luồng quản lý playlist}
+    \label{fig:playlist_flow}
+\end{figure}
+
+\section{Bài hát yêu thích (Liked Songs)}
+\subsection{Giới thiệu chức năng}
+\begin{itemize}
+    \item Lưu trữ bài hát yêu thích
+    \item Xem danh sách bài hát yêu thích
+    \item Phát bài hát yêu thích
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{liked_songs_flow_vn.png}
+    \caption{Biểu đồ luồng quản lý bài hát yêu thích}
+    \label{fig:liked_songs_flow}
+\end{figure}
+
+\section{Mua nhạc và Lịch sử (Purchase)}
+\subsection{Giới thiệu chức năng}
+\begin{itemize}
+    \item Mua bài hát
+    \item Xem lịch sử mua hàng
+    \item Quản lý bài hát đã mua
+\end{itemize}
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{purchase_flow_vn.png}
+    \caption{Biểu đồ luồng mua nhạc và lịch sử}
+    \label{fig:purchase_flow}
+\end{figure}
+
+\section{Chatbox AI (AI Chatbox)}
+\subsection{Giới thiệu chức năng}
+\begin{itemize}
+    \item Tương tác với người dùng thông qua giao diện chat
+    \item Cung cấp gợi ý nhạc dựa trên yêu cầu của người dùng
+    \item Hỗ trợ tìm kiếm bài hát theo nhiều tiêu chí (thể loại, lời bài hát, v.v.)
+    \item Ghi nhớ lịch sử trò chuyện và các lựa chọn của người dùng
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.25\textwidth]{chatboxAI_flow_vn (2).png}
+    \caption{Biểu đồ luồng chatboxAI}
+    \label{fig:purchase_flow}
+\end{figure}
+
+\chapter{Giao diện}
+\section{Phân tích giao diện đăng nhập}
+
+\subsection{Tổng quan về giao diện đăng nhập}
+Giao diện đăng nhập của ứng dụng Spotify Clone được thiết kế với phong cách tối giản, hiện đại, phù hợp với thương hiệu Spotify. Giao diện sử dụng tông màu chủ đạo là đen và xanh lá, tạo nên sự hài hòa và chuyên nghiệp.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{login_screen.png}
+\caption{Giao diện đăng nhập của ứng dụng}
+\label{fig:login}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Logo Spotify}
+\begin{itemize}
+    \item Vị trí: Phía trên cùng của trang
+    \item Được hiển thị thông qua component \texttt{Logo}
+    \item Có khoảng cách margin-bottom là 8 đơn vị
+\end{itemize}
+
+\subsubsection{Form đăng nhập}
+\begin{itemize}
+    \item Container có nền màu đen (bg-spotify-base)
+    \item Bo góc (rounded-lg) và đổ bóng (shadow-lg)
+    \item Chiều rộng tối đa là md (max-w-md)
+    \item Có padding 8 đơn vị (p-8)
+\end{itemize}
+
+\subsubsection{Tiêu đề}
+\begin{itemize}
+    \item Dòng chữ "Log in to Spotify"
+    \item Màu trắng, cỡ chữ 2xl, font chữ đậm
+    \item Căn giữa và có margin-bottom 6 đơn vị
+\end{itemize}
+
+\subsubsection{Trường nhập liệu}
+\begin{itemize}
+    \item \textbf{Username}:
+    \begin{itemize}
+        \item Label màu xám nhạt (text-gray-300)
+        \item Input field có nền màu xám đậm (bg-zinc-800)
+        \item Viền màu xám (border-zinc-700)
+        \item Chữ màu trắng
+        \item Placeholder "Username"
+    \end{itemize}
+    
+    \item \textbf{Password}:
+    \begin{itemize}
+        \item Tương tự như trường username
+        \item Kiểu input là password (ẩn ký tự)
+        \item Placeholder "Password"
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Nút đăng nhập}
+\begin{itemize}
+    \item Màu xanh lá (bg-green-500)
+    \item Hover màu xanh lá nhạt hơn (hover:bg-green-400)
+    \item Chữ màu đen, font đậm
+    \item Chiều rộng 100\%
+    \item Padding dọc 3 đơn vị
+    \item Có trạng thái loading khi đang xử lý đăng nhập
+\end{itemize}
+
+\subsubsection{Link đăng ký}
+\begin{itemize}
+    \item Dòng chữ "Don't have an account?"
+    \item Link "Sign up for Spotify" màu trắng
+    \item Có hiệu ứng gạch chân khi hover
+    \item Căn giữa và có margin-top 6 đơn vị
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Xác thực người dùng}
+\begin{itemize}
+    \item Form có validation required cho cả username và password
+    \item Khi submit form, gọi hàm \texttt{handleSubmit}
+    \item Hiển thị loading state trong quá trình xử lý
+\end{itemize}
+
+\subsubsection{Xử lý đăng nhập}
+\begin{itemize}
+    \item Sử dụng context \texttt{useAuth} để gọi hàm \texttt{login}
+    \item Nếu đăng nhập thành công:
+    \begin{itemize}
+        \item Hiển thị thông báo thành công
+        \item Chuyển hướng về trang chủ
+    \end{itemize}
+    \item Nếu thất bại:
+    \begin{itemize}
+        \item Hiển thị thông báo lỗi
+        \item Log lỗi ra console
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Điều hướng}
+\begin{itemize}
+    \item Có link đến trang đăng ký (/register)
+    \item Sử dụng component \texttt{Link} từ react-router-dom
+\end{itemize}
+
+\subsubsection{Giao diện responsive}
+\begin{itemize}
+    \item Sử dụng Tailwind CSS
+    \item Container có padding 6 đơn vị ở mọi hướng
+    \item Chiều rộng tối đa được giới hạn
+    \item Layout flexbox để căn giữa các phần tử
+\end{itemize}
+
+\subsection{Kết luận}
+Giao diện đăng nhập được thiết kế với phong cách hiện đại, tối giản, phù hợp với thương hiệu Spotify. Việc sử dụng Tailwind CSS giúp tạo ra giao diện responsive và nhất quán. Các chức năng xác thực và điều hướng được tích hợp đầy đủ, đảm bảo trải nghiệm người dùng mượt mà và an toàn.
+
+\section{Phân tích giao diện đăng ký}
+
+\subsection{Tổng quan về giao diện đăng ký}
+Giao diện đăng ký tài khoản của ứng dụng Spotify Clone được thiết kế hiện đại, tối giản với tông màu đen chủ đạo và điểm nhấn màu xanh lá, tạo cảm giác chuyên nghiệp và đồng bộ với thương hiệu Spotify.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{register_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện đăng ký tài khoản của ứng dụng}
+\label{fig:register}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Logo và tiêu đề}
+\begin{itemize}
+    \item Logo Spotify và tên ứng dụng hiển thị ở phía trên cùng, căn giữa.
+    \item Tiêu đề lớn: \textbf{Sign up for Spotify}, nổi bật, căn giữa.
+\end{itemize}
+
+\subsubsection{Form đăng ký}
+\begin{itemize}
+    \item Container nền đen, bo góc, đổ bóng, căn giữa màn hình.
+    \item Các trường nhập liệu:
+    \begin{itemize}
+        \item \textbf{Name}: Gồm hai ô nhập First name và Last name, hiển thị placeholder tương ứng.
+        \item \textbf{Username}: Ô nhập cho tên đăng nhập, có placeholder và hiển thị giá trị nhập vào.
+        \item \textbf{Password}: Ô nhập mật khẩu, kiểu password (ẩn ký tự), có placeholder.
+    \end{itemize}
+    \item Các ô nhập liệu đều có nền xám đậm, viền bo tròn, chữ trắng hoặc xám nhạt.
+\end{itemize}
+
+\subsubsection{Nút đăng ký}
+\begin{itemize}
+    \item Nút \textbf{Sign Up} màu xanh lá nổi bật, chữ trắng, bo góc, chiếm toàn bộ chiều rộng form.
+    \item Khi nhấn sẽ thực hiện chức năng đăng ký tài khoản.
+\end{itemize}
+
+\subsubsection{Liên kết chuyển hướng}
+\begin{itemize}
+    \item Dòng chữ nhỏ: \textit{Already have an account?}
+    \item Liên kết \textbf{Log in to Spotify} màu trắng, in đậm, có hiệu ứng khi hover, cho phép chuyển sang trang đăng nhập.
+    \item Căn giữa phía dưới form.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Xử lý đăng ký}
+\begin{itemize}
+    \item Người dùng nhập đầy đủ thông tin: họ tên, username, password.
+    \item Khi nhấn \textbf{Sign Up}, hệ thống kiểm tra hợp lệ và gửi yêu cầu đăng ký tài khoản.
+    \item Nếu thành công, có thể chuyển hướng sang trang đăng nhập hoặc trang chính.
+    \item Nếu thất bại, hiển thị thông báo lỗi.
+\end{itemize}
+
+\subsubsection{Điều hướng}
+\begin{itemize}
+    \item Nếu đã có tài khoản, người dùng có thể nhấn vào liên kết để chuyển sang trang đăng nhập.
+\end{itemize}
+
+\subsubsection{Giao diện responsive}
+\begin{itemize}
+    \item Giao diện căn giữa, thích ứng với nhiều kích thước màn hình.
+    \item Sử dụng flexbox và các thuộc tính CSS hiện đại để đảm bảo trải nghiệm nhất quán trên mọi thiết bị.
+\end{itemize}
+
+\subsection{Kết luận}
+Giao diện đăng ký được thiết kế trực quan, dễ sử dụng, đảm bảo trải nghiệm người dùng mượt mà và đồng bộ với phong cách thương hiệu Spotify. Các trường nhập liệu rõ ràng, nút hành động nổi bật và liên kết điều hướng hợp lý giúp người dùng dễ dàng thao tác.
+
+\section{Phân tích giao diện chức năng bạn bè (Friends)}
+
+\subsection{Tổng quan về giao diện bạn bè}
+Giao diện quản lý bạn bè của ứng dụng Spotify Clone được thiết kế hiện đại, trực quan, sử dụng tông màu tối chủ đạo, giúp nổi bật các thành phần chức năng và thông tin người dùng.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{friends_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện chức năng bạn bè của ứng dụng}
+\label{fig:friends}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Thanh điều hướng bên trái (Sidebar)}
+\begin{itemize}
+    \item Logo và tên ứng dụng ở trên cùng.
+    \item Các mục điều hướng chính: Home, Search, Your Library, Create Playlist, Purchase History, Friends, Liked Songs.
+    \item Mục Friends được làm nổi bật khi đang ở trang này.
+    \item Danh sách playlist cá nhân và nghệ sĩ đang theo dõi hiển thị phía dưới.
+\end{itemize}
+
+\subsubsection{Thanh điều hướng trên cùng (Topbar)}
+\begin{itemize}
+    \item Nút quay lại, thanh tìm kiếm, nút tạo playlist, biểu tượng tài khoản và avatar người dùng.
+\end{itemize}
+
+\subsubsection{Khu vực nội dung chính}
+\begin{itemize}
+    \item Tiêu đề lớn: \textbf{Friends} với biểu tượng người dùng.
+    \item Thanh tab chuyển đổi: Friends, Pending Requests, Sent Requests, Find Friends.
+    \item Danh sách bạn bè hiển thị dưới dạng các thẻ (card) với thông tin:
+    \begin{itemize}
+        \item Ảnh đại diện, tên, username, mô tả ngắn (nếu có).
+        \item Hai nút chức năng: \textbf{Message} (nhắn tin) và \textbf{Remove} (xóa bạn).
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Thanh điều khiển nhạc (Music Player Bar)}
+\begin{itemize}
+    \item Hiển thị ở dưới cùng màn hình.
+    \item Thông tin bài hát đang phát, các nút điều khiển nhạc (play, pause, next, previous, repeat, volume, v.v.).
+    \item Thanh tiến trình phát nhạc và nút yêu thích bài hát.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Quản lý bạn bè}
+\begin{itemize}
+    \item Xem danh sách bạn bè hiện tại.
+    \item Gửi tin nhắn trực tiếp cho bạn bè qua nút \textbf{Message}.
+    \item Xóa bạn khỏi danh sách qua nút \textbf{Remove}.
+\end{itemize}
+
+\subsubsection{Chuyển đổi tab}
+\begin{itemize}
+    \item Chuyển đổi giữa các tab: Friends, Pending Requests (lời mời chờ xác nhận), Sent Requests (lời mời đã gửi), Find Friends (tìm bạn mới).
+\end{itemize}
+
+\subsubsection{Điều hướng và trải nghiệm người dùng}
+\begin{itemize}
+    \item Dễ dàng chuyển đổi giữa các chức năng chính của ứng dụng qua sidebar và topbar.
+    \item Giao diện responsive, tối ưu cho nhiều kích thước màn hình.
+    \item Các nút chức năng rõ ràng, dễ thao tác.
+\end{itemize}
+
+\subsection{Kết luận}
+Giao diện bạn bè được thiết kế trực quan, hiện đại, giúp người dùng dễ dàng quản lý, kết nối và tương tác với bạn bè trong hệ sinh thái Spotify Clone. Các chức năng chính được bố trí hợp lý, đảm bảo trải nghiệm người dùng mượt mà và nhất quán với tổng thể ứng dụng.
+
+\section{Phân tích giao diện trang hồ sơ cá nhân (Profile)}
+
+\subsection{Tổng quan về giao diện hồ sơ cá nhân}
+Giao diện hồ sơ cá nhân (Profile) của ứng dụng Spotify Clone được thiết kế tối giản, hiện đại, tập trung vào việc hiển thị thông tin cá nhân, bio, thống kê tài khoản và cung cấp chức năng chỉnh sửa hồ sơ.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{profile_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện trang hồ sơ cá nhân}
+\label{fig:profile}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Thanh điều hướng bên trái (Sidebar)}
+\begin{itemize}
+    \item Logo và tên ứng dụng ở trên cùng.
+    \item Các mục điều hướng chính: Home, Search, Your Library, Create Playlist, Purchase History, Friends, Liked Songs.
+    \item Danh sách playlist cá nhân và nghệ sĩ đang theo dõi hiển thị phía dưới.
+\end{itemize}
+
+\subsubsection{Thanh điều hướng trên cùng (Topbar)}
+\begin{itemize}
+    \item Nút quay lại, thanh tìm kiếm, nút tạo playlist, biểu tượng tài khoản và avatar người dùng.
+\end{itemize}
+
+\subsubsection{Khu vực nội dung chính (Profile)}
+\begin{itemize}
+    \item Tiêu đề lớn: \textbf{Your Profile}, căn trái, nổi bật.
+    \item Nút \textbf{Edit Profile} ở góc trên bên phải, cho phép chuyển sang chế độ chỉnh sửa hồ sơ.
+    \item Thông tin cá nhân hiển thị trong một card lớn ở giữa màn hình:
+    \begin{itemize}
+        \item Ảnh đại diện (avatar) lớn, căn trái.
+        \item Họ tên đầy đủ (in đậm), username (in nhỏ, màu xám).
+        \item Bio: mô tả ngắn về bản thân, hiển thị rõ ràng.
+        \item Thống kê tài khoản: số lượng playlist và số lượng bạn bè (Account Stats), hiển thị nổi bật phía dưới.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Thanh điều khiển nhạc (Music Player Bar)}
+\begin{itemize}
+    \item Hiển thị ở dưới cùng màn hình.
+    \item Thông tin bài hát đang phát, các nút điều khiển nhạc (play, pause, next, previous, repeat, volume, v.v.).
+    \item Thanh tiến trình phát nhạc và nút yêu thích bài hát.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Hiển thị thông tin cá nhân}
+\begin{itemize}
+    \item Hiển thị ảnh đại diện, họ tên, username, bio và các thống kê tài khoản (số playlist, số bạn bè).
+\end{itemize}
+
+\subsubsection{Chỉnh sửa hồ sơ}
+\begin{itemize}
+    \item Nhấn nút \textbf{Edit Profile} để chuyển sang giao diện chỉnh sửa thông tin cá nhân.
+\end{itemize}
+
+\subsubsection{Điều hướng và trải nghiệm người dùng}
+\begin{itemize}
+    \item Dễ dàng chuyển đổi giữa các chức năng chính của ứng dụng qua sidebar và topbar.
+    \item Giao diện responsive, tối ưu cho nhiều kích thước màn hình.
+    \item Các thành phần được bố trí hợp lý, dễ thao tác.
+\end{itemize}
+
+\subsection{Kết luận}
+Giao diện hồ sơ cá nhân được thiết kế trực quan, hiện đại, giúp người dùng dễ dàng xem và quản lý thông tin cá nhân cũng như các thống kê tài khoản. Các chức năng chỉnh sửa và điều hướng được tích hợp hợp lý, đảm bảo trải nghiệm người dùng mượt mà và đồng bộ với tổng thể ứng dụng.
+\section{Phân tích giao diện chỉnh sửa hồ sơ (Edit Profile)}
+
+\subsection{Tổng quan về giao diện chỉnh sửa hồ sơ}
+Giao diện chỉnh sửa hồ sơ người dùng của ứng dụng Spotify Clone được thiết kế hiện đại, tối giản, tập trung vào trải nghiệm người dùng với các trường thông tin rõ ràng, dễ thao tác.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{edit_profile_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện chỉnh sửa hồ sơ người dùng}
+\label{fig:editprofile}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Thanh điều hướng bên trái (Sidebar)}
+\begin{itemize}
+    \item Logo và tên ứng dụng ở trên cùng.
+    \item Các mục điều hướng chính: Home, Search, Your Library, Create Playlist, Purchase History, Friends, Liked Songs.
+    \item Danh sách playlist cá nhân và nghệ sĩ đang theo dõi hiển thị phía dưới.
+\end{itemize}
+
+\subsubsection{Thanh điều hướng trên cùng (Topbar)}
+\begin{itemize}
+    \item Nút quay lại, thanh tìm kiếm, nút tạo playlist, biểu tượng tài khoản và avatar người dùng.
+\end{itemize}
+
+\subsubsection{Khu vực nội dung chính}
+\begin{itemize}
+    \item Tiêu đề lớn: \textbf{Your Profile}, căn trái, nổi bật.
+    \item Ảnh đại diện người dùng (avatar) lớn, có nút thay đổi ảnh (biểu tượng máy ảnh).
+    \item Các trường thông tin cá nhân:
+    \begin{itemize}
+        \item \textbf{First name}: Ô nhập liệu, hiển thị tên.
+        \item \textbf{Last name}: Ô nhập liệu, hiển thị họ.
+        \item \textbf{Username}: Ô nhập liệu, không cho phép chỉnh sửa (có chú thích “Username cannot be changed”).
+        \item \textbf{Bio}: Ô nhập liệu cho mô tả ngắn về bản thân.
+    \end{itemize}
+    \item Hai nút chức năng:
+    \begin{itemize}
+        \item \textbf{Save Changes}: Nút màu xanh lá, lưu thay đổi thông tin.
+        \item \textbf{Cancel}: Nút màu đen/xám, hủy thao tác chỉnh sửa.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Thanh điều khiển nhạc (Music Player Bar)}
+\begin{itemize}
+    \item Hiển thị ở dưới cùng màn hình.
+    \item Thông tin bài hát đang phát, các nút điều khiển nhạc (play, pause, next, previous, repeat, volume, v.v.).
+    \item Thanh tiến trình phát nhạc và nút yêu thích bài hát.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Chỉnh sửa thông tin cá nhân}
+\begin{itemize}
+    \item Cho phép người dùng thay đổi ảnh đại diện, họ tên, và mô tả bản thân (bio).
+    \item Username không thể thay đổi sau khi đăng ký.
+    \item Nhấn \textbf{Save Changes} để lưu thông tin mới, hoặc \textbf{Cancel} để hủy bỏ thay đổi.
+\end{itemize}
+
+\subsubsection{Điều hướng và trải nghiệm người dùng}
+\begin{itemize}
+    \item Dễ dàng chuyển đổi giữa các chức năng chính của ứng dụng qua sidebar và topbar.
+    \item Giao diện responsive, tối ưu cho nhiều kích thước màn hình.
+    \item Các trường nhập liệu và nút chức năng rõ ràng, dễ thao tác.
+\end{itemize}
+
+\subsection{Kết luận}
+Giao diện chỉnh sửa hồ sơ được thiết kế trực quan, hiện đại, giúp người dùng dễ dàng cập nhật thông tin cá nhân. Các trường thông tin được bố trí hợp lý, đảm bảo trải nghiệm người dùng mượt mà và đồng bộ với tổng thể ứng dụng.
+
+\section{Phân tích giao diện chức năng tin nhắn (Chat)}
+
+\subsection{Tổng quan về giao diện tin nhắn}
+Giao diện trò chuyện (chat) giữa hai người dùng trong ứng dụng Spotify Clone được thiết kế tối giản, hiện đại, tập trung vào trải nghiệm nhắn tin trực tiếp, đồng thời vẫn giữ phong cách nhận diện thương hiệu Spotify.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{chat_screen.png}
+\caption{Giao diện chức năng tin nhắn giữa hai người dùng}
+\label{fig:chat}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Thanh điều hướng bên trái (Sidebar)}
+\begin{itemize}
+    \item Logo và tên ứng dụng ở trên cùng.
+    \item Các mục điều hướng chính: Home, Search, Your Library, Create Playlist, Purchase History, Friends, Liked Songs.
+    \item Danh sách playlist cá nhân và nghệ sĩ đang theo dõi hiển thị phía dưới.
+\end{itemize}
+
+\subsubsection{Thanh điều hướng trên cùng (Topbar)}
+\begin{itemize}
+    \item Nút quay lại, thanh tìm kiếm, nút tạo playlist, biểu tượng tài khoản và avatar người dùng.
+\end{itemize}
+
+\subsubsection{Khu vực nội dung chính (Chat)}
+\begin{itemize}
+    \item Tiêu đề: Hiển thị tên bạn bè, username và ngày bắt đầu cuộc trò chuyện.
+    \item Tin nhắn hiển thị theo dạng bong bóng (bubble chat):
+    \begin{itemize}
+        \item Tin nhắn của người dùng hiện tại (bên phải, màu xanh lá).
+        \item Tin nhắn của bạn bè (bên trái, màu xám đậm).
+        \item Mỗi tin nhắn có thời gian gửi kèm theo.
+    \end{itemize}
+    \item Khu vực nhập tin nhắn:
+    \begin{itemize}
+        \item Ô nhập liệu với placeholder “Type a message...”
+        \item Nút gửi tin nhắn (biểu tượng máy bay giấy), màu xanh lá, nằm bên phải ô nhập.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Thanh điều khiển nhạc (Music Player Bar)}
+\begin{itemize}
+    \item Hiển thị ở dưới cùng màn hình.
+    \item Thông tin bài hát đang phát, các nút điều khiển nhạc (play, pause, next, previous, repeat, volume, v.v.).
+    \item Thanh tiến trình phát nhạc và nút yêu thích bài hát.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Nhắn tin trực tiếp}
+\begin{itemize}
+    \item Cho phép người dùng gửi và nhận tin nhắn với bạn bè theo thời gian thực.
+    \item Tin nhắn mới sẽ xuất hiện ngay lập tức trong khung chat.
+    \item Hiển thị thời gian gửi cho từng tin nhắn.
+\end{itemize}
+
+\subsubsection{Điều hướng và trải nghiệm người dùng}
+\begin{itemize}
+    \item Dễ dàng quay lại danh sách bạn bè hoặc các chức năng khác qua sidebar và topbar.
+    \item Giao diện responsive, tối ưu cho nhiều kích thước màn hình.
+    \item Các nút chức năng rõ ràng, dễ thao tác.
+\end{itemize}
+
+\subsection{Kết luận}
+Giao diện chat được thiết kế trực quan, hiện đại, giúp người dùng dễ dàng trò chuyện với bạn bè trong hệ sinh thái Spotify Clone. Các thành phần được bố trí hợp lý, đảm bảo trải nghiệm nhắn tin mượt mà và đồng bộ với tổng thể ứng dụng.
+
+\section{Phân tích giao diện trang tìm kiếm (Search)}
+
+\subsection{Tổng quan về giao diện tìm kiếm}
+Giao diện tìm kiếm của ứng dụng Spotify Clone được thiết kế hiện đại, trực quan, giúp người dùng dễ dàng tìm kiếm bài hát, nghệ sĩ, playlist hoặc thể loại nhạc. Giao diện sử dụng tông màu tối chủ đạo, nổi bật các thành phần chức năng.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{search_browse_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện trang tìm kiếm với các thể loại nhạc}
+\label{fig:search_browse}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{search_result_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện trang tìm kiếm với kết quả tìm kiếm}
+\label{fig:search_result}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Thanh điều hướng bên trái (Sidebar)}
+\begin{itemize}
+    \item Logo và tên ứng dụng ở trên cùng.
+    \item Các mục điều hướng chính: Home, Search (được làm nổi bật khi ở trang này), Your Library, Create Playlist, Purchase History, Friends, Liked Songs.
+    \item Danh sách playlist cá nhân và nghệ sĩ đang theo dõi hiển thị phía dưới.
+\end{itemize}
+
+\subsubsection{Thanh điều hướng trên cùng (Topbar)}
+\begin{itemize}
+    \item Nút quay lại, thanh tìm kiếm, nút tạo playlist, biểu tượng tài khoản và avatar người dùng.
+\end{itemize}
+
+\subsubsection{Khu vực nội dung chính}
+\begin{itemize}
+    \item Thanh tìm kiếm lớn ở phía trên, có placeholder “What do you want to listen to?” hoặc hiển thị từ khóa tìm kiếm.
+    \item Khi chưa tìm kiếm, hiển thị các thể loại nhạc (Pop, Hip-Hop, Rock, Electronic, R\&B, Indie, Jazz, Classical) dưới dạng các ô màu sắc nổi bật, dễ nhận biết.
+    \item Khi có kết quả tìm kiếm:
+    \begin{itemize}
+        \item Hiển thị các tab lọc: All, Songs, Artists, Playlists.
+        \item Kết quả tìm kiếm được chia thành các khu vực: nghệ sĩ, bài hát, playlist.
+        \item Thông tin nghệ sĩ: ảnh đại diện, tên nghệ sĩ, nhãn “Artist”.
+        \item Danh sách bài hát: tên bài hát, nghệ sĩ, thời lượng.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Thanh điều khiển nhạc (Music Player Bar)}
+\begin{itemize}
+    \item Hiển thị ở dưới cùng màn hình.
+    \item Thông tin bài hát đang phát, các nút điều khiển nhạc (play, pause, next, previous, repeat, volume, v.v.).
+    \item Thanh tiến trình phát nhạc và nút yêu thích bài hát.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Tìm kiếm nội dung}
+\begin{itemize}
+    \item Cho phép người dùng nhập từ khóa để tìm kiếm bài hát, nghệ sĩ, playlist hoặc thể loại nhạc.
+    \item Hiển thị kết quả tìm kiếm theo từng danh mục, giúp người dùng dễ dàng lựa chọn.
+    \item Có thể lọc kết quả theo tab: All, Songs, Artists, Playlists.
+\end{itemize}
+
+\subsubsection{Khám phá thể loại nhạc}
+\begin{itemize}
+    \item Khi chưa nhập từ khóa, người dùng có thể duyệt nhanh các thể loại nhạc phổ biến qua các ô màu sắc nổi bật.
+\end{itemize}
+
+\subsubsection{Điều hướng và trải nghiệm người dùng}
+\begin{itemize}
+    \item Dễ dàng chuyển đổi giữa các chức năng chính của ứng dụng qua sidebar và topbar.
+    \item Giao diện responsive, tối ưu cho nhiều kích thước màn hình.
+    \item Các thành phần được bố trí hợp lý, dễ thao tác.
+\end{itemize}
+
+\subsection{Kết luận}
+Giao diện tìm kiếm được thiết kế trực quan, hiện đại, giúp người dùng dễ dàng tìm kiếm và khám phá nội dung âm nhạc trên Spotify Clone. Các chức năng tìm kiếm, lọc và khám phá thể loại nhạc được tích hợp hợp lý, đảm bảo trải nghiệm người dùng mượt mà và đồng bộ với tổng thể ứng dụng.
+
+\section{Phân tích giao diện chức năng theo dõi nghệ sĩ (Follow Artist)}
+
+\subsection{Tổng quan về giao diện nghệ sĩ}
+Giao diện trang nghệ sĩ của ứng dụng Spotify Clone được thiết kế hiện đại, tối giản, tập trung vào việc hiển thị thông tin nghệ sĩ, số lượng người nghe hàng tháng và các chức năng tương tác như phát nhạc và theo dõi nghệ sĩ.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{artist_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện trang nghệ sĩ với chức năng theo dõi}
+\label{fig:artist}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Thanh điều hướng bên trái (Sidebar)}
+\begin{itemize}
+    \item Logo và tên ứng dụng ở trên cùng.
+    \item Các mục điều hướng chính: Home, Search, Your Library, Create Playlist, Purchase History, Friends, Liked Songs.
+    \item Danh sách playlist cá nhân và nghệ sĩ đang theo dõi hiển thị phía dưới.
+\end{itemize}
+
+\subsubsection{Thanh điều hướng trên cùng (Topbar)}
+\begin{itemize}
+    \item Nút quay lại, thanh tìm kiếm, nút tạo playlist, biểu tượng tài khoản và avatar người dùng.
+\end{itemize}
+
+\subsubsection{Khu vực nội dung chính (Artist)}
+\begin{itemize}
+    \item Ảnh đại diện nghệ sĩ lớn, nổi bật ở trung tâm.
+    \item Nhãn “ARTIST” nhỏ phía trên tên nghệ sĩ.
+    \item Tên nghệ sĩ hiển thị lớn, in đậm (ví dụ: \textbf{Drake}).
+    \item Thông tin số lượng người nghe hàng tháng (monthly listeners) hiển thị ngay dưới tên nghệ sĩ.
+    \item Các nút chức năng:
+    \begin{itemize}
+        \item \textbf{Play}: Nút tròn màu xanh lá, phát nhạc của nghệ sĩ.
+        \item \textbf{Follow}: Nút viền bo tròn, cho phép người dùng theo dõi nghệ sĩ.
+        \item Nút tuỳ chọn khác (dấu ba chấm).
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Thanh điều khiển nhạc (Music Player Bar)}
+\begin{itemize}
+    \item Hiển thị ở dưới cùng màn hình.
+    \item Thông tin bài hát đang phát, các nút điều khiển nhạc (play, pause, next, previous, repeat, volume, v.v.).
+    \item Thanh tiến trình phát nhạc và nút yêu thích bài hát.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Theo dõi nghệ sĩ}
+\begin{itemize}
+    \item Người dùng có thể nhấn nút \textbf{Follow} để theo dõi nghệ sĩ yêu thích.
+    \item Sau khi theo dõi, các bản phát hành mới của nghệ sĩ sẽ xuất hiện trong thư viện của người dùng.
+\end{itemize}
+
+\subsubsection{Phát nhạc nghệ sĩ}
+\begin{itemize}
+    \item Nhấn nút \textbf{Play} để phát các bài hát nổi bật của nghệ sĩ.
+\end{itemize}
+
+\subsubsection{Điều hướng và trải nghiệm người dùng}
+\begin{itemize}
+    \item Dễ dàng chuyển đổi giữa các chức năng chính của ứng dụng qua sidebar và topbar.
+    \item Giao diện responsive, tối ưu cho nhiều kích thước màn hình.
+    \item Các thành phần được bố trí hợp lý, dễ thao tác.
+\end{itemize}
+
+\subsection{Kết luận}
+Giao diện trang nghệ sĩ được thiết kế trực quan, hiện đại, giúp người dùng dễ dàng theo dõi và tương tác với nghệ sĩ yêu thích. Các chức năng phát nhạc và theo dõi được tích hợp hợp lý, đảm bảo trải nghiệm người dùng mượt mà và đồng bộ với tổng thể ứng dụng.
+
+\section{Phân tích giao diện chức năng phát nhạc (Music Player)}
+
+\subsection{Tổng quan về giao diện phát nhạc}
+Giao diện phát nhạc của ứng dụng Spotify Clone được thiết kế hiện đại, tối giản, tập trung vào trải nghiệm nghe nhạc với các thành phần điều khiển trực quan và hiển thị danh sách bài hát rõ ràng.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{music_player_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện chức năng phát nhạc}
+\label{fig:musicplayer}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Thanh điều hướng bên trái (Sidebar)}
+\begin{itemize}
+    \item Logo và tên ứng dụng ở trên cùng.
+    \item Các mục điều hướng chính: Home (được làm nổi bật khi ở trang này), Search, Your Library, Create Playlist, Purchase History, Friends, Liked Songs.
+    \item Danh sách playlist cá nhân và nghệ sĩ đang theo dõi hiển thị phía dưới.
+\end{itemize}
+
+\subsubsection{Thanh điều hướng trên cùng (Topbar)}
+\begin{itemize}
+    \item Nút quay lại, thanh tìm kiếm, nút tạo playlist, biểu tượng tài khoản và avatar người dùng.
+\end{itemize}
+
+\subsubsection{Khu vực nội dung chính (All Songs)}
+\begin{itemize}
+    \item Tiêu đề lớn: \textbf{All Songs}, căn giữa, nổi bật.
+    \item Danh sách các bài hát hiển thị dưới dạng lưới (grid), mỗi bài hát là một card với:
+    \begin{itemize}
+        \item Ảnh đại diện bài hát (nếu có).
+        \item Tên bài hát, số lượt phát hoặc số thứ tự.
+        \item Thời lượng bài hát.
+    \end{itemize}
+    \item Người dùng có thể nhấn vào từng bài hát để phát nhạc.
+\end{itemize}
+
+\subsubsection{Thanh điều khiển nhạc (Music Player Bar)}
+\begin{itemize}
+    \item Hiển thị ở dưới cùng màn hình, luôn cố định khi phát nhạc.
+    \item Thông tin bài hát đang phát: ảnh, tên bài hát, nghệ sĩ (nếu có).
+    \item Các nút điều khiển nhạc: phát/dừng (play/pause), chuyển bài (next/previous), lặp lại (repeat), điều chỉnh âm lượng, yêu thích bài hát (icon trái tim).
+    \item Thanh tiến trình phát nhạc hiển thị thời gian đã phát và tổng thời lượng.
+    \item Thông báo nổi (popup) hiển thị tên bài hát đang phát.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Phát nhạc và điều khiển}
+\begin{itemize}
+    \item Người dùng có thể chọn bất kỳ bài hát nào để phát.
+    \item Có thể tạm dừng, phát tiếp, chuyển bài, lặp lại, điều chỉnh âm lượng.
+    \item Hiển thị tiến trình phát nhạc theo thời gian thực.
+    \item Hiển thị thông báo tên bài hát đang phát.
+\end{itemize}
+
+\subsubsection{Điều hướng và trải nghiệm người dùng}
+\begin{itemize}
+    \item Dễ dàng chuyển đổi giữa các chức năng chính của ứng dụng qua sidebar và topbar.
+    \item Giao diện responsive, tối ưu cho nhiều kích thước màn hình.
+    \item Các thành phần được bố trí hợp lý, dễ thao tác.
+\end{itemize}
+
+\subsection{Kết luận}
+Giao diện phát nhạc được thiết kế trực quan, hiện đại, giúp người dùng dễ dàng lựa chọn và thưởng thức các bài hát yêu thích. Các chức năng điều khiển nhạc được tích hợp đầy đủ, đảm bảo trải nghiệm nghe nhạc mượt mà và đồng bộ với tổng thể ứng dụng.
+
+\section{Phân tích giao diện chức năng mua nhạc (Purchase Song)}
+
+\subsection{Tổng quan về chức năng mua nhạc}
+Chức năng mua nhạc cho phép người dùng mua bài hát để phát trên ứng dụng Spotify Clone. Khi người dùng chọn một bài hát chưa sở hữu, một hộp thoại xác nhận mua sẽ xuất hiện, đảm bảo trải nghiệm mua hàng rõ ràng, minh bạch và thuận tiện.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{purchase_song_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện chức năng mua nhạc}
+\label{fig:purchasesong}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Hộp thoại mua nhạc (Purchase Dialog)}
+\begin{itemize}
+    \item Tiêu đề hộp thoại: \textbf{Purchase Song}, in đậm, nổi bật.
+    \item Nội dung thông báo: Hiển thị tên bài hát cần mua và giá tiền (ví dụ: “You need to purchase 'Harry Potter Indian Theme' for \$1.99 to play it.”).
+    \item Hai nút chức năng:
+    \begin{itemize}
+        \item \textbf{Cancel}: Nút màu đen/xám, cho phép hủy thao tác mua.
+        \item \textbf{Purchase}: Nút màu xanh lá, xác nhận mua bài hát.
+    \end{itemize}
+    \item Hộp thoại được căn giữa màn hình, làm mờ nền phía sau để tập trung sự chú ý của người dùng.
+\end{itemize}
+
+\subsubsection{Các thành phần khác}
+\begin{itemize}
+    \item Giao diện chính phía sau hộp thoại vẫn hiển thị danh sách bài hát, sidebar, topbar và thanh điều khiển nhạc như bình thường, nhưng bị làm mờ (blur) hoặc tối đi (overlay).
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Xác nhận mua nhạc}
+\begin{itemize}
+    \item Khi người dùng chọn phát một bài hát chưa sở hữu, hộp thoại xác nhận mua sẽ xuất hiện.
+    \item Người dùng có thể chọn \textbf{Cancel} để hủy hoặc \textbf{Purchase} để xác nhận mua bài hát.
+    \item Sau khi mua thành công, người dùng có thể phát bài hát ngay lập tức.
+\end{itemize}
+
+\subsubsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Hộp thoại mua nhạc giúp người dùng nhận biết rõ ràng về việc mua hàng, tránh thao tác nhầm lẫn.
+    \item Giao diện thân thiện, các nút chức năng rõ ràng, dễ thao tác.
+\end{itemize}
+
+\subsection{Kết luận}
+Chức năng mua nhạc được thiết kế trực quan, minh bạch, giúp người dùng dễ dàng mua và sở hữu các bài hát yêu thích. Hộp thoại xác nhận mua đảm bảo an toàn, rõ ràng cho người dùng khi thực hiện giao dịch trên ứng dụng.
+
+\section{Phân tích giao diện trang lịch sử mua nhạc (Purchase History)}
+
+\subsection{Tổng quan về giao diện lịch sử mua nhạc}
+Giao diện lịch sử mua nhạc của ứng dụng Spotify Clone giúp người dùng dễ dàng theo dõi các bài hát đã mua, tổng số tiền đã chi tiêu và thực hiện các thao tác như phát, tải về hoặc chia sẻ bài hát.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{purchase_history_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện trang lịch sử mua nhạc}
+\label{fig:purchasehistory}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Thanh điều hướng bên trái (Sidebar)}
+\begin{itemize}
+    \item Logo và tên ứng dụng ở trên cùng.
+    \item Các mục điều hướng chính: Home, Search, Your Library, Create Playlist, \textbf{Purchase History} (được làm nổi bật khi ở trang này), Friends, Liked Songs.
+    \item Danh sách playlist cá nhân và nghệ sĩ đang theo dõi hiển thị phía dưới.
+\end{itemize}
+
+\subsubsection{Thanh điều hướng trên cùng (Topbar)}
+\begin{itemize}
+    \item Nút quay lại, thanh tìm kiếm, nút tạo playlist, biểu tượng tài khoản và avatar người dùng.
+\end{itemize}
+
+\subsubsection{Khu vực nội dung chính (Purchase History)}
+\begin{itemize}
+    \item Tiêu đề lớn: \textbf{Purchase History}, căn giữa, nổi bật.
+    \item Bảng tổng kết (summary) phía trên:
+    \begin{itemize}
+        \item Tổng số bài hát đã mua (ví dụ: \textbf{9 songs}).
+        \item Tổng số tiền đã chi tiêu (ví dụ: \textbf{\$1.99}).
+    \end{itemize}
+    \item Bảng danh sách các bài hát đã mua với các cột:
+    \begin{itemize}
+        \item \textbf{Song}: Tên bài hát, kèm ảnh đại diện nếu có.
+        \item \textbf{Artist}: Nghệ sĩ thể hiện.
+        \item \textbf{Date}: Ngày mua bài hát.
+        \item \textbf{Price}: Giá tiền.
+        \item \textbf{Actions}: Các nút chức năng (phát, tải về, chia sẻ).
+    \end{itemize}
+    \item Giao diện bảng rõ ràng, dễ nhìn, các nút chức năng trực quan.
+\end{itemize}
+
+\subsubsection{Thanh điều khiển nhạc (Music Player Bar)}
+\begin{itemize}
+    \item Hiển thị ở dưới cùng màn hình.
+    \item Thông tin bài hát đang phát, các nút điều khiển nhạc (play, pause, next, previous, repeat, volume, v.v.).
+    \item Thanh tiến trình phát nhạc và nút yêu thích bài hát.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Quản lý lịch sử mua nhạc}
+\begin{itemize}
+    \item Hiển thị danh sách tất cả các bài hát đã mua, kèm thông tin chi tiết.
+    \item Thống kê tổng số bài hát và tổng số tiền đã chi tiêu.
+\end{itemize}
+
+\subsubsection{Thao tác với bài hát đã mua}
+\begin{itemize}
+    \item Phát bài hát trực tiếp từ bảng lịch sử.
+    \item Tải về bài hát đã mua.
+    \item Chia sẻ bài hát với bạn bè hoặc lên mạng xã hội.
+\end{itemize}
+
+\subsubsection{Điều hướng và trải nghiệm người dùng}
+\begin{itemize}
+    \item Dễ dàng chuyển đổi giữa các chức năng chính của ứng dụng qua sidebar và topbar.
+    \item Giao diện responsive, tối ưu cho nhiều kích thước màn hình.
+    \item Các thành phần được bố trí hợp lý, dễ thao tác.
+\end{itemize}
+
+\subsection{Kết luận}
+Giao diện lịch sử mua nhạc được thiết kế trực quan, hiện đại, giúp người dùng dễ dàng quản lý các bài hát đã mua và thực hiện các thao tác cần thiết. Các chức năng phát, tải về và chia sẻ bài hát được tích hợp hợp lý, đảm bảo trải nghiệm người dùng mượt mà và đồng bộ với tổng thể ứng dụng.
+
+\section{Phân tích giao diện chức năng tạo playlist (Create Playlist)}
+
+\subsection{Tổng quan về giao diện tạo playlist}
+Chức năng tạo playlist cho phép người dùng tự do tạo danh sách phát nhạc cá nhân trên ứng dụng Spotify Clone. Giao diện được thiết kế tối giản, hiện đại, tập trung vào trải nghiệm nhập liệu và thao tác nhanh chóng.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{create_playlist_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện chức năng tạo playlist}
+\label{fig:createplaylist}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Thanh điều hướng bên trái (Sidebar)}
+\begin{itemize}
+    \item Logo và tên ứng dụng ở trên cùng.
+    \item Các mục điều hướng chính: Home, Search, Your Library, \textbf{Create Playlist} (được làm nổi bật khi ở trang này), Purchase History, Friends, Liked Songs.
+    \item Danh sách playlist cá nhân và nghệ sĩ đang theo dõi hiển thị phía dưới.
+\end{itemize}
+
+\subsubsection{Thanh điều hướng trên cùng (Topbar)}
+\begin{itemize}
+    \item Nút quay lại, thanh tìm kiếm, nút tạo playlist, biểu tượng tài khoản và avatar người dùng.
+\end{itemize}
+
+\subsubsection{Khu vực nội dung chính (Create Playlist)}
+\begin{itemize}
+    \item Tiêu đề lớn: \textbf{Create Playlist}, căn giữa, nổi bật.
+    \item Hộp tạo playlist ở giữa màn hình, gồm:
+    \begin{itemize}
+        \item Icon nhạc lớn ở bên trái.
+        \item Dòng chữ hướng dẫn: “Start creating your custom playlist”.
+        \item Tên mặc định: \textbf{New Playlist}.
+        \item Trường nhập liệu: “Enter a name for your playlist”.
+        \item Hai nút chức năng:
+        \begin{itemize}
+            \item \textbf{Create Playlist}: Nút màu xanh lá, xác nhận tạo playlist mới.
+            \item \textbf{Cancel}: Nút màu đen/xám, hủy thao tác tạo playlist.
+        \end{itemize}
+    \end{itemize}
+    \item Giao diện hộp thoại bo góc, nổi bật trên nền tối.
+\end{itemize}
+
+\subsubsection{Thanh điều khiển nhạc (Music Player Bar)}
+\begin{itemize}
+    \item Hiển thị ở dưới cùng màn hình.
+    \item Thông tin bài hát đang phát, các nút điều khiển nhạc (play, pause, next, previous, repeat, volume, v.v.).
+    \item Thanh tiến trình phát nhạc và nút yêu thích bài hát.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Tạo playlist mới}
+\begin{itemize}
+    \item Người dùng nhập tên cho playlist mới và nhấn \textbf{Create Playlist} để tạo.
+    \item Nếu muốn hủy, nhấn \textbf{Cancel} để quay lại.
+    \item Sau khi tạo thành công, playlist sẽ xuất hiện trong danh sách cá nhân.
+\end{itemize}
+
+\subsubsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Giao diện nhập liệu rõ ràng, các nút chức năng nổi bật, dễ thao tác.
+    \item Giao diện responsive, tối ưu cho nhiều kích thước màn hình.
+\end{itemize}
+
+\subsection{Kết luận}
+Chức năng tạo playlist được thiết kế trực quan, hiện đại, giúp người dùng dễ dàng tạo và quản lý danh sách phát nhạc cá nhân. Các thao tác tạo, hủy được bố trí hợp lý, đảm bảo trải nghiệm người dùng mượt mà và đồng bộ với tổng thể ứng dụng.
+
+\section{Phân tích giao diện chức năng playlist (Playlist)}
+
+\subsection{Tổng quan về giao diện playlist}
+Chức năng playlist cho phép người dùng quản lý, phát và theo dõi các danh sách phát nhạc (playlist) trên ứng dụng Spotify Clone. Giao diện được thiết kế hiện đại, trực quan, tập trung vào trải nghiệm nghe nhạc và quản lý danh sách bài hát.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{playlist_overview_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện tổng quan playlist}
+\label{fig:playlist_overview}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{playlist_detail_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện chi tiết playlist với danh sách bài hát}
+\label{fig:playlist_detail}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Thanh điều hướng bên trái (Sidebar)}
+\begin{itemize}
+    \item Logo và tên ứng dụng ở trên cùng.
+    \item Các mục điều hướng chính: Home, Search, Your Library, Create Playlist, Purchase History, Friends, Liked Songs.
+    \item Danh sách playlist cá nhân và nghệ sĩ đang theo dõi hiển thị phía dưới.
+\end{itemize}
+
+\subsubsection{Thanh điều hướng trên cùng (Topbar)}
+\begin{itemize}
+    \item Nút quay lại, thanh tìm kiếm, nút tạo playlist, biểu tượng tài khoản và avatar người dùng.
+\end{itemize}
+
+\subsubsection{Khu vực nội dung chính (Playlist)}
+\begin{itemize}
+    \item Ảnh đại diện playlist lớn, tiêu đề playlist nổi bật (ví dụ: \textbf{Today's Top Hits}).
+    \item Thông tin mô tả playlist: người tạo, số lượt thích, số lượng bài hát, tổng thời lượng.
+    \item Nút phát playlist (Play), nút yêu thích (Like), nút tuỳ chọn khác (dấu ba chấm).
+    \item Danh sách bài hát trong playlist hiển thị dưới dạng bảng với các cột:
+    \begin{itemize}
+        \item Số thứ tự, tên bài hát, nghệ sĩ, album, ngày thêm vào, thời lượng.
+    \end{itemize}
+    \item Người dùng có thể nhấn vào từng bài hát để phát nhạc trực tiếp từ playlist.
+\end{itemize}
+
+\subsubsection{Thanh điều khiển nhạc (Music Player Bar)}
+\begin{itemize}
+    \item Hiển thị ở dưới cùng màn hình.
+    \item Thông tin bài hát đang phát, các nút điều khiển nhạc (play, pause, next, previous, repeat, volume, v.v.).
+    \item Thanh tiến trình phát nhạc và nút yêu thích bài hát.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Quản lý và phát playlist}
+\begin{itemize}
+    \item Hiển thị thông tin tổng quan về playlist và danh sách các bài hát.
+    \item Cho phép phát toàn bộ playlist hoặc từng bài hát riêng lẻ.
+    \item Hiển thị thông tin chi tiết từng bài hát: tên, nghệ sĩ, album, ngày thêm, thời lượng.
+\end{itemize}
+
+\subsubsection{Tương tác với playlist}
+\begin{itemize}
+    \item Người dùng có thể yêu thích playlist, chia sẻ hoặc thực hiện các thao tác khác qua nút tuỳ chọn.
+\end{itemize}
+
+\subsubsection{Điều hướng và trải nghiệm người dùng}
+\begin{itemize}
+    \item Dễ dàng chuyển đổi giữa các chức năng chính của ứng dụng qua sidebar và topbar.
+    \item Giao diện responsive, tối ưu cho nhiều kích thước màn hình.
+    \item Các thành phần được bố trí hợp lý, dễ thao tác.
+\end{itemize}
+
+\subsection{Kết luận}
+Giao diện playlist được thiết kế trực quan, hiện đại, giúp người dùng dễ dàng quản lý, phát và tương tác với các danh sách phát nhạc. Các chức năng phát nhạc, yêu thích và quản lý bài hát được tích hợp hợp lý, đảm bảo trải nghiệm người dùng mượt mà và đồng bộ với tổng thể ứng dụng.
+
+\section{Phân tích giao diện chức năng bài hát yêu thích (Liked Songs)}
+
+\subsection{Tổng quan về giao diện bài hát yêu thích}
+Chức năng bài hát yêu thích (Liked Songs) cho phép người dùng lưu trữ và quản lý các bài hát mà mình đã đánh dấu yêu thích trên ứng dụng Spotify Clone. Giao diện được thiết kế tối giản, hiện đại, giúp người dùng dễ dàng truy cập và phát các bài hát yêu thích của mình.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{liked_song_detail_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện chi tiết bài hát yêu thích}
+\label{fig:liked_song_detail}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{liked_song_list_screen.png} % Đổi tên file ảnh nếu cần
+\caption{Giao diện danh sách bài hát yêu thích}
+\label{fig:liked_songs_list}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+
+\subsubsection{Thanh điều hướng bên trái (Sidebar)}
+\begin{itemize}
+    \item Logo và tên ứng dụng ở trên cùng.
+    \item Các mục điều hướng chính: Home, Search, Your Library, Create Playlist, Purchase History, Friends, \textbf{Liked Songs} (được làm nổi bật khi ở trang này).
+    \item Danh sách playlist cá nhân và nghệ sĩ đang theo dõi hiển thị phía dưới.
+\end{itemize}
+
+\subsubsection{Thanh điều hướng trên cùng (Topbar)}
+\begin{itemize}
+    \item Nút quay lại, thanh tìm kiếm, nút tạo playlist, biểu tượng tài khoản và avatar người dùng.
+\end{itemize}
+
+\subsubsection{Khu vực nội dung chính (Liked Songs)}
+\begin{itemize}
+    \item Tiêu đề lớn: \textbf{Liked Songs}, căn giữa, nổi bật.
+    \item Danh sách các bài hát yêu thích hiển thị dưới dạng lưới hoặc danh sách, mỗi bài hát là một card với:
+    \begin{itemize}
+        \item Ảnh đại diện bài hát (nếu có).
+        \item Tên bài hát, nghệ sĩ, năm phát hành.
+        \item Nút phát, nút yêu thích (trái tim), nút tuỳ chọn khác (dấu ba chấm).
+        \item Thời lượng bài hát.
+    \end{itemize}
+    \item Khi nhấn vào một bài hát, giao diện chi tiết bài hát sẽ hiển thị với thông tin đầy đủ và các nút chức năng.
+\end{itemize}
+
+\subsubsection{Thanh điều khiển nhạc (Music Player Bar)}
+\begin{itemize}
+    \item Hiển thị ở dưới cùng màn hình.
+    \item Thông tin bài hát đang phát, các nút điều khiển nhạc (play, pause, next, previous, repeat, volume, v.v.).
+    \item Thanh tiến trình phát nhạc và nút yêu thích bài hát.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Quản lý bài hát yêu thích}
+\begin{itemize}
+    \item Hiển thị danh sách tất cả các bài hát mà người dùng đã đánh dấu yêu thích.
+    \item Cho phép phát nhạc trực tiếp từ danh sách yêu thích.
+    \item Có thể bỏ yêu thích hoặc thêm lại bất kỳ bài hát nào.
+\end{itemize}
+
+\subsubsection{Trải nghiệm người dùng}
+\begin{itemize}
+    \item Giao diện rõ ràng, các nút chức năng nổi bật, dễ thao tác.
+    \item Giao diện responsive, tối ưu cho nhiều kích thước màn hình.
+\end{itemize}
+
+\subsection{Kết luận}
+Chức năng bài hát yêu thích được thiết kế trực quan, hiện đại, giúp người dùng dễ dàng lưu trữ, quản lý và phát các bài hát yêu thích của mình. Các thao tác thêm/xoá yêu thích và phát nhạc được tích hợp hợp lý, đảm bảo trải nghiệm người dùng mượt mà và đồng bộ với tổng thể ứng dụng.
+
+\section{Phân tích giao diện chức năng Chatbox AI}
+
+\subsection{Tổng quan về giao diện Chatbox AI}
+Giao diện chức năng Chatbox AI được thiết kế dưới dạng một cửa sổ popup nổi bật ở góc dưới bên phải màn hình, cung cấp một phương tiện tương tác trực tiếp và tiện lợi với trợ lý AI của Spotify Clone. Giao diện này tập trung vào trải nghiệm đàm thoại, cho phép người dùng gửi câu hỏi hoặc yêu cầu và nhận phản hồi từ AI.
+
+\begin{figure}[h!]
+\centering
+
+ \includegraphics[width=0.9\textwidth]{chatbox_ai_screenshot.jpg} 
+\caption{Giao diện Chatbox AI}
+\label{fig:chatbox_ai}
+\end{figure}
+
+\subsection{Thành phần giao diện}
+Giao diện Chatbox AI bao gồm các thành phần chính sau:
+
+\subsubsection{Header của cửa sổ Chatbox}
+\begin{itemize}
+    \item Biểu tượng AI và tên chức năng (\textbf{Spotify AI}) ở phía trên cùng, hiển thị rõ ràng mục đích của cửa sổ.
+    \item Nút đóng (biểu tượng \(\times\)) ở góc trên bên phải, cho phép người dùng ẩn hoặc đóng cửa sổ chatbox.
+\end{itemize}
+
+\subsubsection{Khu vực hiển thị tin nhắn}
+\begin{itemize}
+    \item Hiển thị lịch sử cuộc hội thoại giữa người dùng và AI.
+    \item Các tin nhắn của AI và người dùng được phân biệt rõ ràng (ví dụ: bong bóng chat khác màu hoặc vị trí).
+    \item Bao gồm cả tin nhắn chào mừng ban đầu từ AI và các gợi ý tương tác.
+    \item Thời gian gửi tin nhắn có thể được hiển thị.
+\end{itemize}
+
+\subsubsection{Khu vực nhập và gửi tin nhắn}
+\begin{itemize}
+    \item Thanh nhập liệu (\textbf{Write your message...}) cho phép người dùng gõ nội dung tin nhắn.
+    \item Nút gửi (biểu tượng máy bay giấy) ở bên phải thanh nhập liệu, dùng để gửi tin nhắn đến AI.
+\end{itemize}
+
+\subsubsection{Nút kích hoạt Chatbox}
+\begin{itemize}
+    \item Một biểu tượng AI nổi bật (hình tròn màu hồng với biểu tượng robot) thường nằm ở góc màn hình (trong ảnh chụp là góc dưới bên phải), khi nhấn vào sẽ mở hoặc đóng cửa sổ Chatbox AI.
+\end{itemize}
+
+\subsection{Chức năng của giao diện}
+
+\subsubsection{Tương tác với AI}
+\begin{itemize}
+    \item Người dùng nhập câu hỏi hoặc yêu cầu vào thanh nhập liệu và nhấn nút gửi.
+    \item \textbf{Luồng xử lý}: Frontend gửi nội dung tin nhắn thông qua một cuộc gọi API (HTTP POST) đến backend. Backend xử lý yêu cầu (có thể tương tác với mô hình AI) và trả về phản hồi qua API response. Frontend nhận phản hồi và hiển thị cả tin nhắn người dùng vừa gửi và phản hồi từ AI trong khu vực hiển thị tin nhắn.
+    \item AI có thể cung cấp các gợi ý (ví dụ: gợi ý nhạc mới, nghe nhạc Pop, tìm bài hát theo lời, nghe lại playlist cũ) mà người dùng có thể nhấn vào để tương tác nhanh.
+\end{itemize}
+
+\subsubsection{Quản lý cuộc hội thoại (Local Storage)}
+\begin{itemize}
+    \item Toàn bộ lịch sử cuộc hội thoại giữa người dùng và AI được lưu trữ \textbf{tạm thời} trong bộ nhớ cục bộ của trình duyệt (ví dụ: sử dụng JavaScript variables hoặc Session Storage).
+    \item \textbf{Quan trọng}: Dữ liệu cuộc hội thoại \textbf{không} được lưu trữ trên server hoặc database lâu dài. Khi người dùng đóng hoặc thoát ứng dụng (làm mới trang, đóng trình duyệt), toàn bộ lịch sử cuộc hội thoại sẽ \textbf{bị mất}.
+\end{itemize}
+
+\subsubsection{Hiển thị và Điều hướng}
+\begin{itemize}
+    \item Cửa sổ chatbox có thể được mở/đóng dễ dàng thông qua nút kích hoạt.
+    \item Giao diện hiển thị tin nhắn cuộn để người dùng theo dõi toàn bộ cuộc hội thoại.
+\end{itemize}
+
+\subsection{Kết luận}
+Chức năng Chatbox AI cung cấp một phương thức tương tác trực tiếp với người dùng thông qua giao diện đàm thoại thân thiện. Luồng xử lý dựa trên các cuộc gọi API đồng bộ để gửi tin nhắn và nhận phản hồi. Đặc điểm nổi bật của triển khai này là việc lưu trữ lịch sử cuộc hội thoại chỉ diễn ra ở phía client (local storage), dẫn đến việc dữ liệu hội thoại không được duy trì qua các phiên sử dụng. Điều này tạo ra trải nghiệm hội thoại ngắn hạn, phù hợp với các tương tác tức thời nhưng không lưu giữ bối cảnh lâu dài.
+
+\chapter{Cách thức cài đặt ứng dụng và môi trường chạy}
+\section{Yêu cầu về môi trường}
+
+\begin{itemize}
+    \item \textbf{Hệ điều hành:} Windows, Linux hoặc macOS
+    \item \textbf{Phiên bản Python:} 3.9 trở lên
+    \item \textbf{Node.js:} 16.x trở lên
+    \item \textbf{Bun:} (nếu sử dụng cho frontend)
+    \item \textbf{Trình quản lý gói:} pip (Python), npm hoặc bun (Node.js)
+    \item \textbf{Các phần mềm hỗ trợ khác:} Git, SQLite
+\end{itemize}
+
+\section{Hướng dẫn cài đặt Backend}
+
+\begin{enumerate}
+    \item \textbf{Cài đặt Python và pip} \\
+    Tải và cài đặt Python từ trang chủ: \url{https://www.python.org/downloads/}
+    \item \textbf{Cài đặt các thư viện cần thiết} \\
+    Mở terminal/cmd, di chuyển vào thư mục \texttt{backend} và chạy lệnh:
+    \begin{lstlisting}[language=bash]
+pip install -r requirements.txt
+    \end{lstlisting}
+    \item \textbf{Khởi tạo cơ sở dữ liệu} \\
+    Trong thư mục \texttt{backend}, chạy:
+    \begin{lstlisting}[language=bash]
+python manage.py migrate
+    \end{lstlisting}
+    \item \textbf{Chạy server backend} \\
+    \begin{lstlisting}[language=bash]
+python manage.py runserver
+    \end{lstlisting}
+    Mặc định backend sẽ chạy tại địa chỉ: \url{http://127.0.0.1:8000}
+\end{enumerate}
+
+\section{Hướng dẫn cài đặt Frontend}
+
+\begin{enumerate}
+    \item \textbf{Cài đặt Node.js và Bun} \\
+    - Tải Node.js tại: \url{https://nodejs.org/} \\
+    - Cài đặt Bun theo hướng dẫn tại: \url{https://bun.sh/}
+    \item \textbf{Cài đặt các thư viện cần thiết} \\
+    Mở terminal/cmd, di chuyển vào thư mục \texttt{frontend} và chạy:
+    \begin{lstlisting}[language=bash]
+bun install
+    \end{lstlisting}
+    hoặc nếu dùng npm:
+    \begin{lstlisting}[language=bash]
+npm install
+    \end{lstlisting}
+    \item \textbf{Chạy ứng dụng frontend} \\
+    \begin{lstlisting}[language=bash]
+bun run dev
+    \end{lstlisting}
+    hoặc nếu dùng npm:
+    \begin{lstlisting}[language=bash]
+npm run dev
+    \end{lstlisting}
+    Ứng dụng frontend sẽ chạy tại địa chỉ: \url{http://localhost:5173}
+\end{enumerate}
+
+\section{Kết nối Frontend và Backend}
+
+\begin{itemize}
+    \item Đảm bảo backend và frontend đều đang chạy.
+    \item Trong file cấu hình frontend (thường là \texttt{src/config}), chỉnh sửa địa chỉ API trỏ về backend (mặc định là \url{http://127.0.0.1:8000}).
+\end{itemize}
+
+\section{Tóm tắt quy trình cài đặt}
+
+\begin{enumerate}
+    \item Cài đặt Python, pip, Node.js, Bun.
+    \item Cài đặt các thư viện cho backend và frontend.
+    \item Khởi tạo database và chạy server backend.
+    \item Chạy ứng dụng frontend.
+    \item Kiểm tra kết nối giữa frontend và backend.
+\end{enumerate}
+
+\textbf{Lưu ý:}
+\begin{itemize}
+    \item Đảm bảo các port không bị chiếm dụng bởi ứng dụng khác.
+    \item Nếu gặp lỗi trong quá trình cài đặt, kiểm tra lại phiên bản các phần mềm và các bước đã thực hiện.
+\end{itemize}
+
+\chapter{Phân công công việc}
+
+\section{Thành viên nhóm và nhiệm vụ}
+
+\subsection{Nguyễn Nhật Trường}
+\begin{itemize}
+    \item \textbf{Vai trò}: Backend Developer
+    \item \textbf{Nhiệm vụ chính}:
+    \begin{itemize}
+        \item Phát triển hệ thống backend chính
+        \item Xây dựng API endpoints
+        \item Xử lý logic nghiệp vụ
+        \item Tối ưu hóa hiệu suất server
+        \item Bảo mật hệ thống
+    \end{itemize}
+    \item \textbf{Công nghệ sử dụng}:
+    \begin{itemize}
+        \item Django
+        \item Django REST Framework
+        \item PostgreSQL
+        \item Redis
+    \end{itemize}
+\end{itemize}
+
+\subsection{Nguyễn Minh Phúc}
+\begin{itemize}
+    \item \textbf{Vai trò}: Database Designer \& Software Developer
+    \item \textbf{Nhiệm vụ chính}:
+    \begin{itemize}
+        \item Thiết kế cơ sở dữ liệu
+        \item Tối ưu hóa cấu trúc database
+        \item Phát triển phần mềm
+        \item Kiểm thử hệ thống
+        \item Tối ưu hóa truy vấn
+    \end{itemize}
+    \item \textbf{Công nghệ sử dụng}:
+    \begin{itemize}
+        \item SQL
+        \item Django ORM
+        \item Python
+        \item Docker
+    \end{itemize}
+\end{itemize}
+
+\subsection{Nguyễn Quốc Tuấn}
+\begin{itemize}
+    \item \textbf{Vai trò}: Frontend Developer
+    \item \textbf{Nhiệm vụ chính}:
+    \begin{itemize}
+        \item Phát triển giao diện người dùng
+        \item Xây dựng các trang chính
+        \item Tối ưu hóa trải nghiệm người dùng
+        \item Đảm bảo responsive design
+        \item Tích hợp API
+    \end{itemize}
+    \item \textbf{Công nghệ sử dụng}:
+    \begin{itemize}
+        \item React
+        \item TypeScript
+        \item Tailwind CSS
+        \item Redux
+    \end{itemize}
+\end{itemize}
+
+\subsection{Phạm Thiên Phú}
+\begin{itemize}
+    \item \textbf{Vai trò}: Frontend Developer \& Technical Writer
+    \item \textbf{Nhiệm vụ chính}:
+    \begin{itemize}
+        \item Phát triển một số trang frontend
+        \item Viết tài liệu kỹ thuật
+        \item Viết báo cáo dự án
+        \item Hỗ trợ testing
+        \item Quản lý tài liệu
+    \end{itemize}
+    \item \textbf{Công nghệ sử dụng}:
+    \begin{itemize}
+        \item React
+        \item TypeScript
+        \item LaTeX
+        \item Markdown
+    \end{itemize}
+\end{itemize}
+
+\section{Quy trình làm việc}
+\begin{itemize}
+    \item \textbf{Phương pháp làm việc}:
+    \begin{itemize}
+        \item Agile/Scrum
+        \item Code review
+        \item Pair programming khi cần
+        \item Daily standup meetings
+    \end{itemize}
+    \item \textbf{Công cụ quản lý}:
+    \begin{itemize}
+        \item GitHub cho version control
+        \item Trello cho quản lý task
+        \item Slack cho communication
+        \item Google Docs cho tài liệu
+    \end{itemize}
+    \item \textbf{Quy trình phát triển}:
+    \begin{itemize}
+        \item Planning và phân công task
+        \item Development và code review
+        \item Testing và bug fixing
+        \item Deployment và documentation
+    \end{itemize}
+\end{itemize}
+
+\section{Kết quả đạt được}
+\begin{itemize}
+    \item \textbf{Backend}:
+    \begin{itemize}
+        \item Hệ thống API hoàn chỉnh
+        \item Database được tối ưu hóa
+        \item Bảo mật được đảm bảo
+    \end{itemize}
+    \item \textbf{Frontend}:
+    \begin{itemize}
+        \item Giao diện người dùng thân thiện
+        \item Responsive trên mọi thiết bị
+        \item Hiệu suất được tối ưu
+    \end{itemize}
+    \item \textbf{Tài liệu}:
+    \begin{itemize}
+        \item Báo cáo chi tiết
+        \item Tài liệu kỹ thuật đầy đủ
+        \item Hướng dẫn sử dụng
+    \end{itemize}
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+   
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{thebibliography}{99}
+
+\bibitem{spotify} Spotify (2024). \textit{Spotify Web API Documentation}. 
+\url{https://developer.spotify.com/documentation/web-api/}
+
+\bibitem{react} React Documentation (2024). \textit{React Official Documentation}.
+\url{https://react.dev/}
+
+\bibitem{django} Django Documentation (2024). \textit{Django Official Documentation}.
+\url{https://docs.djangoproject.com/}
+
+\bibitem{typescript} TypeScript Documentation (2024). \textit{TypeScript Official Documentation}.
+\url{https://www.typescriptlang.org/docs/}
+
+\bibitem{tailwind} Tailwind CSS Documentation (2024). \textit{Tailwind CSS Official Documentation}.
+\url{https://tailwindcss.com/docs}
+
+\bibitem{postgresql} PostgreSQL Documentation (2024). \textit{PostgreSQL Official Documentation}.
+\url{https://www.postgresql.org/docs/}
+
+\bibitem{redis} Redis Documentation (2024). \textit{Redis Official Documentation}.
+\url{https://redis.io/documentation}
+
+\bibitem{rest} Fielding, R. (2000). \textit{Architectural Styles and the Design of Network-based Software Architectures}. 
+University of California, Irvine.
+
+\bibitem{oauth} Hardt, D. (2012). \textit{The OAuth 2.0 Authorization Framework}. 
+RFC 6749, IETF.
+
+\bibitem{websocket} Fette, I., Melnikov, A. (2011). \textit{The WebSocket Protocol}. 
+RFC 6455, IETF.
+
+\bibitem{security} OWASP (2024). \textit{OWASP Web Security Testing Guide}.
+\url{https://owasp.org/www-project-web-security-testing-guide/}
+
+\bibitem{ux} Nielsen, J. (1994). \textit{10 Usability Heuristics for User Interface Design}.
+Nielsen Norman Group.
+
+\bibitem{agile} Agile Alliance (2024). \textit{Agile Manifesto}.
+\url{https://agilemanifesto.org/}
+
+\bibitem{git} Git Documentation (2024). \textit{Git Official Documentation}.
+\url{https://git-scm.com/doc}
+
+\bibitem{docker} Docker Documentation (2024). \textit{Docker Official Documentation}.
+\url{https://docs.docker.com/}
+
+\bibitem{testing} Fowler, M. (2018). \textit{Refactoring: Improving the Design of Existing Code}.
+Addison-Wesley Professional.
+
+\bibitem{clean} Martin, R. C. (2008). \textit{Clean Code: A Handbook of Agile Software Craftsmanship}.
+Prentice Hall.
+
+\bibitem{design} Gamma, E., Helm, R., Johnson, R., Vlissides, J. (1994). \textit{Design Patterns: Elements of Reusable Object-Oriented Software}.
+Addison-Wesley Professional.
+
+\bibitem{performance} High Performance Browser Networking (2024). \textit{Web Performance Optimization}.
+\url{https://hpbn.co/}
+
+\bibitem{music} International Federation of the Phonographic Industry (2024). \textit{Global Music Report}.
+\url{https://www.ifpi.org/}
+
+\end{thebibliography}
+\end{document}
+
