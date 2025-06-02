@@ -1,9 +1,3 @@
-# Thông Tin Sinh Viên
-- Phạm Thiên Phú - 3122560059
-- Nguyễn Quốc Tuấn - 3122560087
-- Nguyễn Minh Phúc - 3122560061
-- Nguyễn Nhật Trường - 3122410441
-
 # Hướng Dẫn Cài Đặt Spotify Clone
 
 ## Yêu Cầu Hệ Thống
